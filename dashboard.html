@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Healthium | Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="dashboard">
+    <main class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark"><i data-lucide="heart-pulse"></i></div>
+          <div>
+            <div class="text-lg">Healthium</div>
+            <div id="doctorLabel" class="text-xs text-slate-500 font-bold">Care console</div>
+          </div>
+        </div>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div class="section-title"><i data-lucide="users"></i> Patient queue</div>
+          </div>
+          <div class="panel-body grid gap-3">
+            <div class="field">
+              <label for="patientSearch">Search patients</label>
+              <input id="patientSearch" placeholder="Name, ID, condition" />
+            </div>
+            <div id="patientList" class="patient-list"></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div class="section-title"><i data-lucide="user-plus"></i> Add patient</div>
+          </div>
+          <form id="addPatientForm" class="panel-body grid gap-3">
+            <div class="field">
+              <label for="newPatientName">Patient name</label>
+              <input id="newPatientName" placeholder="Patient name" />
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="field">
+                <label for="newPatientAge">Age</label>
+                <input id="newPatientAge" type="number" min="0" max="120" placeholder="42" />
+              </div>
+              <div class="field">
+                <label for="newPatientGender">Gender</label>
+                <select id="newPatientGender">
+                  <option>Female</option>
+                  <option>Male</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="newPatientCondition">Known condition</label>
+              <input id="newPatientCondition" placeholder="e.g. Diabetes follow-up" />
+            </div>
+            <button class="btn btn-secondary w-full" type="submit">
+              <i data-lucide="plus"></i>
+              Add patient
+            </button>
+          </form>
+        </section>
+      </aside>
+
+      <section class="main">
+        <header class="topbar">
+          <div>
+            <h1 class="text-2xl font-black text-slate-900">Healthium Dashboard</h1>
+            <p class="mt-1 text-sm text-slate-600">Overview of patients, care plans, and agent readiness.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <a class="btn btn-primary" href="./consultation.html">
+              <i data-lucide="clipboard-pen-line"></i>
+              Open consultation
+            </a>
+            <button id="resetDemoButton" class="btn btn-danger" type="button">
+              <i data-lucide="rotate-ccw"></i>
+              Reset demo
+            </button>
+            <button id="logoutButton" class="btn btn-secondary" type="button">
+              <i data-lucide="log-out"></i>
+              Logout
+            </button>
+          </div>
+        </header>
+
+        <section class="dashboard-grid" aria-label="Care console metrics">
+          <div class="metric-card">
+            <div id="todayVisitsCount" class="metric-value">0</div>
+            <div class="metric-label">Today's care plans</div>
+            <div class="metric-note">Generated from validated visits</div>
+          </div>
+          <div class="metric-card">
+            <div id="followUpCount" class="metric-value">0</div>
+            <div class="metric-label">Follow-up tasks</div>
+            <div class="metric-note">Doctor visits and labs</div>
+          </div>
+          <div class="metric-card">
+            <div id="validationIssueCount" class="metric-value">0</div>
+            <div class="metric-label">Open validation issues</div>
+            <div class="metric-note">Clickable fixes in consultation</div>
+          </div>
+          <div class="metric-card">
+            <div id="reminderCount" class="metric-value">0</div>
+            <div class="metric-label">Reminder events</div>
+            <div class="metric-note">Latest selected patient</div>
+          </div>
+        </section>
+
+        <section class="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="section-title"><i data-lucide="user-round-check"></i> Selected patient</div>
+                <p id="selectedPatientLine" class="mt-1 text-xs font-bold text-slate-500"></p>
+              </div>
+              <a class="btn btn-secondary" href="./consultation.html">
+                <i data-lucide="arrow-right"></i>
+                Continue care plan
+              </a>
+            </div>
+            <div class="panel-body">
+              <div id="patientOverview" class="overview-grid"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <div class="section-title"><i data-lucide="activity"></i> Agent readiness</div>
+            </div>
+            <div class="panel-body agent-grid one-column">
+              <div id="agentIntake" class="agent-card">
+                <div class="agent-title"><i data-lucide="shield-check"></i> Intake Agent</div>
+                <div class="agent-status">Ready to validate required clinical fields</div>
+              </div>
+              <div id="agentSummary" class="agent-card">
+                <div class="agent-title"><i data-lucide="file-text"></i> Summary Agent</div>
+                <div class="agent-status">English summary output for current MVP</div>
+              </div>
+              <div id="agentReminder" class="agent-card">
+                <div class="agent-title"><i data-lucide="alarm-clock"></i> Reminder Agent</div>
+                <div class="agent-status">Ready to build schedule from prescription data</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel mt-4">
+          <div class="panel-header">
+            <div class="section-title"><i data-lucide="history"></i> Recent care plans</div>
+          </div>
+          <div id="recentCarePlans" class="panel-body recent-list"></div>
+        </section>
+      </section>
+    </main>
+
+    <div id="toastHost" class="toast-host" aria-live="polite" aria-atomic="true"></div>
+    <script src="./app.js" defer></script>
+  </body>
+</html>

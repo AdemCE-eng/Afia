@@ -1,4 +1,6 @@
 (function () {
+  const page = document.body.dataset.page || "login";
+
   const STORAGE = {
     session: "healthium.session",
     patients: "healthium.patients",
@@ -19,7 +21,7 @@
   const DEMO_PATIENTS = [
     {
       id: "P-1042",
-      fullName: "Ahmed Ali",
+      fullName: "Ahmed",
       age: 35,
       gender: "Male",
       condition: "Respiratory infection",
@@ -28,7 +30,7 @@
     },
     {
       id: "P-1187",
-      fullName: "Sara Khalid",
+      fullName: "Sara",
       age: 46,
       gender: "Female",
       condition: "Diabetes follow-up",
@@ -37,7 +39,7 @@
     },
     {
       id: "P-1220",
-      fullName: "Omar Hassan",
+      fullName: "Omar",
       age: 67,
       gender: "Male",
       condition: "Hypertension review",
@@ -60,44 +62,6 @@
     processing: false,
   };
 
-  const $ = (id) => document.getElementById(id);
-
-  const els = {
-    loginView: $("loginView"),
-    appShell: $("appShell"),
-    loginForm: $("loginForm"),
-    loginError: $("loginError"),
-    demoFillButton: $("demoFillButton"),
-    doctorId: $("doctorId"),
-    password: $("password"),
-    doctorLabel: $("doctorLabel"),
-    logoutButton: $("logoutButton"),
-    resetDemoButton: $("resetDemoButton"),
-    patientSearch: $("patientSearch"),
-    patientList: $("patientList"),
-    addPatientForm: $("addPatientForm"),
-    visitForm: $("visitForm"),
-    generateButton: $("generateButton"),
-    loadSampleButton: $("loadSampleButton"),
-    selectedPatientLine: $("selectedPatientLine"),
-    validationPanel: $("validationPanel"),
-    validationStatusPill: $("validationStatusPill"),
-    summaryPanel: $("summaryPanel"),
-    schedulePanel: $("schedulePanel"),
-    jsonOutput: $("jsonOutput"),
-    copySummaryButton: $("copySummaryButton"),
-    toggleJsonButton: $("toggleJsonButton"),
-    toastHost: $("toastHost"),
-    todayVisitsCount: $("todayVisitsCount"),
-    followUpCount: $("followUpCount"),
-    validationIssueCount: $("validationIssueCount"),
-    reminderCount: $("reminderCount"),
-    pipelineStatusPill: $("pipelineStatusPill"),
-    agentIntake: $("agentIntake"),
-    agentSummary: $("agentSummary"),
-    agentReminder: $("agentReminder"),
-  };
-
   const HealthiumServices = {
     validateIntake,
     generatePatientSummary,
@@ -105,169 +69,180 @@
   };
 
   window.HealthiumServices = HealthiumServices;
-
   document.addEventListener("DOMContentLoaded", init);
 
   function init() {
     loadState();
-    wireEvents();
-    setDefaultDates();
-    render();
+
+    if (page === "login") {
+      if (state.session) {
+        goTo("./dashboard.html");
+        return;
+      }
+      wireLoginPage();
+      refreshIcons();
+      return;
+    }
+
+    if (!state.session) {
+      goTo("./index.html");
+      return;
+    }
+
+    setDoctorLabel();
+    wireCommonEvents();
+
+    if (page === "dashboard") {
+      wireDashboardPage();
+      renderDashboardPage();
+    }
+
+    if (page === "consultation") {
+      wireConsultationPage();
+      renderConsultationPage();
+    }
+
     refreshIcons();
   }
 
-  function wireEvents() {
-    els.loginForm.addEventListener("submit", handleLogin);
-    els.demoFillButton.addEventListener("click", () => {
-      els.doctorId.value = "dr.khalid";
-      els.password.value = "healthium-demo";
+  function wireLoginPage() {
+    const loginForm = $("loginForm");
+    const demoFillButton = $("demoFillButton");
+
+    loginForm?.addEventListener("submit", handleLogin);
+    demoFillButton?.addEventListener("click", () => {
+      $("doctorId").value = "dr.khalid";
+      $("password").value = "healthium-demo";
     });
-    els.logoutButton.addEventListener("click", handleLogout);
-    els.resetDemoButton.addEventListener("click", resetDemoData);
-    els.addPatientForm.addEventListener("submit", handleAddPatient);
-    els.visitForm.addEventListener("submit", handleVisitSubmit);
-    els.loadSampleButton.addEventListener("click", loadSampleVisit);
-    els.patientSearch.addEventListener("input", (event) => {
+  }
+
+  function wireCommonEvents() {
+    $("logoutButton")?.addEventListener("click", handleLogout);
+    $("resetDemoButton")?.addEventListener("click", resetDemoData);
+    $("patientSearch")?.addEventListener("input", (event) => {
       state.patientSearch = event.target.value.trim().toLowerCase();
-      renderPatients();
+      renderPatientList();
     });
-    $("followUpNeeded").addEventListener("change", () => {
+  }
+
+  function wireDashboardPage() {
+    $("addPatientForm")?.addEventListener("submit", handleAddPatient);
+  }
+
+  function wireConsultationPage() {
+    $("visitForm")?.addEventListener("submit", handleVisitSubmit);
+    $("loadSampleButton")?.addEventListener("click", () => loadSampleVisit());
+    $("followUpNeeded")?.addEventListener("change", () => {
       $("followUpDate").disabled = $("followUpNeeded").value === "no";
     });
+    $("toggleJsonButton")?.addEventListener("click", toggleJson);
+    $("copySummaryButton")?.addEventListener("click", copySummary);
+    $("validationPanel")?.addEventListener("click", handleValidationClick);
+    $("schedulePanel")?.addEventListener("click", handleScheduleClick);
+
     document.querySelectorAll("[data-tab]").forEach((button) => {
       button.addEventListener("click", () => setActiveTab(button.dataset.tab));
     });
-    els.toggleJsonButton.addEventListener("click", toggleJson);
-    els.copySummaryButton.addEventListener("click", copySummary);
-    els.validationPanel.addEventListener("click", handleValidationClick);
-    els.schedulePanel.addEventListener("click", handleScheduleClick);
-  }
-
-  function loadState() {
-    state.session = readJson(STORAGE.session, null);
-    if (state.session?.doctorId === "dr.noura") {
-      state.session = {
-        ...state.session,
-        doctorId: "dr.khalid",
-        doctorName: "Dr. Khalid Al-Harbi",
-      };
-      writeJson(STORAGE.session, state.session);
-    }
-    state.patients = readJson(STORAGE.patients, null);
-    if (!Array.isArray(state.patients) || state.patients.length === 0) {
-      state.patients = clone(DEMO_PATIENTS);
-      writeJson(STORAGE.patients, state.patients);
-    }
-    state.selectedPatientId = localStorage.getItem(STORAGE.selectedPatient) || state.patients[0]?.id || null;
-    if (!state.patients.some((patient) => patient.id === state.selectedPatientId)) {
-      state.selectedPatientId = state.patients[0]?.id || null;
-      if (state.selectedPatientId) localStorage.setItem(STORAGE.selectedPatient, state.selectedPatientId);
-    }
-    const latest = getSelectedPatient()?.visits?.[0];
-    if (latest) {
-      state.lastRecord = latest.record;
-      state.lastSummary = latest.summary;
-      state.lastSchedule = latest.schedule;
-    }
-  }
-
-  function savePatients() {
-    writeJson(STORAGE.patients, state.patients);
   }
 
   function handleLogin(event) {
     event.preventDefault();
-    const doctorId = els.doctorId.value.trim();
-    const password = els.password.value.trim();
+    const doctorId = $("doctorId").value.trim();
+    const password = $("password").value.trim();
+
     if (!doctorId || !password) {
-      els.loginError.textContent = "Enter any demo Doctor ID and password.";
-      els.loginError.classList.remove("hidden");
+      const error = $("loginError");
+      error.textContent = "Enter the demo Doctor ID and password.";
+      error.classList.remove("hidden");
       return;
     }
-    state.session = {
+
+    state.session = normalizeSession({
       doctorId,
-      doctorName: doctorId === "dr.khalid" ? "Dr. Khalid Al-Harbi" : doctorId,
+      doctorName: doctorId === "dr.khalid" ? "Dr. Khalid" : doctorId,
       signedInAt: new Date().toISOString(),
-    };
+    });
     writeJson(STORAGE.session, state.session);
-    els.loginError.classList.add("hidden");
-    showToast("Welcome back", "Care console is ready for today’s visits.", "success");
-    render();
+    goTo("./dashboard.html");
   }
 
   function handleLogout() {
     localStorage.removeItem(STORAGE.session);
     state.session = null;
-    render();
+    goTo("./index.html");
   }
 
   function resetDemoData() {
     state.patients = clone(DEMO_PATIENTS);
-    state.selectedPatientId = state.patients[0].id;
+    state.selectedPatientId = state.patients[0]?.id || null;
     state.lastRecord = null;
     state.lastSummary = null;
     state.lastSchedule = null;
     state.lastIssues = [];
+    state.patientSearch = "";
     savePatients();
-    localStorage.setItem(STORAGE.selectedPatient, state.selectedPatientId);
-    clearOutputs();
-    loadSampleVisit();
-    showToast("Demo reset", "Patients and visits returned to the clean demo state.", "success");
-    render();
+    persistSelectedPatient();
+
+    if ($("patientSearch")) $("patientSearch").value = "";
+    showToast("Demo reset", "Patients and visit history returned to the clean MVP state.", "success");
+
+    if (page === "dashboard") renderDashboardPage();
+    if (page === "consultation") {
+      loadSampleVisit({ silent: true });
+      renderConsultationPage();
+    }
   }
 
   function handleAddPatient(event) {
     event.preventDefault();
-    const fullName = $("newPatientName").value.trim();
-    if (!fullName) {
-      showToast("Missing name", "Add the patient’s full name first.", "warning");
+    const patientName = $("newPatientName").value.trim();
+
+    if (!patientName) {
+      showToast("Missing name", "Add the patient name first.", "warning");
       return;
     }
+
     const patient = {
       id: `P-${Math.floor(1000 + Math.random() * 9000)}`,
-      fullName,
+      fullName: patientName,
       age: Number($("newPatientAge").value || 0) || null,
       gender: $("newPatientGender").value,
       condition: $("newPatientCondition").value.trim() || "New consultation",
       phone: "",
       visits: [],
     };
+
     state.patients.unshift(patient);
     state.selectedPatientId = patient.id;
-    localStorage.setItem(STORAGE.selectedPatient, patient.id);
     state.lastRecord = null;
     state.lastSummary = null;
     state.lastSchedule = null;
     state.lastIssues = [];
     savePatients();
+    persistSelectedPatient();
     event.currentTarget.reset();
-    clearOutputs();
-    setWorkflowStep("patient");
+
     showToast("Patient added", `${patient.fullName} is ready for intake.`, "success");
-    render();
+    renderDashboardPage();
   }
 
   async function handleVisitSubmit(event) {
     event.preventDefault();
     if (state.processing) return;
-    state.processing = true;
-    els.generateButton.disabled = true;
-    els.generateButton.innerHTML = `<i data-lucide="loader-2"></i> Agents processing`;
-    refreshIcons();
 
+    startProcessing();
     setActiveTab("validation");
     setWorkflowStep("intake");
     setAgentState("intake", "processing", "Checking required clinical fields");
     setAgentState("summary", "", "Waiting for validated intake");
     setAgentState("reminder", "", "Waiting for validated medication data");
     setPipelineStatus("Processing intake", "pill-amber");
-    await wait(420);
+    await wait(280);
 
     const visitInput = collectVisitInput();
     const validation = HealthiumServices.validateIntake(visitInput);
     state.lastIssues = validation.validation_issues;
     renderValidation(validation);
-    renderDashboard();
 
     if (validation.validation_status !== "complete") {
       setAgentState("intake", "needs-work", "Missing fields need clarification");
@@ -280,15 +255,15 @@
     }
 
     setAgentState("intake", "complete", "Structured intake JSON is ready");
-    setAgentState("summary", "processing", "Generating patient-friendly Arabic summary");
+    setAgentState("summary", "processing", "Generating English patient summary");
     setWorkflowStep("validate");
     setPipelineStatus("Generating care plan", "pill-amber");
-    await wait(360);
+    await wait(280);
 
     const summary = HealthiumServices.generatePatientSummary(validation.record);
-    setAgentState("summary", "complete", "Arabic summary generated");
+    setAgentState("summary", "complete", "English summary generated");
     setAgentState("reminder", "processing", "Building reminder calendar");
-    await wait(360);
+    await wait(280);
 
     const schedule = HealthiumServices.buildReminderSchedule(validation.record);
     setAgentState("reminder", "complete", `${schedule.totalEvents} reminder events ready`);
@@ -302,27 +277,267 @@
     };
 
     const patient = getSelectedPatient();
-    patient.visits.unshift(visit);
+    if (patient) {
+      patient.visits.unshift(visit);
+      savePatients();
+    }
+
     state.lastRecord = validation.record;
     state.lastSummary = summary;
     state.lastSchedule = schedule;
     state.lastIssues = [];
-    savePatients();
 
     renderOutputs(validation.record, summary, schedule);
-    render();
+    renderPatientList();
+    renderSelectedPatient();
     setActiveTab("summary");
     setWorkflowStep("careplan");
     setPipelineStatus("Care plan ready", "pill-teal");
-    showToast("Care plan generated", "Arabic summary and reminders are ready for review.", "success");
+    showToast("Care plan generated", "English summary and reminders are ready for review.", "success");
     finishProcessing();
   }
 
-  function finishProcessing() {
-    state.processing = false;
-    els.generateButton.disabled = false;
-    els.generateButton.innerHTML = `<i data-lucide="sparkles"></i> Validate and generate`;
+  function loadState() {
+    state.session = normalizeSession(readJson(STORAGE.session, null));
+    if (state.session) writeJson(STORAGE.session, state.session);
+
+    state.patients = readJson(STORAGE.patients, null);
+    if (!Array.isArray(state.patients) || state.patients.length === 0) {
+      state.patients = clone(DEMO_PATIENTS);
+    } else {
+      state.patients = migrateDemoPatientNames(state.patients);
+    }
+    savePatients();
+
+    state.selectedPatientId = localStorage.getItem(STORAGE.selectedPatient) || state.patients[0]?.id || null;
+    if (!state.patients.some((patient) => patient.id === state.selectedPatientId)) {
+      state.selectedPatientId = state.patients[0]?.id || null;
+    }
+    persistSelectedPatient();
+    loadLatestVisitForSelectedPatient();
+  }
+
+  function normalizeSession(session) {
+    if (!session) return null;
+
+    const normalized = { ...session };
+    const doctorId = String(normalized.doctorId || "").toLowerCase();
+    const doctorName = String(normalized.doctorName || "");
+
+    if (doctorId === "dr.khalid" || doctorId.startsWith("dr.") || doctorName.startsWith("Dr.")) {
+      normalized.doctorId = "dr.khalid";
+      normalized.doctorName = "Dr. Khalid";
+    }
+
+    if (!normalized.doctorName) normalized.doctorName = normalized.doctorId || "Dr. Khalid";
+    return normalized;
+  }
+
+  function migrateDemoPatientNames(patients) {
+    const nameMap = {
+      "Ahmed Ali": "Ahmed",
+      "Sara Khalid": "Sara",
+      "Omar Hassan": "Omar",
+    };
+
+    return patients.map((patient) => ({
+      ...patient,
+      fullName: nameMap[patient.fullName] || patient.fullName,
+      visits: Array.isArray(patient.visits) ? patient.visits : [],
+    }));
+  }
+
+  function savePatients() {
+    writeJson(STORAGE.patients, state.patients);
+  }
+
+  function persistSelectedPatient() {
+    if (state.selectedPatientId) {
+      localStorage.setItem(STORAGE.selectedPatient, state.selectedPatientId);
+    }
+  }
+
+  function loadLatestVisitForSelectedPatient() {
+    const latest = getSelectedPatient()?.visits?.[0];
+    state.lastRecord = latest?.record || null;
+    state.lastSummary = latest?.summary || null;
+    state.lastSchedule = latest?.schedule || null;
+    state.lastIssues = [];
+  }
+
+  function renderDashboardPage() {
+    renderPatientList();
+    renderSelectedPatient();
+    renderMetrics();
+    renderRecentCarePlans();
+    renderDashboardAgentReadiness();
     refreshIcons();
+  }
+
+  function renderConsultationPage() {
+    if (!$("startDate")?.value) loadSampleVisit({ silent: true });
+
+    renderPatientList();
+    renderSelectedPatient();
+
+    if (state.lastRecord && state.lastSummary && state.lastSchedule) {
+      renderOutputs(state.lastRecord, state.lastSummary, state.lastSchedule);
+      setWorkflowStep("careplan");
+      setPipelineStatus("Loaded saved care plan", "pill-teal");
+      setAgentState("intake", "complete", "Saved intake loaded");
+      setAgentState("summary", "complete", "Saved English summary loaded");
+      setAgentState("reminder", "complete", "Saved reminders loaded");
+    } else {
+      clearOutputs();
+      setWorkflowStep("intake");
+      setPipelineStatus("Ready for intake", "pill-amber");
+      resetAgentStates();
+    }
+
+    refreshIcons();
+  }
+
+  function renderPatientList() {
+    const patientList = $("patientList");
+    if (!patientList) return;
+
+    const patients = state.patients.filter((patient) => {
+      if (!state.patientSearch) return true;
+      const haystack = `${patient.fullName} ${patient.id} ${patient.condition}`.toLowerCase();
+      return haystack.includes(state.patientSearch);
+    });
+
+    if (!patients.length) {
+      patientList.innerHTML = `<div class="empty-state">No patients match this search.</div>`;
+      return;
+    }
+
+    patientList.innerHTML = patients
+      .map((patient) => {
+        const active = patient.id === state.selectedPatientId ? " active" : "";
+        const latest = patient.visits[0];
+        const nextFollowUp = latest?.record?.clinical_data?.follow_up?.date;
+        return `
+          <button class="patient-button${active}" type="button" data-patient-id="${escapeHtml(patient.id)}">
+            <div class="patient-name">${escapeHtml(patient.fullName)}</div>
+            <div class="patient-meta">${escapeHtml(patient.id)} - ${escapeHtml(patient.condition || "No condition")}</div>
+            <div class="patient-meta">${patient.visits.length} care plans${nextFollowUp ? ` - next ${formatDate(nextFollowUp)}` : ""}</div>
+          </button>
+        `;
+      })
+      .join("");
+
+    patientList.querySelectorAll("[data-patient-id]").forEach((button) => {
+      button.addEventListener("click", () => {
+        state.selectedPatientId = button.dataset.patientId;
+        persistSelectedPatient();
+        loadLatestVisitForSelectedPatient();
+
+        if (page === "dashboard") renderDashboardPage();
+        if (page === "consultation") renderConsultationPage();
+      });
+    });
+  }
+
+  function renderSelectedPatient() {
+    const patient = getSelectedPatient();
+    const selectedPatientLine = $("selectedPatientLine");
+    const overview = $("patientOverview");
+
+    if (!patient) {
+      if (selectedPatientLine) selectedPatientLine.textContent = "No patient selected";
+      if (overview) overview.innerHTML = `<div class="empty-state">Select or create a patient to continue.</div>`;
+      return;
+    }
+
+    if (selectedPatientLine) {
+      selectedPatientLine.textContent = `${patient.fullName} - ${patient.id} - ${patient.age || "Age not set"} - ${patient.condition}`;
+    }
+
+    if (overview) {
+      const latest = patient.visits[0];
+      const followUp = latest?.record?.clinical_data?.follow_up;
+      overview.innerHTML = `
+        ${overviewItem("Name", patient.fullName)}
+        ${overviewItem("Patient ID", patient.id)}
+        ${overviewItem("Profile", `${patient.age || "Age not set"} - ${patient.gender || "Not set"}`)}
+        ${overviewItem("Known condition", patient.condition || "New consultation")}
+        ${overviewItem("Care plans", patient.visits.length)}
+        ${overviewItem("Next follow-up", followUp?.needed ? formatDate(followUp.date) : "Not scheduled")}
+      `;
+    }
+  }
+
+  function overviewItem(label, value) {
+    return `
+      <div class="overview-item">
+        <div class="overview-label">${escapeHtml(label)}</div>
+        <div class="overview-value">${escapeHtml(value)}</div>
+      </div>
+    `;
+  }
+
+  function renderMetrics() {
+    const allVisits = state.patients.flatMap((patient) => patient.visits.map((visit) => ({ ...visit, patient })));
+    const today = todayIso();
+    const todayVisits = allVisits.filter((visit) => visit.record.visit.visit_date === today).length;
+    const followUps = allVisits.reduce((count, visit) => {
+      const followUp = visit.record.clinical_data.follow_up;
+      return count + (followUp.needed ? 1 : 0) + visit.record.clinical_data.lab_tests.length;
+    }, 0);
+
+    setText("todayVisitsCount", todayVisits);
+    setText("followUpCount", followUps);
+    setText("validationIssueCount", state.lastIssues.length);
+    setText("reminderCount", state.lastSchedule?.totalEvents || 0);
+  }
+
+  function renderRecentCarePlans() {
+    const recentCarePlans = $("recentCarePlans");
+    if (!recentCarePlans) return;
+
+    const rows = state.patients
+      .flatMap((patient) => patient.visits.map((visit) => ({ patient, visit })))
+      .sort((a, b) => new Date(b.visit.createdAt) - new Date(a.visit.createdAt))
+      .slice(0, 5);
+
+    if (!rows.length) {
+      recentCarePlans.innerHTML = `<div class="empty-state">No care plans generated yet.</div>`;
+      return;
+    }
+
+    recentCarePlans.innerHTML = rows
+      .map(({ patient, visit }) => {
+        const medication = visit.record.clinical_data.medications[0];
+        return `
+          <div class="recent-row">
+            <div>
+              <div class="font-black text-slate-900">${escapeHtml(patient.fullName)} - ${escapeHtml(medication.drug_name || "Medication pending")}</div>
+              <div class="mt-1 text-xs font-bold text-slate-500">${escapeHtml(visit.record.clinical_data.diagnosis.text || "No diagnosis")} - ${formatDate(visit.record.visit.visit_date)}</div>
+            </div>
+            <button class="btn btn-secondary" type="button" data-patient-id="${escapeHtml(patient.id)}">
+              <i data-lucide="arrow-right"></i>
+              Open
+            </button>
+          </div>
+        `;
+      })
+      .join("");
+
+    recentCarePlans.querySelectorAll("[data-patient-id]").forEach((button) => {
+      button.addEventListener("click", () => {
+        state.selectedPatientId = button.dataset.patientId;
+        persistSelectedPatient();
+        goTo("./consultation.html");
+      });
+    });
+  }
+
+  function renderDashboardAgentReadiness() {
+    const latest = getSelectedPatient()?.visits?.[0];
+    setAgentState("intake", latest ? "complete" : "", latest ? "Latest intake is saved" : "Ready to validate required clinical fields");
+    setAgentState("summary", latest ? "complete" : "", latest ? "Latest English summary is saved" : "English summary output for current MVP");
+    setAgentState("reminder", latest ? "complete" : "", latest ? "Latest reminder schedule is saved" : "Ready to build schedule from prescription data");
   }
 
   function collectVisitInput() {
@@ -400,7 +615,8 @@
       },
       visit: {
         visit_id: `VIS-${Date.now()}`,
-        physician_id: state.session?.doctorId || "demo-doctor",
+        physician_id: state.session?.doctorId || "dr.khalid",
+        physician_name: state.session?.doctorName || "Dr. Khalid",
         visit_date: input.visitDate,
         clinic: "Healthium Demo Clinic",
       },
@@ -449,26 +665,25 @@
 
   function generatePatientSummary(record) {
     const medication = record.clinical_data.medications[0];
-    const mealText = arabicMealRelation(medication.meal_relation);
-    const durationText = arabicDuration(medication.duration.value, medication.duration.unit);
     const doseText = `${medication.dose_amount} ${medication.dose_unit}`.trim();
+    const durationText = formatDuration(medication.duration.value, medication.duration.unit);
     const careInstructions = record.clinical_data.care_instructions.length
       ? record.clinical_data.care_instructions
-      : ["اتبع تعليمات الطبيب كما هي مكتوبة في الخطة العلاجية."];
+      : ["Follow the doctor's documented care instructions."];
     const labs = record.clinical_data.lab_tests.map((test) => test.test_name);
     const followUp = record.clinical_data.follow_up;
 
     return {
-      language: "ar",
-      condition_summary: `تشير ملاحظات الطبيب إلى: ${record.clinical_data.diagnosis.text}. اتبع الخطة التالية كما هي موضحة.`,
+      language: "en",
+      condition_summary: `The doctor documented: ${record.clinical_data.diagnosis.text}. Follow the treatment plan below exactly as provided.`,
       medication_plan: [
-        `${medication.drug_name}: ${doseText}، ${arabicFrequency(medication.frequency)} ${mealText} لمدة ${durationText}.`,
+        `${medication.drug_name}: ${doseText}, ${formatFrequency(medication.frequency)}, ${formatMealRelation(medication.meal_relation).toLowerCase()}, for ${durationText}.`,
       ],
-      important_instructions: careInstructions.map(translateInstruction),
-      lab_tests: labs.length ? labs.map((test) => `إجراء تحليل ${test}.`) : ["لا توجد تحاليل موثقة في هذه الزيارة."],
+      important_instructions: careInstructions,
+      lab_tests: labs.length ? labs.map((test) => `Complete ${test}.`) : ["No lab tests were documented for this visit."],
       appointments: followUp.needed
-        ? [`موعد المتابعة: ${formatDate(followUp.date)}${followUp.reason ? `، السبب: ${followUp.reason}` : ""}.`]
-        : ["لا يوجد موعد متابعة موثق."],
+        ? [`Follow-up: ${formatDate(followUp.date)}${followUp.reason ? `, reason: ${followUp.reason}` : ""}.`]
+        : ["No follow-up appointment was documented."],
     };
   }
 
@@ -521,6 +736,7 @@
     const followUp = record.clinical_data.follow_up;
     const labs = record.clinical_data.lab_tests;
     const events = [];
+
     labs.forEach((test) => {
       events.push({
         event_type: "lab_test",
@@ -530,123 +746,30 @@
         reminder_offsets: ["24h_before"],
       });
     });
+
     if (followUp.needed) {
       events.push({
         event_type: "doctor_follow_up",
-        title: followUp.reason || "Doctor follow-up",
+        title: followUp.reason || "Follow-up appointment",
         scheduled_date: followUp.date,
-        timeframe: followUp.date ? null : followUp.timeframe,
         reminder_offsets: ["24h_before", "2h_before"],
       });
     }
+
     return events;
   }
 
-  function render() {
-    const loggedIn = Boolean(state.session);
-    els.loginView.classList.toggle("hidden", loggedIn);
-    els.appShell.classList.toggle("hidden", !loggedIn);
-    if (!loggedIn) {
-      refreshIcons();
-      return;
-    }
-    els.doctorLabel.textContent = state.session.doctorName || state.session.doctorId;
-    renderPatients();
-    renderSelectedPatient();
-    renderDashboard();
-    if (state.lastRecord && state.lastSummary && state.lastSchedule) {
-      renderOutputs(state.lastRecord, state.lastSummary, state.lastSchedule);
-    }
-    refreshIcons();
-  }
-
-  function renderPatients() {
-    const patients = state.patients.filter((patient) => {
-      if (!state.patientSearch) return true;
-      const haystack = `${patient.fullName} ${patient.id} ${patient.condition}`.toLowerCase();
-      return haystack.includes(state.patientSearch);
-    });
-
-    if (!patients.length) {
-      els.patientList.innerHTML = `<div class="empty-state">No patients match this search.</div>`;
-      return;
-    }
-
-    els.patientList.innerHTML = patients
-      .map((patient) => {
-        const active = patient.id === state.selectedPatientId ? " active" : "";
-        const latest = patient.visits[0];
-        const nextFollowUp = latest?.record.clinical_data.follow_up.date;
-        return `
-          <button class="patient-button${active}" type="button" data-patient-id="${escapeHtml(patient.id)}">
-            <div class="patient-name">${escapeHtml(patient.fullName)}</div>
-            <div class="patient-meta">${escapeHtml(patient.id)} · ${escapeHtml(patient.condition || "No condition")}</div>
-            <div class="patient-meta">${patient.visits.length} care plans${nextFollowUp ? ` · next ${formatDate(nextFollowUp)}` : ""}</div>
-          </button>
-        `;
-      })
-      .join("");
-
-    els.patientList.querySelectorAll("[data-patient-id]").forEach((button) => {
-      button.addEventListener("click", () => {
-        state.selectedPatientId = button.dataset.patientId;
-        localStorage.setItem(STORAGE.selectedPatient, state.selectedPatientId);
-        const patient = getSelectedPatient();
-        const latest = patient?.visits[0];
-        state.lastRecord = latest?.record || null;
-        state.lastSummary = latest?.summary || null;
-        state.lastSchedule = latest?.schedule || null;
-        state.lastIssues = [];
-        if (latest) {
-          renderOutputs(latest.record, latest.summary, latest.schedule);
-          setWorkflowStep("careplan");
-          setPipelineStatus("Loaded saved care plan", "pill-teal");
-          setAgentState("intake", "complete", "Saved intake loaded");
-          setAgentState("summary", "complete", "Saved Arabic summary loaded");
-          setAgentState("reminder", "complete", "Saved reminders loaded");
-        } else {
-          clearOutputs();
-          setWorkflowStep("patient");
-          setPipelineStatus("Ready for intake", "pill-amber");
-          resetAgentStates();
-        }
-        render();
-      });
-    });
-  }
-
-  function renderSelectedPatient() {
-    const patient = getSelectedPatient();
-    if (!patient) {
-      els.selectedPatientLine.textContent = "No patient selected";
-      return;
-    }
-    els.selectedPatientLine.textContent = `${patient.fullName} · ${patient.id} · ${patient.age || "Age not set"} · ${patient.condition}`;
-  }
-
-  function renderDashboard() {
-    const allVisits = state.patients.flatMap((patient) => patient.visits.map((visit) => ({ ...visit, patient })));
-    const today = todayIso();
-    const todayVisits = allVisits.filter((visit) => visit.record.visit.visit_date === today).length;
-    const followUps = allVisits.reduce((count, visit) => {
-      const followUp = visit.record.clinical_data.follow_up;
-      const labCount = visit.record.clinical_data.lab_tests.length;
-      return count + (followUp.needed ? 1 : 0) + labCount;
-    }, 0);
-    const reminders = state.lastSchedule?.totalEvents || 0;
-
-    els.todayVisitsCount.textContent = todayVisits;
-    els.followUpCount.textContent = followUps;
-    els.validationIssueCount.textContent = state.lastIssues.length;
-    els.reminderCount.textContent = reminders;
-  }
-
   function renderValidation(validation) {
-    els.validationPanel.className = "";
+    const validationPanel = $("validationPanel");
+    const validationStatusPill = $("validationStatusPill");
+    if (!validationPanel || !validationStatusPill) return;
+
+    validationPanel.className = "";
+
     if (validation.validation_status === "complete") {
-      els.validationStatusPill.className = "pill pill-teal";
-      els.validationStatusPill.textContent = "Complete";
-      els.validationPanel.innerHTML = `
+      validationStatusPill.className = "pill pill-teal";
+      validationStatusPill.textContent = "Complete";
+      validationPanel.innerHTML = `
         <div class="success-note">
           Intake is complete. The record was passed to the Summary and Reminder mock services.
         </div>
@@ -654,9 +777,9 @@
       return;
     }
 
-    els.validationStatusPill.className = "pill pill-amber";
-    els.validationStatusPill.textContent = "Needs clarification";
-    els.validationPanel.innerHTML = `
+    validationStatusPill.className = "pill pill-amber";
+    validationStatusPill.textContent = "Needs clarification";
+    validationPanel.innerHTML = `
       <div class="validation-list">
         ${validation.validation_issues
           .map((issue) => {
@@ -674,24 +797,43 @@
   }
 
   function renderOutputs(record, summary, schedule) {
-    els.summaryPanel.innerHTML = `
-      <article class="arabic-summary" dir="rtl" lang="ar">
-        <h3>ملخص الحالة</h3>
-        <p>${escapeHtml(summary.condition_summary)}</p>
-        <h3>خطة الأدوية</h3>
-        <ul>${summary.medication_plan.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-        <h3>تعليمات مهمة</h3>
-        <ul>${summary.important_instructions.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-        <h3>التحاليل المطلوبة</h3>
-        <ul>${summary.lab_tests.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-        <h3>المواعيد القادمة</h3>
-        <ul>${summary.appointments.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-      </article>
-    `;
+    const summaryPanel = $("summaryPanel");
+    const schedulePanel = $("schedulePanel");
+    const jsonOutput = $("jsonOutput");
 
-    els.schedulePanel.innerHTML = renderSchedule(schedule);
-    els.jsonOutput.textContent = JSON.stringify(record, null, 2);
-    els.jsonOutput.classList.toggle("hidden", state.jsonCollapsed);
+    if (summaryPanel) {
+      summaryPanel.innerHTML = `
+        <article class="summary">
+          <section class="summary-card">
+            <h3>Condition Summary</h3>
+            <p>${escapeHtml(summary.condition_summary)}</p>
+          </section>
+          <section class="summary-card">
+            <h3>Medication Plan</h3>
+            <ul>${summary.medication_plan.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+          </section>
+          <section class="summary-card">
+            <h3>Important Instructions</h3>
+            <ul>${summary.important_instructions.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+          </section>
+          <section class="summary-card">
+            <h3>Lab Tests</h3>
+            <ul>${summary.lab_tests.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+          </section>
+          <section class="summary-card">
+            <h3>Upcoming Appointments</h3>
+            <ul>${summary.appointments.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+          </section>
+        </article>
+      `;
+    }
+
+    if (schedulePanel) schedulePanel.innerHTML = renderSchedule(schedule);
+    if (jsonOutput) {
+      jsonOutput.textContent = JSON.stringify(record, null, 2);
+      jsonOutput.classList.toggle("hidden", state.jsonCollapsed);
+    }
+
     refreshIcons();
   }
 
@@ -700,12 +842,13 @@
       const [date, time] = event.scheduled_datetime.split("T");
       const takenClass = event.confirmation_status === "taken" ? " active-taken" : "";
       const missedClass = event.confirmation_status === "missed" ? " active-missed" : "";
+
       return `
         <div class="schedule-row">
           <div class="font-black text-slate-900">${formatDate(date)}</div>
           <div>
-            <div class="font-black">${escapeHtml(event.medication_name)} · ${escapeHtml(event.dose_display)}</div>
-            <div class="text-xs font-bold text-slate-500">${escapeHtml(arabicMealRelation(event.meal_relation, false))} · ${escapeHtml(event.route)} · ${escapeHtml(event.confirmation_status)}</div>
+            <div class="font-black">${escapeHtml(event.medication_name)} - ${escapeHtml(event.dose_display)}</div>
+            <div class="text-xs font-bold text-slate-500">${escapeHtml(formatMealRelation(event.meal_relation))} - ${escapeHtml(event.route)} - ${escapeHtml(event.confirmation_status)}</div>
           </div>
           <div class="schedule-actions">
             <span class="pill pill-blue">${escapeHtml(time.slice(0, 5))}</span>
@@ -748,15 +891,79 @@
     `;
   }
 
+  function clearOutputs(options = {}) {
+    if (!options.keepValidation) {
+      const validationStatusPill = $("validationStatusPill");
+      const validationPanel = $("validationPanel");
+      if (validationStatusPill) {
+        validationStatusPill.className = "pill pill-amber";
+        validationStatusPill.textContent = "Waiting for input";
+      }
+      if (validationPanel) {
+        validationPanel.className = "empty-state";
+        validationPanel.innerHTML = "Submit a consultation to validate critical fields.";
+      }
+    }
+
+    if ($("summaryPanel")) {
+      $("summaryPanel").innerHTML = `<div class="empty-state">A validated visit will generate an English patient care summary here.</div>`;
+    }
+    if ($("schedulePanel")) {
+      $("schedulePanel").innerHTML = `<div class="empty-state">Medication reminder events will appear after validation.</div>`;
+    }
+    if ($("jsonOutput")) $("jsonOutput").textContent = "No validated record yet.";
+  }
+
+  function loadSampleVisit(options = {}) {
+    setValue("diagnosis", "Mild respiratory infection");
+    setValue("medicationName", "Amoxicillin");
+    setValue("doseAmount", "500");
+    setValue("doseUnit", "mg");
+    setValue("frequency", "twice daily");
+    setValue("route", "oral");
+    setValue("mealRelation", "after_meal");
+    setValue("durationValue", "7");
+    setValue("durationUnit", "days");
+    setValue("instructions", "Drink fluids, avoid physical effort");
+    setValue("labs", "CBC");
+    setValue("followUpNeeded", "yes");
+    setValue("startDate", todayIso());
+    setValue("followUpDate", addDays(todayIso(), 7));
+    setValue("followUpReason", "Review symptoms and treatment response");
+    if ($("followUpDate")) $("followUpDate").disabled = false;
+    setWorkflowStep("intake");
+
+    if (!options.silent) {
+      showToast("Sample loaded", "The consultation form is ready to validate.", "success");
+    }
+  }
+
+  function handleValidationClick(event) {
+    const issue = event.target.closest("[data-field-target]");
+    if (!issue) return;
+
+    const targetId = issue.dataset.fieldTarget;
+    if (!targetId) return;
+
+    const field = $(targetId);
+    if (!field) return;
+
+    field.focus();
+    field.classList.add("field-focus");
+    setTimeout(() => field.classList.remove("field-focus"), 1200);
+  }
+
   function handleScheduleClick(event) {
     const button = event.target.closest("[data-reminder-status]");
     if (!button || !state.lastSchedule) return;
+
     const reminder = state.lastSchedule.medication_events.find((item) => item.event_id === button.dataset.eventId);
     if (!reminder) return;
+
     reminder.confirmation_status = reminder.confirmation_status === button.dataset.reminderStatus ? "pending" : button.dataset.reminderStatus;
     reminder.missed_flag = reminder.confirmation_status === "missed";
     persistLatestSchedule();
-    els.schedulePanel.innerHTML = renderSchedule(state.lastSchedule);
+    $("schedulePanel").innerHTML = renderSchedule(state.lastSchedule);
     showToast("Reminder updated", `${reminder.medication_name} is now ${reminder.confirmation_status}.`, "success");
     refreshIcons();
   }
@@ -768,18 +975,6 @@
       latest.schedule = state.lastSchedule;
       savePatients();
     }
-  }
-
-  function handleValidationClick(event) {
-    const issue = event.target.closest("[data-field-target]");
-    if (!issue) return;
-    const targetId = issue.dataset.fieldTarget;
-    if (!targetId) return;
-    const field = $(targetId);
-    if (!field) return;
-    field.focus();
-    field.classList.add("field-focus");
-    setTimeout(() => field.classList.remove("field-focus"), 1200);
   }
 
   function setActiveTab(tab) {
@@ -794,10 +989,12 @@
 
   function toggleJson() {
     state.jsonCollapsed = !state.jsonCollapsed;
-    els.jsonOutput.classList.toggle("hidden", state.jsonCollapsed);
-    els.toggleJsonButton.innerHTML = state.jsonCollapsed
-      ? `<i data-lucide="eye"></i> Expand JSON`
-      : `<i data-lucide="eye-off"></i> Collapse JSON`;
+    $("jsonOutput")?.classList.toggle("hidden", state.jsonCollapsed);
+    if ($("toggleJsonButton")) {
+      $("toggleJsonButton").innerHTML = state.jsonCollapsed
+        ? `<i data-lucide="eye"></i> Expand JSON`
+        : `<i data-lucide="eye-off"></i> Collapse JSON`;
+    }
     refreshIcons();
   }
 
@@ -806,71 +1003,52 @@
       showToast("Nothing to copy", "Generate a care plan first.", "warning");
       return;
     }
+
     const text = [
-      "ملخص الحالة",
+      "Condition Summary",
       state.lastSummary.condition_summary,
-      "خطة الأدوية",
+      "Medication Plan",
       ...state.lastSummary.medication_plan,
-      "تعليمات مهمة",
+      "Important Instructions",
       ...state.lastSummary.important_instructions,
-      "التحاليل المطلوبة",
+      "Lab Tests",
       ...state.lastSummary.lab_tests,
-      "المواعيد القادمة",
+      "Upcoming Appointments",
       ...state.lastSummary.appointments,
     ].join("\n");
+
     try {
       await navigator.clipboard.writeText(text);
-      showToast("Summary copied", "Arabic patient summary copied to clipboard.", "success");
+      showToast("Summary copied", "English patient summary copied to clipboard.", "success");
     } catch {
       showToast("Copy unavailable", "Your browser blocked clipboard access for this local file.", "warning");
     }
   }
 
-  function clearOutputs(options = {}) {
-    if (!options.keepValidation) {
-      els.validationStatusPill.className = "pill pill-amber";
-      els.validationStatusPill.textContent = "Waiting for input";
-      els.validationPanel.className = "empty-state";
-      els.validationPanel.innerHTML = "Submit a consultation to validate critical fields.";
+  function startProcessing() {
+    state.processing = true;
+    const button = $("generateButton");
+    if (button) {
+      button.disabled = true;
+      button.innerHTML = `<i data-lucide="loader-2"></i> Agents processing`;
     }
-    els.summaryPanel.innerHTML = `<div class="empty-state">A validated visit will generate a patient-friendly Arabic care summary here.</div>`;
-    els.schedulePanel.innerHTML = `<div class="empty-state">Medication reminder events will appear after validation.</div>`;
-    els.jsonOutput.textContent = "No validated record yet.";
-    renderDashboard();
+    refreshIcons();
   }
 
-  function loadSampleVisit(options = {}) {
-    $("diagnosis").value = "Mild respiratory infection";
-    $("medicationName").value = "Amoxicillin";
-    $("doseAmount").value = "500";
-    $("doseUnit").value = "mg";
-    $("frequency").value = "twice daily";
-    $("route").value = "oral";
-    $("mealRelation").value = "after_meal";
-    $("durationValue").value = "7";
-    $("durationUnit").value = "days";
-    $("instructions").value = "Drink fluids, avoid physical effort";
-    $("labs").value = "CBC";
-    $("followUpNeeded").value = "yes";
-    $("startDate").value = todayIso();
-    $("followUpDate").value = addDays(todayIso(), 7);
-    $("followUpReason").value = "Review symptoms and treatment response";
-    $("followUpDate").disabled = false;
-    setWorkflowStep("intake");
-    if (!options.silent) {
-      showToast("Sample loaded", "The consultation form is ready to validate.", "success");
+  function finishProcessing() {
+    state.processing = false;
+    const button = $("generateButton");
+    if (button) {
+      button.disabled = false;
+      button.innerHTML = `<i data-lucide="sparkles"></i> Validate and generate`;
     }
-  }
-
-  function setDefaultDates() {
-    $("startDate").value = todayIso();
-    $("followUpDate").value = addDays(todayIso(), 7);
-    loadSampleVisit({ silent: true });
+    refreshIcons();
   }
 
   function setWorkflowStep(step) {
     const order = ["patient", "intake", "validate", "careplan"];
     const activeIndex = order.indexOf(step);
+
     document.querySelectorAll("[data-step]").forEach((element) => {
       const index = order.indexOf(element.dataset.step);
       element.classList.toggle("active", index === activeIndex);
@@ -879,25 +1057,38 @@
   }
 
   function setPipelineStatus(text, colorClass) {
-    els.pipelineStatusPill.className = `pill ${colorClass}`;
-    els.pipelineStatusPill.textContent = text;
+    const pill = $("pipelineStatusPill");
+    if (!pill) return;
+
+    pill.className = `pill ${colorClass}`;
+    pill.textContent = text;
   }
 
   function setAgentState(agent, stateName, statusText) {
-    const target = agent === "intake" ? els.agentIntake : agent === "summary" ? els.agentSummary : els.agentReminder;
+    const target = agent === "intake" ? $("agentIntake") : agent === "summary" ? $("agentSummary") : $("agentReminder");
+    if (!target) return;
+
     target.classList.remove("processing", "complete", "needs-work");
     if (stateName) target.classList.add(stateName);
+
     const status = target.querySelector(".agent-status");
     if (status) status.textContent = statusText;
   }
 
   function resetAgentStates() {
     setAgentState("intake", "", "Waiting for consultation data");
-    setAgentState("summary", "", "Ready to generate Arabic summary");
+    setAgentState("summary", "", "Ready to generate English summary");
     setAgentState("reminder", "", "Ready to build schedule");
   }
 
+  function setDoctorLabel() {
+    setText("doctorLabel", state.session?.doctorName || "Dr. Khalid");
+  }
+
   function showToast(title, message, type = "success") {
+    const host = $("toastHost");
+    if (!host) return;
+
     const toast = document.createElement("div");
     toast.className = `toast ${type}`;
     toast.innerHTML = `
@@ -907,13 +1098,13 @@
         <div class="mt-1 text-sm text-slate-600">${escapeHtml(message)}</div>
       </div>
     `;
-    els.toastHost.appendChild(toast);
+    host.appendChild(toast);
     refreshIcons();
     setTimeout(() => {
       toast.style.opacity = "0";
       toast.style.transform = "translateY(8px)";
       setTimeout(() => toast.remove(), 180);
-    }, 3600);
+    }, 3400);
   }
 
   function getSelectedPatient() {
@@ -930,50 +1121,38 @@
     return map[frequency] || [];
   }
 
-  function arabicFrequency(frequency) {
+  function formatFrequency(frequency) {
     const map = {
-      "once daily": "مرة يوميًا",
-      "twice daily": "مرتين يوميًا",
-      "three times daily": "ثلاث مرات يوميًا",
-      "every 8 hours": "كل 8 ساعات",
-      "as needed": "عند الحاجة",
+      "once daily": "once daily",
+      "twice daily": "twice daily",
+      "three times daily": "three times daily",
+      "every 8 hours": "every 8 hours",
+      "as needed": "as needed",
     };
-    return map[frequency] || frequency;
+    return map[frequency] || frequency || "as documented";
   }
 
-  function arabicMealRelation(value, arabic = true) {
-    const arMap = {
-      before_meal: "قبل الأكل",
-      after_meal: "بعد الأكل",
-      with_meal: "مع الأكل",
-      not_specified: "حسب توجيه الطبيب",
-    };
-    const enMap = {
+  function formatMealRelation(value) {
+    const map = {
       before_meal: "Before meals",
       after_meal: "After meals",
       with_meal: "With meals",
       not_specified: "Not specified",
     };
-    return arabic ? arMap[value] || value : enMap[value] || value;
+    return map[value] || value || "Not specified";
   }
 
-  function arabicDuration(value, unit) {
-    if (!value) return "مدة غير محددة";
-    if (unit === "days") return `${value} أيام`;
-    if (unit === "weeks") return `${value} أسابيع`;
-    if (unit === "months") return `${value} أشهر`;
-    return `${value} ${unit}`;
+  function formatDuration(value, unit) {
+    if (!value) return "an unspecified duration";
+    if (value === 1) return `1 ${singularUnit(unit)}`;
+    return `${value} ${unit || "days"}`;
   }
 
-  function translateInstruction(text) {
-    const normalized = text.toLowerCase();
-    if (normalized.includes("drink") || normalized.includes("fluid") || normalized.includes("water")) {
-      return "اشرب كمية كافية من السوائل.";
-    }
-    if (normalized.includes("avoid") && (normalized.includes("effort") || normalized.includes("exercise") || normalized.includes("physical"))) {
-      return "تجنب المجهود البدني.";
-    }
-    return text;
+  function singularUnit(unit) {
+    if (unit === "days") return "day";
+    if (unit === "weeks") return "week";
+    if (unit === "months") return "month";
+    return unit || "day";
   }
 
   function splitList(value) {
@@ -991,7 +1170,8 @@
   }
 
   function calculateEndDate(startDate, value, unit) {
-    return addDays(startDate, durationToDays(value, unit));
+    const days = Math.max(durationToDays(value, unit) - 1, 0);
+    return addDays(startDate, days);
   }
 
   function addDays(dateString, days) {
@@ -1011,8 +1191,22 @@
   }
 
   function isoDateToUtcDate(dateString) {
-    const [year, month, day] = dateString.split("-").map(Number);
+    const [year, month, day] = String(dateString).split("-").map(Number);
     return new Date(Date.UTC(year, month - 1, day));
+  }
+
+  function setValue(id, value) {
+    const element = $(id);
+    if (element) element.value = value;
+  }
+
+  function setText(id, value) {
+    const element = $(id);
+    if (element) element.textContent = value;
+  }
+
+  function $(id) {
+    return document.getElementById(id);
   }
 
   function escapeHtml(value) {
@@ -1045,9 +1239,11 @@
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  function goTo(url) {
+    window.location.href = url;
+  }
+
   function refreshIcons() {
-    if (window.lucide) {
-      window.lucide.createIcons();
-    }
+    if (window.lucide) window.lucide.createIcons();
   }
 })();

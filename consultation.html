@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Healthium | Consultation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="consultation">
+    <main class="app-shell">
+      <aside class="sidebar compact-sidebar">
+        <div class="brand">
+          <div class="brand-mark"><i data-lucide="heart-pulse"></i></div>
+          <div>
+            <div class="text-lg">Healthium</div>
+            <div id="doctorLabel" class="text-xs text-slate-500 font-bold">Care console</div>
+          </div>
+        </div>
+        <a class="btn btn-secondary w-full" href="./dashboard.html">
+          <i data-lucide="layout-dashboard"></i>
+          Back to dashboard
+        </a>
+        <section class="panel">
+          <div class="panel-header">
+            <div class="section-title"><i data-lucide="user-round"></i> Active patient</div>
+          </div>
+          <div class="panel-body">
+            <div id="patientOverview" class="overview-grid compact"></div>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-header">
+            <div class="section-title"><i data-lucide="users"></i> Switch patient</div>
+          </div>
+          <div class="panel-body grid gap-3">
+            <div class="field">
+              <label for="patientSearch">Search</label>
+              <input id="patientSearch" placeholder="Name, ID, condition" />
+            </div>
+            <div id="patientList" class="patient-list compact"></div>
+          </div>
+        </section>
+      </aside>
+
+      <section class="main">
+        <header class="topbar">
+          <div>
+            <h1 class="text-2xl font-black text-slate-900">Consultation Workspace</h1>
+            <p id="selectedPatientLine" class="mt-1 text-sm text-slate-600"></p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button id="resetDemoButton" class="btn btn-danger" type="button">
+              <i data-lucide="rotate-ccw"></i>
+              Reset demo
+            </button>
+            <button id="logoutButton" class="btn btn-secondary" type="button">
+              <i data-lucide="log-out"></i>
+              Logout
+            </button>
+          </div>
+        </header>
+
+        <section class="command-strip">
+          <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+            <div class="section-title"><i data-lucide="route"></i> Care pipeline</div>
+            <span id="pipelineStatusPill" class="pill pill-amber">Ready for intake</span>
+          </div>
+          <div class="stepper" aria-label="Care workflow steps">
+            <div class="step active" data-step="patient">
+              <div class="step-kicker">Step 1</div>
+              <div class="step-title">Patient selected</div>
+            </div>
+            <div class="step" data-step="intake">
+              <div class="step-kicker">Step 2</div>
+              <div class="step-title">Clinical intake</div>
+            </div>
+            <div class="step" data-step="validate">
+              <div class="step-kicker">Step 3</div>
+              <div class="step-title">Agent validation</div>
+            </div>
+            <div class="step" data-step="careplan">
+              <div class="step-kicker">Step 4</div>
+              <div class="step-title">Care plan ready</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="mb-4 agent-grid" aria-label="Agent status">
+          <div id="agentIntake" class="agent-card">
+            <div class="agent-title"><i data-lucide="shield-check"></i> Intake Agent</div>
+            <div class="agent-status">Waiting for consultation data</div>
+          </div>
+          <div id="agentSummary" class="agent-card">
+            <div class="agent-title"><i data-lucide="file-text"></i> Summary Agent</div>
+            <div class="agent-status">English summary output for current MVP</div>
+          </div>
+          <div id="agentReminder" class="agent-card">
+            <div class="agent-title"><i data-lucide="alarm-clock"></i> Reminder Agent</div>
+            <div class="agent-status">Ready to build schedule</div>
+          </div>
+        </section>
+
+        <div class="workspace-grid">
+          <section class="panel">
+            <div class="panel-header">
+              <div class="section-title"><i data-lucide="clipboard-pen-line"></i> Clinical intake</div>
+              <span class="pill pill-blue">POST /api/intake/validate</span>
+            </div>
+            <form id="visitForm" class="panel-body form-grid">
+              <div class="field full">
+                <label for="diagnosis">Diagnosis or clinical impression</label>
+                <input id="diagnosis" placeholder="Mild respiratory infection" />
+              </div>
+              <div class="field">
+                <label for="medicationName">Medication name</label>
+                <input id="medicationName" placeholder="Amoxicillin" />
+              </div>
+              <div class="field">
+                <label for="doseAmount">Dose</label>
+                <div class="grid grid-cols-2 gap-2">
+                  <input id="doseAmount" placeholder="500" />
+                  <select id="doseUnit">
+                    <option>mg</option>
+                    <option>tablet</option>
+                    <option>capsule</option>
+                    <option>mL</option>
+                    <option>puff</option>
+                    <option>unit</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label for="frequency">Frequency</label>
+                <select id="frequency">
+                  <option value="">Select frequency</option>
+                  <option value="once daily">Once daily</option>
+                  <option value="twice daily">Twice daily</option>
+                  <option value="three times daily">Three times daily</option>
+                  <option value="every 8 hours">Every 8 hours</option>
+                  <option value="as needed">As needed</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="route">Route</label>
+                <select id="route">
+                  <option>oral</option>
+                  <option>inhalation</option>
+                  <option>topical</option>
+                  <option>injection</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="mealRelation">Meal relation</label>
+                <select id="mealRelation">
+                  <option value="after_meal">After meals</option>
+                  <option value="before_meal">Before meals</option>
+                  <option value="with_meal">With meals</option>
+                  <option value="not_specified">Not specified</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="startDate">Start date</label>
+                <input id="startDate" type="date" />
+              </div>
+              <div class="field">
+                <label for="durationValue">Duration</label>
+                <div class="grid grid-cols-2 gap-2">
+                  <input id="durationValue" type="number" min="1" placeholder="7" />
+                  <select id="durationUnit">
+                    <option value="days">Days</option>
+                    <option value="weeks">Weeks</option>
+                    <option value="months">Months</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label for="labs">Lab tests</label>
+                <input id="labs" placeholder="CBC, CRP" />
+              </div>
+              <div class="field full">
+                <label for="instructions">Care instructions</label>
+                <textarea id="instructions" placeholder="Drink fluids, avoid physical effort"></textarea>
+              </div>
+              <div class="field">
+                <label for="followUpNeeded">Follow-up required</label>
+                <select id="followUpNeeded">
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="followUpDate">Follow-up date</label>
+                <input id="followUpDate" type="date" />
+              </div>
+              <div class="field full">
+                <label for="followUpReason">Follow-up reason</label>
+                <input id="followUpReason" placeholder="Review symptoms and treatment response" />
+              </div>
+              <div class="full flex flex-wrap gap-2 pt-1">
+                <button id="generateButton" class="btn btn-primary" type="submit">
+                  <i data-lucide="sparkles"></i>
+                  Validate and generate
+                </button>
+                <button id="loadSampleButton" class="btn btn-secondary" type="button">
+                  <i data-lucide="clipboard-check"></i>
+                  Load sample
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="section-title"><i data-lucide="activity"></i> Care plan studio</div>
+                <p class="mt-1 text-xs font-bold text-slate-500">Review validation, English summary, reminders, and API payload.</p>
+              </div>
+              <button id="copySummaryButton" class="btn btn-secondary" type="button">
+                <i data-lucide="copy"></i>
+                Copy summary
+              </button>
+            </div>
+            <div class="tabbar" role="tablist" aria-label="Care output tabs">
+              <button class="tab-button active" type="button" data-tab="validation">Validation</button>
+              <button class="tab-button" type="button" data-tab="summary">Summary</button>
+              <button class="tab-button" type="button" data-tab="schedule">Reminders</button>
+              <button class="tab-button" type="button" data-tab="json">JSON</button>
+            </div>
+            <div class="panel-body">
+              <div id="validationTab" class="tab-panel active" data-panel="validation">
+                <div class="mb-3 flex justify-end">
+                  <span id="validationStatusPill" class="pill pill-amber">Waiting for input</span>
+                </div>
+                <div id="validationPanel" class="empty-state">Submit a consultation to validate critical fields.</div>
+              </div>
+              <div id="summaryTab" class="tab-panel" data-panel="summary">
+                <div class="mb-3 flex justify-end">
+                  <span class="pill pill-teal">POST /api/summary</span>
+                </div>
+                <div id="summaryPanel">
+                  <div class="empty-state">A validated visit will generate an English patient care summary here.</div>
+                </div>
+              </div>
+              <div id="scheduleTab" class="tab-panel" data-panel="schedule">
+                <div class="mb-3 flex justify-end">
+                  <span class="pill pill-teal">POST /api/reminders/schedule</span>
+                </div>
+                <div id="schedulePanel">
+                  <div class="empty-state">Medication reminder events will appear after validation.</div>
+                </div>
+              </div>
+              <div id="jsonTab" class="tab-panel" data-panel="json">
+                <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+                  <span class="text-xs font-black text-slate-500">Standardized intake JSON</span>
+                  <button id="toggleJsonButton" class="btn btn-secondary" type="button">
+                    <i data-lucide="eye-off"></i>
+                    Collapse JSON
+                  </button>
+                </div>
+                <pre id="jsonOutput" class="json-box">No validated record yet.</pre>
+                <div class="mt-3 contract-row">
+                  <span class="contract-chip">POST /api/intake/validate</span>
+                  <span class="contract-chip">POST /api/summary</span>
+                  <span class="contract-chip">POST /api/reminders/schedule</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <div id="toastHost" class="toast-host" aria-live="polite" aria-atomic="true"></div>
+    <script src="./app.js" defer></script>
+  </body>
+</html>
