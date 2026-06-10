@@ -1,6 +1,6 @@
 # Healthium Frontend MVP
 
-Static doctor-first MVP for Healthium.
+Static doctor-first MVP for Healthium, redesigned as a clinical care console.
 
 ## How to Run
 
@@ -22,6 +22,17 @@ Demo login:
    - Arabic patient summary
    - Medication reminder schedule
    - Standardized intake JSON
+
+## UI Interactions
+
+- Patient search and active patient selection
+- Care pipeline stepper
+- Intake, Summary, and Reminder agent status cards
+- Toast notifications for validation and generation events
+- Clickable validation issues that focus the missing field
+- Tabbed care-plan studio
+- Reminder status buttons for taken/missed demo states
+- Collapsible standardized JSON panel
 
 ## Mock Services
 
