@@ -10,24 +10,22 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body data-page="login">
-    <main class="login-page">
-      <section class="login-panel">
-        <div class="brand mb-8">
+    <main class="login-shell">
+      <section class="login-card">
+        <div class="brand mb-10">
           <div class="brand-mark"><i data-lucide="heart-pulse"></i></div>
           <div>
-            <div class="text-xl">Healthium</div>
-            <div class="text-xs text-slate-500 font-bold">Care Console MVP</div>
+            <div class="brand-name">Healthium</div>
+            <div class="brand-subtitle">Doctor workspace</div>
           </div>
         </div>
 
-        <div class="mb-8">
-          <h1 class="text-3xl font-black tracking-normal text-slate-900">Move from notes to a care plan.</h1>
-          <p class="mt-3 text-sm leading-6 text-slate-600">
-            A doctor-first workspace that validates clinical intake, generates patient summaries, and builds reminder schedules.
-          </p>
+        <div class="mb-7">
+          <h1 class="page-title">Sign in</h1>
+          <p class="page-caption">Continue to the care console.</p>
         </div>
 
-        <form id="loginForm" class="grid gap-4">
+        <form id="loginForm" class="form-stack">
           <div class="field">
             <label for="doctorId">Doctor ID</label>
             <input id="doctorId" autocomplete="username" value="dr.khalid" />
@@ -36,7 +34,7 @@
             <label for="password">Demo password</label>
             <input id="password" type="password" autocomplete="current-password" value="healthium-demo" />
           </div>
-          <div class="flex flex-wrap gap-2">
+          <div class="action-row">
             <button class="btn btn-primary" type="submit">
               <i data-lucide="log-in"></i>
               Enter dashboard
@@ -48,28 +46,6 @@
           </div>
           <p id="loginError" class="hidden text-sm font-bold text-red-700"></p>
         </form>
-      </section>
-
-      <section class="login-side">
-        <div class="surface w-full max-w-3xl p-6">
-          <div class="grid gap-3 md:grid-cols-3">
-            <div class="metric-card">
-              <div class="metric-value">3</div>
-              <div class="metric-label">Agents coordinated</div>
-              <div class="metric-note">Intake, Summary, Reminder</div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-value">EN</div>
-              <div class="metric-label">Summary output</div>
-              <div class="metric-note">English for current MVP</div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-value">0</div>
-              <div class="metric-label">Backend dependency</div>
-              <div class="metric-note">Mock services first</div>
-            </div>
-          </div>
-        </div>
       </section>
     </main>
 

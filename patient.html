@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Healthium | Patient Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="patient">
+    <main class="portal-shell patient-shell">
+      <aside class="portal-sidebar patient-sidebar">
+        <div class="brand">
+          <div class="brand-mark"><i data-lucide="heart-pulse"></i></div>
+          <div class="brand-name">Healthium</div>
+        </div>
+
+        <nav class="side-nav" aria-label="Patient navigation">
+          <a class="nav-item active" href="./patient.html"><i data-lucide="home"></i> Dashboard</a>
+          <a class="nav-item" href="#summary"><i data-lucide="clipboard-list"></i> My Summary</a>
+          <a class="nav-item" href="#reminders"><i data-lucide="pill"></i> Medications</a>
+          <a class="nav-item" href="#reminders"><i data-lucide="alarm-clock"></i> Reminders</a>
+          <a class="nav-item" href="#assistant"><i data-lucide="bot"></i> AI Assistant</a>
+          <a class="nav-item" href="#appointments"><i data-lucide="calendar-days"></i> My Appointments</a>
+          <a class="nav-item" href="#records"><i data-lucide="file-text"></i> My Records</a>
+        </nav>
+
+        <div class="patient-profile-mini">
+          <div id="patientAvatarMini" class="avatar">Y</div>
+          <div>
+            <div id="patientMiniName" class="font-black text-slate-900">Patient</div>
+            <div class="text-xs font-bold text-slate-500">View Profile</div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="patient-main">
+        <section class="patient-hero-card">
+          <h1 id="patientWelcome">Welcome back</h1>
+          <p>Here's your health overview for today.</p>
+          <div class="health-status-card">
+            <div>
+              <div class="section-label">Health Status</div>
+              <h2 id="patientCondition">Condition</h2>
+              <p id="patientLastUpdated">Last updated today</p>
+            </div>
+            <span class="stable-chip">Stable</span>
+            <div class="health-icon"><i data-lucide="activity"></i></div>
+          </div>
+        </section>
+
+        <section class="patient-dashboard-grid">
+          <div class="patient-card task-card">
+            <h2>Today's Tasks</h2>
+            <div id="todayTasks" class="task-list"></div>
+          </div>
+
+          <div id="appointments" class="patient-card appointment-card">
+            <h2>Next Appointment</h2>
+            <div class="appointment-icon"><i data-lucide="calendar-days"></i></div>
+            <div id="nextAppointment" class="appointment-details"></div>
+            <button class="btn btn-secondary w-full" type="button">View Details</button>
+          </div>
+        </section>
+
+        <section class="patient-content-grid">
+          <section id="summary" class="patient-card">
+            <h2>My Treatment Summary</h2>
+            <div class="patient-tabs">
+              <button class="patient-tab active" type="button">Overview</button>
+              <button class="patient-tab" type="button">Treatment Plan</button>
+              <button class="patient-tab" type="button">Medications</button>
+              <button class="patient-tab" type="button">Doctor Notes</button>
+            </div>
+            <div id="patientSummaryPanel" class="patient-summary-box"></div>
+            <div id="patientKeyPoints" class="key-points"></div>
+            <button class="btn btn-secondary w-full" type="button">View Full Plan</button>
+          </section>
+
+          <section id="reminders" class="patient-card">
+            <h2>Reminders</h2>
+            <div class="patient-tabs compact-tabs">
+              <button class="patient-tab active" type="button">Upcoming</button>
+              <button class="patient-tab" type="button">Past</button>
+            </div>
+            <div id="patientReminderList" class="reminder-list"></div>
+            <button class="btn btn-secondary w-full" type="button">View All Reminders</button>
+          </section>
+
+          <section id="assistant" class="patient-card assistant-card">
+            <div class="assistant-title">
+              <div class="assistant-mark"><i data-lucide="bot"></i></div>
+              <div>
+                <h2>AI Health Assistant</h2>
+                <p>Ask me anything about your health plan</p>
+              </div>
+            </div>
+            <div id="chatMessages" class="chat-messages"></div>
+            <div class="quick-questions">
+              <button type="button" data-question="When should I take my medication?">When should I take my medication?</button>
+              <button type="button" data-question="What if I miss a dose?">What if I miss a dose?</button>
+              <button type="button" data-question="Can I eat fruits?">Can I eat fruits?</button>
+              <button type="button" data-question="When is my next appointment?">When is my next appointment?</button>
+            </div>
+            <form id="chatForm" class="chat-input-row">
+              <input id="chatInput" placeholder="Type your message..." />
+              <button class="icon-button" type="submit" aria-label="Send message">
+                <i data-lucide="send"></i>
+              </button>
+            </form>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>

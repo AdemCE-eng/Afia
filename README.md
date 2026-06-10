@@ -1,6 +1,6 @@
 # Healthium Frontend MVP
 
-Static doctor-first MVP for Healthium, redesigned as a clinical care console with separate login, dashboard, and consultation pages.
+Static MVP for Healthium with a doctor workspace and patient portal.
 
 ## How to Run
 
@@ -14,26 +14,21 @@ Demo login:
 ## MVP Flow
 
 1. Log in with the demo doctor account.
-2. Use the dashboard to select or create a patient.
-3. Open the consultation workspace.
-4. Enter consultation details.
-5. Click **Validate and generate**.
-6. Review:
-   - Intake validation status
-   - English patient summary
-   - Medication reminder schedule
-   - Standardized intake JSON
+2. Use the doctor dashboard to review patients and select one.
+3. Open **Update medical info** for the selected patient.
+4. Enter diagnosis, medication, instructions, and follow-up details.
+5. Click **Generate Patient Plan**.
+6. Review the AI-generated patient summary, medication schedule, instructions, and standardized JSON.
+7. Open `patient.html` to view the patient-facing summary, reminders, and Q&A assistant.
 
 ## UI Interactions
 
-- Patient search and active patient selection
-- Care pipeline stepper
-- Intake, Summary, and Reminder agent status cards
+- Doctor patient overview list
+- Selected patient medical update flow
 - Toast notifications for validation and generation events
 - Clickable validation issues that focus the missing field
-- Tabbed care-plan studio
 - Reminder status buttons for taken/missed demo states
-- Collapsible standardized JSON panel
+- Patient-facing treatment summary, reminders, and Q&A chatbot
 
 ## Mock Services
 
