@@ -20,23 +20,41 @@
           <p id="selectedPatientLine">Select a patient from the dashboard.</p>
         </div>
         <nav class="record-tabs" aria-label="Patient record tabs">
-          <button class="record-tab active" type="button">Overview</button>
-          <button class="record-tab" type="button">History</button>
-          <button class="record-tab" type="button">Documents</button>
-          <button class="record-tab" type="button">Appointments</button>
+          <button class="record-tab active" type="button" data-tab-target="#tab-overview">Overview</button>
+          <button class="record-tab" type="button" data-tab-target="#tab-history">History</button>
+          <button class="record-tab" type="button" data-tab-target="#tab-documents">Documents</button>
+          <button class="record-tab" type="button" data-tab-target="#tab-appointments">Appointments</button>
         </nav>
-        <button id="logoutButton" class="btn btn-secondary" type="button">
-          <i data-lucide="log-out"></i>
-          Logout
-        </button>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button id="langToggleBtn" type="button" style="
+            padding: 7px 14px;
+            border-radius: 20px;
+            border: 2px solid var(--blue);
+            background: white;
+            color: var(--blue);
+            font-weight: 900;
+            font-size: 13px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 140ms ease;
+          ">AR | EN</button>
+          <button id="logoutButton" class="btn btn-secondary" type="button">
+            <i data-lucide="log-out"></i>
+            Logout
+          </button>
+        </div>
       </header>
 
-      <section class="record-layout">
+      <div id="tab-overview" class="tab-content active">
+        <section class="record-layout">
         <section class="medical-form-card">
           <h2>Update Medical Information</h2>
           <form id="visitForm" class="doctor-form">
             <div class="field full">
-              <label for="diagnosis">Diagnosis / Condition</label>
+              <label for="diagnosis" style="display:flex; justify-content:space-between; align-items:center;">
+                Diagnosis / Condition
+                <button type="button" class="mic-button" data-mic-target="diagnosis" title="Dictate (Arabic/English)" style="background:none; border:none; color:var(--primary-color); cursor:pointer;"><i data-lucide="mic"></i></button>
+              </label>
               <input id="diagnosis" placeholder="Type II Diabetes" />
             </div>
 
@@ -99,7 +117,10 @@
             </div>
 
             <div class="field full">
-              <label for="instructions">Instructions for Patient</label>
+              <label for="instructions" style="display:flex; justify-content:space-between; align-items:center;">
+                Instructions for Patient
+                <button type="button" class="mic-button" data-mic-target="instructions" title="Dictate (Arabic/English)" style="background:none; border:none; color:var(--primary-color); cursor:pointer;"><i data-lucide="mic"></i></button>
+              </label>
               <textarea id="instructions" placeholder="Avoid sugary drinks and high-carb foods."></textarea>
             </div>
 
@@ -180,10 +201,67 @@
             <pre id="jsonOutput" class="json-box">No validated record yet.</pre>
           </details>
         </section>
-      </section>
+      </div>
+
+      <div id="tab-history" class="tab-content">
+        <section class="record-layout" style="grid-template-columns: 1fr;">
+          <div class="medical-form-card">
+            <h2>Medical History Timeline</h2>
+            <div style="display:grid; gap: 16px; margin-top: 16px;">
+              <div style="border-left: 4px solid var(--blue); padding-left: 16px;">
+                <strong style="display:block; color:var(--ink);">March 15, 2026 - Initial Consult</strong>
+                <p style="color:var(--muted); margin: 4px 0;">Patient reported chronic fatigue. Ordered full blood panel.</p>
+              </div>
+              <div style="border-left: 4px solid var(--blue); padding-left: 16px;">
+                <strong style="display:block; color:var(--ink);">April 02, 2026 - Follow-up</strong>
+                <p style="color:var(--muted); margin: 4px 0;">Diagnosed with Type II Diabetes based on A1C. Started Metformin.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div id="tab-documents" class="tab-content">
+        <section class="record-layout" style="grid-template-columns: 1fr;">
+          <div class="medical-form-card">
+            <h2>Documents & Lab Results</h2>
+            <div style="display:flex; gap: 16px; margin-top: 16px;">
+              <div style="border: 1px solid var(--line); border-radius: 8px; padding: 16px; width: 200px; text-align: center;">
+                <i data-lucide="file-text" style="width:48px; height:48px; color:var(--blue); margin: 0 auto 10px;"></i>
+                <strong>Blood Panel</strong><br>
+                <small style="color:var(--muted);">Mar 16, 2026</small>
+              </div>
+              <div style="border: 1px solid var(--line); border-radius: 8px; padding: 16px; width: 200px; text-align: center;">
+                <i data-lucide="file-image" style="width:48px; height:48px; color:var(--blue); margin: 0 auto 10px;"></i>
+                <strong>Chest X-Ray</strong><br>
+                <small style="color:var(--muted);">Jan 10, 2026</small>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div id="tab-appointments" class="tab-content">
+        <section class="record-layout" style="grid-template-columns: 1fr;">
+          <div class="medical-form-card">
+            <h2>Appointments</h2>
+            <div style="border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin-top: 16px; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <strong style="font-size: 18px; color:var(--ink);">Follow-up Consultation</strong>
+                <p style="margin:4px 0 0; color:var(--muted);">General Checkup & Medication Review</p>
+              </div>
+              <div style="text-align:right;">
+                <strong style="color:var(--blue);">Next Week</strong>
+                <p style="margin:4px 0 0; color:var(--muted);">Tuesday, 10:00 AM</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
     </main>
 
     <div id="toastHost" class="toast-host" aria-live="polite" aria-atomic="true"></div>
+    <script src="../lang.js" defer></script>
     <script src="../app.js" defer></script>
   </body>
 </html>

@@ -69,30 +69,43 @@
           <section id="summary" class="patient-card">
             <h2>My Treatment Summary</h2>
             <div class="patient-tabs">
-              <button class="patient-tab active" type="button">Overview</button>
-              <button class="patient-tab" type="button">Treatment Plan</button>
-              <button class="patient-tab" type="button">Medications</button>
-              <button class="patient-tab" type="button">Doctor Notes</button>
+              <button class="patient-tab active" type="button" data-panel-target="#dashboardOverview">Overview</button>
+              <button class="patient-tab" type="button" data-panel-target="#dashboardTreatment">Treatment Plan</button>
+              <button class="patient-tab" type="button" data-panel-target="#dashboardMedications">Medications</button>
+              <button class="patient-tab" type="button" data-panel-target="#dashboardNotes">Doctor Notes</button>
             </div>
-            <div id="patientSummaryPanel" class="patient-summary-box"></div>
-            <div id="patientKeyPoints" class="key-points"></div>
-            <button class="btn btn-secondary w-full" type="button">View Full Plan</button>
+            <div class="patient-summary-panels">
+              <div id="dashboardOverview" class="patient-summary-panel active">
+                <div id="patientSummaryPanel" class="patient-summary-box"></div>
+                <div id="patientKeyPoints" class="key-points"></div>
+              </div>
+              <div id="dashboardTreatment" class="patient-summary-panel"></div>
+              <div id="dashboardMedications" class="patient-summary-panel"></div>
+              <div id="dashboardNotes" class="patient-summary-panel"></div>
+            </div>
+            <a class="btn btn-secondary w-full" href="./summary.html">View Full Plan</a>
           </section>
 
           <section id="reminders" class="patient-card">
             <h2>Reminders</h2>
             <div class="patient-tabs compact-tabs">
-              <button class="patient-tab active" type="button">Upcoming</button>
-              <button class="patient-tab" type="button">Past</button>
+              <button class="patient-tab reminder-tab active" type="button" data-reminder-target="#dashboardUpcomingReminders">Upcoming</button>
+              <button class="patient-tab reminder-tab" type="button" data-reminder-target="#dashboardPastReminders">Past</button>
             </div>
-            <div id="patientReminderList" class="reminder-list"></div>
-            <button class="btn btn-secondary w-full" type="button">View All Reminders</button>
+            <div id="dashboardUpcomingReminders" class="reminder-pane active">
+              <div id="patientReminderList" class="reminder-list"></div>
+            </div>
+            <div id="dashboardPastReminders" class="reminder-pane">
+              <div id="patientPastReminderList" class="reminder-list"></div>
+            </div>
+            <a class="btn btn-secondary w-full" href="./reminders.html">View All Reminders</a>
           </section>
 
         </section>
       </section>
     </main>
 
+    <script src="../lang.js" defer></script>
     <script src="../app.js" defer></script>
   </body>
 </html>

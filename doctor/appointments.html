@@ -11,7 +11,7 @@
   <body data-page="appointments">
     <main class="portal-shell doctor-shell">
       <aside class="portal-sidebar">
-        <div class="brand"><div class="brand-mark"><i data-lucide="heart-pulse"></i></div><div><div class="brand-name">Healthium</div><div id="doctorLabel" class="brand-subtitle">Doctor workspace</div></div></div>
+        <div class="brand"><div class="brand-mark"><i data-lucide="heart-pulse"></i></div><div><div class="brand-name">Healthium</div><div id="doctorLabel" class="brand-subtitle" data-i18n="doctor.workspace">Doctor workspace</div></div></div>
         <nav class="side-nav" aria-label="Doctor navigation">
           <a class="nav-item" href="./dashboard.html"><i data-lucide="home"></i> Dashboard</a>
           <a class="nav-item active" href="./appointments.html"><i data-lucide="calendar-days"></i> Appointments</a>
@@ -23,14 +23,37 @@
       <section class="portal-main utility-main">
         <section class="patients-card">
           <div class="patients-header">
-            <div><h1 class="page-title">Appointments</h1><p class="page-caption">Upcoming visits for your patient panel.</p></div>
-            <a class="btn btn-primary" href="./dashboard.html"><i data-lucide="users"></i> Select patient</a>
+            <div><h1 class="page-title" data-i18n="appointments.title">Appointments</h1><p class="page-caption" data-i18n="appointments.caption">Upcoming visits for your patient panel.</p></div>
+            <a class="btn btn-primary" href="./dashboard.html"><i data-lucide="users"></i><span data-i18n="appointments.select_patient">Select patient</span></a>
           </div>
-          <div id="appointmentsList" class="utility-list"></div>
+          <div id="appointmentsList" class="utility-list">
+            <div class="utility-row">
+              <div>
+                <strong style="color:var(--ink); font-size: 16px;">Today, 09:30 AM - Yousef (Type II Diabetes)</strong>
+                <span style="display:block; color:var(--muted); font-size:13px;">Follow-up on A1C levels and diet.</span>
+              </div>
+              <a class="btn btn-secondary" href="./consultation.html">Open File</a>
+            </div>
+            <div class="utility-row">
+              <div>
+                <strong style="color:var(--ink); font-size: 16px;">Today, 11:00 AM - Sara (Asthma)</strong>
+                <span style="display:block; color:var(--muted); font-size:13px;">Inhaler refill and breathing test.</span>
+              </div>
+              <a class="btn btn-secondary" href="./consultation.html">Open File</a>
+            </div>
+            <div class="utility-row">
+              <div>
+                <strong style="color:var(--ink); font-size: 16px;">Tomorrow, 02:00 PM - Ali (Hypertension)</strong>
+                <span style="display:block; color:var(--muted); font-size:13px;">Routine checkup and blood pressure reading.</span>
+              </div>
+              <button class="btn btn-secondary" type="button" disabled>Upcoming</button>
+            </div>
+          </div>
         </section>
       </section>
     </main>
     <div id="toastHost" class="toast-host" aria-live="polite" aria-atomic="true"></div>
+    <script src="../lang.js" defer></script>
     <script src="../app.js" defer></script>
   </body>
 </html>

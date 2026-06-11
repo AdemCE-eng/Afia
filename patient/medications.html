@@ -25,10 +25,34 @@
         <section class="patient-card">
           <h1 class="page-title">Medications</h1>
           <p class="page-caption">Medication timing and dosage from your treatment plan.</p>
-          <div id="patientMedicationList" class="medication-list"></div>
+          <div id="patientMedicationList" class="medication-list">
+            <div class="patient-med-card">
+              <div>
+                <h3>Metformin 500mg</h3>
+                <p>Take 1 tablet twice daily, with meals.</p>
+                <span class="plan-chip mt-2 inline-block">For Type II Diabetes</span>
+              </div>
+              <div style="text-align:right;">
+                <strong style="display:block; color:var(--blue); font-size:24px;">2x</strong>
+                <span style="color:var(--muted);">Daily</span>
+              </div>
+            </div>
+            <div class="patient-med-card">
+              <div>
+                <h3>Vitamin D3 1000 IU</h3>
+                <p>Take 1 capsule once daily, after breakfast.</p>
+                <span class="plan-chip mt-2 inline-block">Supplement</span>
+              </div>
+              <div style="text-align:right;">
+                <strong style="display:block; color:var(--blue); font-size:24px;">1x</strong>
+                <span style="color:var(--muted);">Daily</span>
+              </div>
+            </div>
+          </div>
         </section>
       </section>
     </main>
+    <script src="../lang.js" defer></script>
     <script src="../app.js" defer></script>
   </body>
 </html>
