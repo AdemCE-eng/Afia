@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Healthium | Reports</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .report-hero {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 28px;
+      }
+      .report-kpi {
+        border: 1px solid var(--line); border-radius: 12px;
+        background: white; padding: 20px;
+        box-shadow: 0 4px 12px rgba(31,52,96,0.05);
+        transition: transform 140ms, box-shadow 140ms;
+      }
+      .report-kpi:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(31,52,96,0.1); }
+      .report-kpi .kpi-value { font-size: 34px; font-weight: 950; color: var(--blue); line-height:1; margin-bottom:6px; }
+      .report-kpi .kpi-label { font-size: 13px; color: var(--muted); font-weight: 800; }
+      .report-kpi .kpi-delta { font-size: 12px; font-weight: 800; color: var(--green); margin-top: 6px; }
+      .report-section-title {
+        font-size: 16px; font-weight: 950; color: var(--ink); margin: 0 0 16px;
+      }
+      .report-card {
+        border: 1px solid var(--line); border-radius: 12px; background: white;
+        padding: 24px; margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(31,52,96,0.05);
+      }
+      .activity-row {
+        display: flex; align-items: center; gap: 12px;
+        padding: 12px 0; border-bottom: 1px solid var(--line);
+      }
+      .activity-row:last-child { border-bottom: none; }
+      .activity-icon {
+        width: 36px; height: 36px; border-radius: 8px;
+        display:flex; align-items:center; justify-content:center; flex-shrink:0;
+      }
+      .activity-icon.success { background: var(--green-soft); color: var(--green); }
+      .activity-icon.warning { background: #fff7e6; color: #b45309; }
+      .activity-icon.info { background: var(--blue-soft); color: var(--blue); }
+      .activity-body { flex:1; }
+      .activity-body strong { display:block; font-size:14px; color:var(--ink); font-weight:800; }
+      .activity-body span { font-size:12px; color:var(--muted); font-weight:600; }
+      .activity-time { font-size:12px; color:var(--muted); font-weight:700; white-space:nowrap; }
+      .bar-row { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+      .bar-label { width:110px; font-size:13px; font-weight:800; color:var(--ink); }
+      .bar-track { flex:1; height:10px; background:var(--line); border-radius:10px; overflow:hidden; }
+      .bar-fill { height:100%; border-radius:10px; background:linear-gradient(90deg, var(--blue), #6fa3f9); transition:width 0.6s ease; }
+      .bar-pct { width:40px; font-size:13px; font-weight:900; color:var(--blue); text-align:right; }
+    </style>
+  </head>
+  <body data-page="reports">
+    <main class="portal-shell doctor-shell">
+      <aside class="portal-sidebar">
+        <div class="brand"><div class="brand-mark"><i data-lucide="heart-pulse"></i></div><div><div class="brand-name">Healthium</div><div id="doctorLabel" class="brand-subtitle" data-i18n="doctor.workspace">Doctor workspace</div></div></div>
+        <nav class="side-nav" aria-label="Doctor navigation">
+          <a class="nav-item" href="./dashboard.html"><i data-lucide="home"></i> Dashboard</a>
+          <a class="nav-item" href="./appointments.html"><i data-lucide="calendar-days"></i> Appointments</a>
+          <a class="nav-item active" href="./reports.html"><i data-lucide="bar-chart-3"></i> Reports</a>
+          <a class="nav-item" href="./settings.html"><i data-lucide="settings"></i> Settings</a>
+        </nav>
+        <button id="logoutButton" class="nav-item logout-item" type="button"><i data-lucide="log-out"></i> Log out</button>
+      </aside>
+
+      <section class="portal-main utility-main">
+        <section class="patients-card">
+          <div class="patients-header">
+            <div><h1 class="page-title" data-i18n="reports.title">Reports</h1><p class="page-caption" data-i18n="reports.caption">AI-powered metrics and workflow insights.</p></div>
+          </div>
+
+          <div style="margin-top:24px;">
+
+            <!-- KPI Grid (will be updated by app.js on dashboard, standalone here shows nice static demo) -->
+            <div class="report-hero" id="reportsPanel">
+              <div class="report-kpi">
+                <div class="kpi-value" id="metricPatients">5</div>
+                <div class="kpi-label">Total Patients</div>
+                <div class="kpi-delta">↑ 2 this week</div>
+              </div>
+              <div class="report-kpi">
+                <div class="kpi-value" id="metricPlans">0</div>
+                <div class="kpi-label">Care Plans Generated</div>
+                <div class="kpi-delta">AI-powered</div>
+              </div>
+              <div class="report-kpi">
+                <div class="kpi-value" id="metricToday">3</div>
+                <div class="kpi-label">Visits Today</div>
+                <div class="kpi-delta">2 remaining</div>
+              </div>
+              <div class="report-kpi">
+                <div class="kpi-value">98%</div>
+                <div class="kpi-label">AI Summary Accuracy</div>
+                <div class="kpi-delta">↑ vs last month</div>
+              </div>
+            </div>
+
+            <!-- Medication Adherence -->
+            <div class="report-card">
+              <h2 class="report-section-title">Patient Medication Adherence</h2>
+              <div class="bar-row">
+                <div class="bar-label">Yousef</div>
+                <div class="bar-track"><div class="bar-fill" style="width:89%;"></div></div>
+                <div class="bar-pct">89%</div>
+              </div>
+              <div class="bar-row">
+                <div class="bar-label">Sara</div>
+                <div class="bar-track"><div class="bar-fill" style="width:95%;"></div></div>
+                <div class="bar-pct">95%</div>
+              </div>
+              <div class="bar-row">
+                <div class="bar-label">Ali</div>
+                <div class="bar-track"><div class="bar-fill" style="width:72%;"></div></div>
+                <div class="bar-pct">72%</div>
+              </div>
+              <div class="bar-row">
+                <div class="bar-label">Fatima</div>
+                <div class="bar-track"><div class="bar-fill" style="width:100%;"></div></div>
+                <div class="bar-pct">100%</div>
+              </div>
+              <div class="bar-row">
+                <div class="bar-label">Mohammed</div>
+                <div class="bar-track"><div class="bar-fill" style="width:60%; background:linear-gradient(90deg,var(--red),#f8a5a5);"></div></div>
+                <div class="bar-pct" style="color:var(--red);">60%</div>
+              </div>
+            </div>
+
+            <!-- Recent AI Activity -->
+            <div class="report-card">
+              <h2 class="report-section-title">Recent AI Activity</h2>
+              <div class="activity-row">
+                <div class="activity-icon success"><i data-lucide="sparkles"></i></div>
+                <div class="activity-body">
+                  <strong>Care plan generated for Yousef</strong>
+                  <span>Metformin 500mg &mdash; Type II Diabetes &mdash; No risks detected</span>
+                </div>
+                <div class="activity-time">Today 09:14 AM</div>
+              </div>
+              <div class="activity-row">
+                <div class="activity-icon warning"><i data-lucide="alert-triangle"></i></div>
+                <div class="activity-body">
+                  <strong>Risk flag: Mohammed &mdash; Hypertension</strong>
+                  <span>Potential interaction flagged between Lisinopril and Ibuprofen</span>
+                </div>
+                <div class="activity-time">Yesterday 02:30 PM</div>
+              </div>
+              <div class="activity-row">
+                <div class="activity-icon success"><i data-lucide="check-circle"></i></div>
+                <div class="activity-body">
+                  <strong>Patient Sara confirmed her plan</strong>
+                  <span>Asthma inhaler schedule acknowledged via patient app</span>
+                </div>
+                <div class="activity-time">Yesterday 11:00 AM</div>
+              </div>
+              <div class="activity-row">
+                <div class="activity-icon info"><i data-lucide="file-text"></i></div>
+                <div class="activity-body">
+                  <strong>Summary generated &mdash; Ali</strong>
+                  <span>Hypertension plan in bilingual format (EN + AR)</span>
+                </div>
+                <div class="activity-time">Jun 9, 2026 10:45 AM</div>
+              </div>
+              <div class="activity-row">
+                <div class="activity-icon success"><i data-lucide="sparkles"></i></div>
+                <div class="activity-body">
+                  <strong>Care plan generated for Fatima</strong>
+                  <span>Iron deficiency anemia &mdash; Iron 200mg supplement plan</span>
+                </div>
+                <div class="activity-time">Jun 8, 2026 03:20 PM</div>
+              </div>
+            </div>
+
+            <!-- Time Savings -->
+            <div class="report-card">
+              <h2 class="report-section-title">Efficiency Gains</h2>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div style="text-align:center; padding:16px; background:var(--blue-soft); border-radius:10px;">
+                  <div style="font-size:30px; font-weight:950; color:var(--blue);">4m</div>
+                  <div style="font-size:13px; color:var(--muted); font-weight:800; margin-top:4px;">Avg. time saved per consultation</div>
+                </div>
+                <div style="text-align:center; padding:16px; background:var(--green-soft); border-radius:10px;">
+                  <div style="font-size:30px; font-weight:950; color:var(--green);">12</div>
+                  <div style="font-size:13px; color:var(--muted); font-weight:800; margin-top:4px;">High-risk flags prevented this month</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <div id="toastHost" class="toast-host" aria-live="polite" aria-atomic="true"></div>
+    <script src="../lang.js" defer></script>
+    <script src="../app.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Healthium | Settings</title>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body data-page="settings">
+    <main class="portal-shell doctor-shell">
+      <aside class="portal-sidebar">
+        <div class="brand">
+          <div class="brand-mark"><i data-lucide="heart-pulse"></i></div>
+          <div>
+            <div class="brand-name">Healthium</div>
+            <div id="doctorLabel" class="brand-subtitle" data-i18n="doctor.workspace">Doctor workspace</div>
+          </div>
+        </div>
+        <nav class="side-nav" aria-label="Doctor navigation">
+          <a class="nav-item" href="./dashboard.html"><i data-lucide="home"></i><span data-i18n="nav.dashboard">Dashboard</span></a>
+          <a class="nav-item" href="./appointments.html"><i data-lucide="calendar-days"></i><span data-i18n="nav.appointments">Appointments</span></a>
+          <a class="nav-item" href="./reports.html"><i data-lucide="bar-chart-3"></i><span data-i18n="nav.reports">Reports</span></a>
+          <a class="nav-item active" href="./settings.html"><i data-lucide="settings"></i><span data-i18n="nav.settings">Settings</span></a>
+        </nav>
+        <button id="logoutButton" class="nav-item logout-item" type="button"><i data-lucide="log-out"></i><span data-i18n="nav.logout">Log out</span></button>
+      </aside>
+
+      <section class="settings-page-main">
+        <section class="patient-card settings-card">
+          <header class="settings-page-header">
+            <h1 class="page-title" data-i18n="settings.title">Settings</h1>
+            <p class="page-caption" data-i18n="settings.doctor_caption">Manage your profile, AI preferences, and workspace.</p>
+          </header>
+
+          <div class="settings-content">
+            <div class="settings-profile-banner">
+              <div class="avatar">K</div>
+              <div class="settings-profile-copy">
+                <strong>Dr. Khalid</strong>
+                <span>Internal Medicine - Healthium Demo Clinic</span>
+              </div>
+              <button class="settings-btn" type="button" onclick="notify('Profile editing coming in the full release.')" data-i18n="settings.edit_profile">Edit Profile</button>
+            </div>
+
+            <section class="settings-section">
+              <h2 class="settings-section-title" data-i18n="settings.account">Account</h2>
+              <div class="settings-group">
+                <div class="settings-row">
+                  <div class="settings-row-label"><strong data-i18n="settings.doctor_id">Doctor ID</strong><span>dr.khalid</span></div>
+                  <button class="settings-btn" type="button" onclick="notify('ID cannot be changed in demo mode.')" data-i18n="settings.locked">Locked</button>
+                </div>
+                <div class="settings-row">
+                  <div class="settings-row-label"><strong data-i18n="settings.email">Email</strong><span>dr.khalid@healthium.clinic</span></div>
+                  <button class="settings-btn" type="button" onclick="notify('Email editing coming soon.')" data-i18n="settings.edit">Edit</button>
+                </div>
+                <div class="settings-row">
+                  <div class="settings-row-label"><strong data-i18n="settings.password">Password</strong><span data-i18n="settings.password_hint">Last changed: 90 days ago</span></div>
+                  <button class="settings-btn" type="button" onclick="notify('Password reset coming soon.')" data-i18n="settings.change">Change</button>
+                </div>
+              </div>
+            </section>
+
+            <section class="settings-section">
+              <h2 class="settings-section-title" data-i18n="settings.language_display">Language &amp; Display</h2>
+              <div class="settings-group">
+                <div class="settings-row language-setting-row">
+                  <div class="settings-row-label">
+                    <strong data-i18n="settings.app_language">App Language</strong>
+                    <span data-i18n="settings.language_hint">Choose your preferred display language</span>
+                  </div>
+                  <div class="language-toggle" aria-label="App language">
+                    <button class="language-option active" type="button" data-set-language="en" data-i18n="settings.english">English</button>
+                    <button class="language-option" type="button" data-set-language="ar" data-i18n="settings.arabic">Arabic</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="settings-section">
+              <h2 class="settings-section-title" data-i18n="settings.ai">Agentic AI Preferences</h2>
+              <div class="settings-group">
+                <div class="settings-row">
+                  <div class="settings-row-label">
+                    <strong data-i18n="settings.summary_language">Default Summary Language</strong>
+                    <span data-i18n="settings.summary_language_hint">Language used when generating patient summaries</span>
+                  </div>
+                </div>
+                <div class="ai-choice-grid">
+                  <button class="ai-option selected" type="button" onclick="selectAI(this)">
+                    <span class="ai-dot"></span><span><strong data-i18n="settings.bilingual">Bilingual</strong><span data-i18n="settings.bilingual_hint">Summary shown in English and Arabic</span></span>
+                  </button>
+                  <button class="ai-option" type="button" onclick="selectAI(this)">
+                    <span class="ai-dot"></span><span><strong data-i18n="settings.english_only">English Only</strong><span data-i18n="settings.english_only_hint">Summary in English</span></span>
+                  </button>
+                  <button class="ai-option" type="button" onclick="selectAI(this)">
+                    <span class="ai-dot"></span><span><strong data-i18n="settings.arabic_only">Arabic Only</strong><span data-i18n="settings.arabic_only_hint">Summary in Arabic</span></span>
+                  </button>
+                </div>
+                <div class="settings-row">
+                  <div class="settings-row-label"><strong data-i18n="settings.risk_sensitivity">Risk Detection Sensitivity</strong><span data-i18n="settings.risk_hint">Alert threshold for potential drug interactions</span></div>
+                  <select class="settings-select">
+                    <option data-i18n="settings.risk_high">High (recommended)</option>
+                    <option data-i18n="settings.risk_medium">Medium</option>
+                    <option data-i18n="settings.risk_low">Low</option>
+                  </select>
+                </div>
+              </div>
+            </section>
+
+            <section class="settings-section">
+              <h2 class="settings-section-title" data-i18n="settings.notifications">Notifications</h2>
+              <div class="settings-group">
+                <div class="settings-row">
+                  <div class="settings-row-label"><strong data-i18n="settings.high_risk_alerts">High-Risk Prescription Alerts</strong><span data-i18n="settings.high_risk_hint">Immediate warning when AI flags a risk</span></div>
+                  <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+                </div>
+                <div class="settings-row">
+                  <div class="settings-row-label"><strong data-i18n="settings.appointment_reminders">Appointment Reminders</strong><span data-i18n="settings.appointment_reminders_doctor_hint">Email digest each morning with today's schedule</span></div>
+                  <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+                </div>
+                <div class="settings-row">
+                  <div class="settings-row-label"><strong data-i18n="settings.patient_updates">Patient Plan Updates</strong><span data-i18n="settings.patient_updates_hint">Notify when a patient acknowledges their plan</span></div>
+                  <label class="toggle-switch"><input type="checkbox" /><span class="toggle-slider"></span></label>
+                </div>
+              </div>
+            </section>
+
+            <section class="settings-section">
+              <h2 class="settings-section-title" data-i18n="settings.data">Data</h2>
+              <div class="settings-group">
+                <div class="settings-row">
+                  <div class="settings-row-label"><strong data-i18n="settings.reset">Reset Demo Data</strong><span data-i18n="settings.reset_hint">Restore all patients to default demo state</span></div>
+                  <button id="resetDemoButton" class="settings-btn danger" type="button" data-i18n="settings.reset_button">Reset Demo</button>
+                </div>
+                <div class="settings-row">
+                  <div class="settings-row-label"><strong data-i18n="settings.export_all">Export All Data</strong><span data-i18n="settings.export_all_hint">Download your patient records as JSON</span></div>
+                  <button class="settings-btn" type="button" onclick="notify('Export coming in the full release.')" data-i18n="settings.export">Export</button>
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <div id="toastHost" class="toast-host" aria-live="polite" aria-atomic="true"></div>
+    <script src="../lang.js" defer></script>
+    <script src="../app.js" defer></script>
+    <script>
+      function notify(message) {
+        const host = document.getElementById("toastHost");
+        if (!host) return;
+        host.innerHTML = "";
+        const toast = document.createElement("div");
+        toast.className = "toast success";
+        toast.textContent = message;
+        host.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+      }
+      function selectAI(element) {
+        document.querySelectorAll(".ai-option").forEach((option) => option.classList.remove("selected"));
+        element.classList.add("selected");
+      }
+    </script>
+  </body>
+</html>
