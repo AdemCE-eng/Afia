@@ -69,6 +69,32 @@ a {
   box-shadow: var(--shadow);
 }
 
+.role-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.role-option {
+  min-height: 64px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #46536c;
+  background: #ffffff;
+  cursor: pointer;
+  font-weight: 950;
+}
+
+.role-option.active {
+  border-color: #9bc0ff;
+  color: var(--blue);
+  background: var(--blue-soft);
+}
+
 .brand {
   display: flex;
   align-items: center;
@@ -178,6 +204,68 @@ a {
   align-items: start;
 }
 
+.doctor-dashboard-main {
+  grid-template-columns: minmax(0, 1fr) 340px;
+}
+
+.doctor-dashboard-column {
+  display: grid;
+  gap: 24px;
+}
+
+.doctor-hero-panel {
+  border: 1px solid #d9e8ff;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ffffff, #f2f7ff);
+  box-shadow: var(--shadow);
+  padding: 26px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.8fr);
+  gap: 24px;
+  align-items: center;
+  animation: cardIn 220ms ease both;
+}
+
+.doctor-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.doctor-metric {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 16px;
+  transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.doctor-metric:hover {
+  border-color: #bcd0f0;
+  box-shadow: 0 14px 30px rgba(31, 52, 96, 0.08);
+  transform: translateY(-2px);
+}
+
+.doctor-metric span {
+  display: block;
+  color: var(--blue);
+  font-size: 30px;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.doctor-metric p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.utility-main {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 980px;
+}
+
 .patients-card,
 .selected-card,
 .medical-form-card,
@@ -188,6 +276,7 @@ a {
   border-radius: 12px;
   background: var(--panel);
   box-shadow: var(--shadow);
+  animation: cardIn 220ms ease both;
 }
 
 .patients-card {
@@ -263,7 +352,17 @@ a {
   background: #ffffff;
   text-align: left;
   cursor: pointer;
-  transition: border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
+  transition: border-color 140ms ease, box-shadow 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.patient-button:hover {
+  transform: translateX(3px);
+  border-color: #c8d8f2;
+  background: #f8fbff;
+}
+
+.patient-button:active {
+  transform: translateX(3px) scale(0.995);
 }
 
 .patient-button + .patient-button {
@@ -276,6 +375,7 @@ a {
   border-radius: 10px;
   background: #f8fbff;
   box-shadow: inset 0 0 0 1px #bdd4ff;
+  animation: softPulse 240ms ease both;
 }
 
 .patient-name {
@@ -346,6 +446,22 @@ a {
   padding: 24px;
   display: grid;
   gap: 16px;
+}
+
+.selected-care-card {
+  position: sticky;
+  top: 28px;
+}
+
+.selected-card-kicker {
+  border-radius: 999px;
+  justify-self: start;
+  background: var(--blue-soft);
+  color: var(--blue);
+  padding: 7px 11px;
+  font-size: 11px;
+  font-weight: 950;
+  text-transform: uppercase;
 }
 
 .section-label {
@@ -449,6 +565,10 @@ a {
   transform: translateY(-1px);
 }
 
+.btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
 .btn:disabled {
   cursor: not-allowed;
   opacity: 0.65;
@@ -469,6 +589,11 @@ a {
   color: var(--ink);
   background: #ffffff;
   border-color: var(--line);
+}
+
+.btn.is-disabled {
+  pointer-events: none;
+  opacity: 0.55;
 }
 
 .brand-mark svg,
@@ -913,6 +1038,7 @@ a {
 
 .patient-hero-card {
   padding: 24px;
+  background: linear-gradient(135deg, #ffffff, #f5f9ff);
 }
 
 .patient-hero-card h1 {
@@ -989,7 +1115,23 @@ a {
   padding: 22px;
 }
 
-.task-list,
+.plan-overview-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.plan-chip {
+  border-radius: 999px;
+  color: var(--blue);
+  background: var(--blue-soft);
+  padding: 7px 11px;
+  font-size: 12px;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
 .reminder-list,
 .key-points {
   margin-top: 18px;
@@ -997,7 +1139,6 @@ a {
   gap: 14px;
 }
 
-.task-item,
 .reminder-item {
   display: grid;
   grid-template-columns: 24px minmax(0, 1fr) auto;
@@ -1005,19 +1146,70 @@ a {
   align-items: center;
 }
 
-.check-box {
-  width: 22px;
-  height: 22px;
-  border: 2px solid #b7c1d3;
-  border-radius: 5px;
+.plan-snapshot {
+  margin-top: 18px;
   display: grid;
-  place-items: center;
+  gap: 12px;
 }
 
-.check-box.done {
-  border-color: var(--green);
-  color: #ffffff;
-  background: var(--green);
+.plan-snapshot-row {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #ffffff;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px;
+  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+}
+
+.plan-snapshot-row:hover {
+  border-color: #bcd0f0;
+  background: #fbfdff;
+  box-shadow: 0 12px 24px rgba(31, 52, 96, 0.07);
+  transform: translateY(-2px);
+}
+
+.plan-snapshot-row.primary {
+  border-color: #bfead2;
+  background: linear-gradient(135deg, #f1fff8, #fbfffd);
+}
+
+.plan-snapshot-row svg {
+  width: 22px;
+  height: 22px;
+  color: var(--blue);
+  margin-top: 2px;
+}
+
+.plan-snapshot-row span,
+.plan-snapshot-row strong,
+.plan-snapshot-row small {
+  display: block;
+}
+
+.plan-snapshot-row span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.plan-snapshot-row strong {
+  margin-top: 4px;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 950;
+  line-height: 1.35;
+}
+
+.plan-snapshot-row small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
 }
 
 .appointment-card {
@@ -1043,9 +1235,85 @@ a {
 
 .patient-content-grid {
   display: grid;
-  grid-template-columns: minmax(360px, 1.15fr) minmax(300px, 0.8fr) minmax(360px, 1fr);
+  grid-template-columns: minmax(360px, 1.15fr) minmax(300px, 0.85fr);
   gap: 18px;
   align-items: start;
+}
+
+.utility-list,
+.settings-list,
+.record-list,
+.medication-list {
+  margin-top: 22px;
+  display: grid;
+  gap: 12px;
+}
+
+.utility-row,
+.settings-row,
+.record-list-row,
+.patient-med-card {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.settings-row span {
+  color: var(--muted);
+  font-weight: 850;
+}
+
+.settings-row strong {
+  color: var(--ink);
+  font-weight: 950;
+}
+
+.report-grid {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.report-metric {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fbfdff;
+  padding: 18px;
+}
+
+.report-metric span {
+  display: block;
+  color: var(--blue);
+  font-size: 32px;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.report-metric p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.patient-med-card h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 950;
+}
+
+.patient-med-card p {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 800;
+  line-height: 1.6;
 }
 
 .patient-tabs {
@@ -1187,6 +1455,114 @@ a {
   gap: 10px;
 }
 
+.floating-assistant {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 80;
+}
+
+.floating-chat-button {
+  width: 62px;
+  height: 62px;
+  border: 0;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  box-shadow: 0 18px 34px rgba(37, 99, 235, 0.28);
+  cursor: pointer;
+  font-size: 27px;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+  animation: floatPulse 2400ms ease-in-out infinite;
+}
+
+.floating-chat-button:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 22px 42px rgba(37, 99, 235, 0.34);
+}
+
+.floating-chat-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.floating-chat-panel {
+  position: absolute;
+  right: 0;
+  bottom: 78px;
+  width: min(380px, calc(100vw - 32px));
+  max-height: min(620px, calc(100vh - 120px));
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 24px 54px rgba(31, 52, 96, 0.2);
+  display: none;
+  overflow: hidden;
+}
+
+.floating-chat-panel.open {
+  display: block;
+  animation: toastIn 160ms ease both;
+}
+
+.floating-chat-header {
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+}
+
+.floating-chat-header strong {
+  display: block;
+  color: var(--ink);
+  font-weight: 950;
+}
+
+.floating-chat-header span {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.floating-chat-messages {
+  max-height: 300px;
+  overflow: auto;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 14px;
+  background: #fbfdff;
+}
+
+.floating-questions {
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 14px 0;
+}
+
+.floating-questions button {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--blue);
+  background: #ffffff;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.floating-chat-panel .chat-input-row {
+  margin: 0;
+  padding: 12px 14px 14px;
+}
+
 @keyframes toastIn {
   from {
     opacity: 0;
@@ -1198,18 +1574,69 @@ a {
   }
 }
 
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes softPulse {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.01);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes floatPulse {
+  0%,
+  100% {
+    box-shadow: 0 18px 34px rgba(37, 99, 235, 0.28);
+  }
+  50% {
+    box-shadow: 0 18px 44px rgba(139, 69, 217, 0.34);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
+  }
+}
+
 @media (max-width: 1180px) {
   .portal-shell,
   .portal-main,
+  .doctor-dashboard-main,
+  .doctor-hero-panel,
   .record-layout,
   .patient-dashboard-grid,
-  .patient-content-grid {
+  .patient-content-grid,
+  .report-grid {
     grid-template-columns: 1fr;
   }
 
   .portal-sidebar {
     position: static;
     height: auto;
+  }
+
+  .selected-care-card {
+    position: static;
   }
 
   .patient-button {
@@ -1280,14 +1707,34 @@ a {
   }
 
   .schedule-row,
-  .task-item,
-  .reminder-item {
+  .reminder-item,
+  .utility-row,
+  .settings-row,
+  .record-list-row,
+  .patient-med-card {
     grid-template-columns: 1fr;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .plan-overview-head {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .btn,
   .form-actions .btn,
   .plan-actions .btn {
     width: 100%;
+  }
+
+  .floating-assistant {
+    right: 14px;
+    bottom: 14px;
+  }
+
+  .floating-chat-button {
+    width: 56px;
+    height: 56px;
   }
 }

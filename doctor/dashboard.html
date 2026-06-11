@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Healthium | Patients</title>
+    <title>Healthium | Doctor Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="../styles.css" />
   </head>
   <body data-page="dashboard">
     <main class="portal-shell doctor-shell">
@@ -21,18 +21,39 @@
 
         <nav class="side-nav" aria-label="Doctor navigation">
           <a class="nav-item active" href="./dashboard.html"><i data-lucide="home"></i> Dashboard</a>
-          <a class="nav-item" href="./dashboard.html"><i data-lucide="users"></i> Patients</a>
-          <a class="nav-item" href="./dashboard.html"><i data-lucide="calendar-days"></i> Appointments</a>
-          <a class="nav-item" href="./consultation.html"><i data-lucide="brain-circuit"></i> AI Assistant</a>
-          <a class="nav-item" href="./dashboard.html"><i data-lucide="bar-chart-3"></i> Reports</a>
-          <a class="nav-item" href="./dashboard.html"><i data-lucide="settings"></i> Settings</a>
+          <a class="nav-item" href="./appointments.html"><i data-lucide="calendar-days"></i> Appointments</a>
+          <a class="nav-item" href="./reports.html"><i data-lucide="bar-chart-3"></i> Reports</a>
+          <a class="nav-item" href="./settings.html"><i data-lucide="settings"></i> Settings</a>
         </nav>
 
         <button id="logoutButton" class="nav-item logout-item" type="button"><i data-lucide="log-out"></i> Log out</button>
       </aside>
 
-      <section class="portal-main">
-        <section class="patients-card">
+      <section class="portal-main doctor-dashboard-main">
+        <section class="doctor-dashboard-column">
+          <section class="doctor-hero-panel">
+            <div>
+              <p class="section-label">Doctor Dashboard</p>
+              <h1 class="page-title">Patient care panel</h1>
+              <p class="page-caption">Select a patient, review their latest status, and update the treatment plan.</p>
+            </div>
+            <div class="doctor-metric-grid">
+              <div class="doctor-metric">
+                <span id="totalPatientsMetric">0</span>
+                <p>Patients</p>
+              </div>
+              <div class="doctor-metric">
+                <span id="todayVisitsMetric">0</span>
+                <p>Due today</p>
+              </div>
+              <div class="doctor-metric">
+                <span id="carePlansMetric">0</span>
+                <p>Care plans</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="patients-card">
           <div class="patients-header">
             <div>
               <h1 class="page-title">Patients Overview</h1>
@@ -81,18 +102,18 @@
           </div>
 
           <div id="patientList" class="patient-overview-list"></div>
-          <button class="link-button" type="button">View all patients <i data-lucide="arrow-right"></i></button>
+        </section>
         </section>
 
-        <aside class="selected-card">
-          <div class="section-label">Selected Patient</div>
+        <aside class="selected-card selected-care-card">
+          <div class="selected-card-kicker">Selected Patient</div>
           <div id="patientOverview" class="selected-patient-preview"></div>
           <p id="selectedPatientLine" class="selected-line"></p>
           <a class="btn btn-primary w-full" href="./consultation.html">
             <i data-lucide="clipboard-pen-line"></i>
             Update medical info
           </a>
-          <a class="btn btn-secondary w-full" href="./patient.html">
+          <a class="btn btn-secondary w-full" href="../patient/dashboard.html">
             <i data-lucide="smartphone"></i>
             Patient view
           </a>
@@ -105,6 +126,6 @@
     </main>
 
     <div id="toastHost" class="toast-host" aria-live="polite" aria-atomic="true"></div>
-    <script src="./app.js" defer></script>
+    <script src="../app.js" defer></script>
   </body>
 </html>

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Healthium | My Summary</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body data-page="patient-summary">
+    <main class="portal-shell patient-shell">
+      <aside class="portal-sidebar patient-sidebar">
+        <div class="brand"><div class="brand-mark"><i data-lucide="heart-pulse"></i></div><div class="brand-name">Healthium</div></div>
+        <nav class="side-nav" aria-label="Patient navigation">
+          <a class="nav-item" href="./dashboard.html"><i data-lucide="home"></i> Dashboard</a>
+          <a class="nav-item active" href="./summary.html"><i data-lucide="clipboard-list"></i> My Summary</a>
+          <a class="nav-item" href="./medications.html"><i data-lucide="pill"></i> Medications</a>
+          <a class="nav-item" href="./reminders.html"><i data-lucide="alarm-clock"></i> Reminders</a>
+          <a class="nav-item" href="./settings.html"><i data-lucide="settings"></i> Settings</a>
+        </nav>
+        <div class="patient-profile-mini"><div id="patientAvatarMini" class="avatar">Y</div><div><div id="patientMiniName" class="font-black text-slate-900">Patient</div><div class="text-xs font-bold text-slate-500">View Profile</div></div></div>
+      </aside>
+      <section class="patient-main">
+        <section class="patient-card">
+          <h1 class="page-title">My Treatment Summary</h1>
+          <p class="page-caption">Your latest doctor-approved plan.</p>
+          <div class="patient-tabs"><button class="patient-tab active" type="button">Overview</button><button class="patient-tab" type="button">Treatment Plan</button><button class="patient-tab" type="button">Medications</button><button class="patient-tab" type="button">Doctor Notes</button></div>
+          <div id="patientSummaryPanel" class="patient-summary-box"></div>
+          <div id="patientKeyPoints" class="key-points"></div>
+        </section>
+      </section>
+    </main>
+    <script src="../app.js" defer></script>
+  </body>
+</html>

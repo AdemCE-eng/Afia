@@ -6,7 +6,7 @@
     <title>Healthium | Patient Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="../styles.css" />
   </head>
   <body data-page="patient">
     <main class="portal-shell patient-shell">
@@ -17,13 +17,11 @@
         </div>
 
         <nav class="side-nav" aria-label="Patient navigation">
-          <a class="nav-item active" href="./patient.html"><i data-lucide="home"></i> Dashboard</a>
-          <a class="nav-item" href="#summary"><i data-lucide="clipboard-list"></i> My Summary</a>
-          <a class="nav-item" href="#reminders"><i data-lucide="pill"></i> Medications</a>
-          <a class="nav-item" href="#reminders"><i data-lucide="alarm-clock"></i> Reminders</a>
-          <a class="nav-item" href="#assistant"><i data-lucide="bot"></i> AI Assistant</a>
-          <a class="nav-item" href="#appointments"><i data-lucide="calendar-days"></i> My Appointments</a>
-          <a class="nav-item" href="#records"><i data-lucide="file-text"></i> My Records</a>
+          <a class="nav-item active" href="./dashboard.html"><i data-lucide="home"></i> Dashboard</a>
+          <a class="nav-item" href="./summary.html"><i data-lucide="clipboard-list"></i> My Summary</a>
+          <a class="nav-item" href="./medications.html"><i data-lucide="pill"></i> Medications</a>
+          <a class="nav-item" href="./reminders.html"><i data-lucide="alarm-clock"></i> Reminders</a>
+          <a class="nav-item" href="./settings.html"><i data-lucide="settings"></i> Settings</a>
         </nav>
 
         <div class="patient-profile-mini">
@@ -38,10 +36,10 @@
       <section class="patient-main">
         <section class="patient-hero-card">
           <h1 id="patientWelcome">Welcome back</h1>
-          <p>Here's your health overview for today.</p>
+          <p>Your latest doctor-approved care plan.</p>
           <div class="health-status-card">
             <div>
-              <div class="section-label">Health Status</div>
+              <div class="section-label">Current condition</div>
               <h2 id="patientCondition">Condition</h2>
               <p id="patientLastUpdated">Last updated today</p>
             </div>
@@ -51,9 +49,12 @@
         </section>
 
         <section class="patient-dashboard-grid">
-          <div class="patient-card task-card">
-            <h2>Today's Tasks</h2>
-            <div id="todayTasks" class="task-list"></div>
+          <div class="patient-card plan-overview-card">
+            <div class="plan-overview-head">
+              <h2>Current Plan</h2>
+              <span id="planUpdatedChip" class="plan-chip">Latest plan</span>
+            </div>
+            <div id="patientPlanSnapshot" class="plan-snapshot"></div>
           </div>
 
           <div id="appointments" class="patient-card appointment-card">
@@ -88,32 +89,10 @@
             <button class="btn btn-secondary w-full" type="button">View All Reminders</button>
           </section>
 
-          <section id="assistant" class="patient-card assistant-card">
-            <div class="assistant-title">
-              <div class="assistant-mark"><i data-lucide="bot"></i></div>
-              <div>
-                <h2>AI Health Assistant</h2>
-                <p>Ask me anything about your health plan</p>
-              </div>
-            </div>
-            <div id="chatMessages" class="chat-messages"></div>
-            <div class="quick-questions">
-              <button type="button" data-question="When should I take my medication?">When should I take my medication?</button>
-              <button type="button" data-question="What if I miss a dose?">What if I miss a dose?</button>
-              <button type="button" data-question="Can I eat fruits?">Can I eat fruits?</button>
-              <button type="button" data-question="When is my next appointment?">When is my next appointment?</button>
-            </div>
-            <form id="chatForm" class="chat-input-row">
-              <input id="chatInput" placeholder="Type your message..." />
-              <button class="icon-button" type="submit" aria-label="Send message">
-                <i data-lucide="send"></i>
-              </button>
-            </form>
-          </section>
         </section>
       </section>
     </main>
 
-    <script src="./app.js" defer></script>
+    <script src="../app.js" defer></script>
   </body>
 </html>

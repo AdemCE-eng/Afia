@@ -6,7 +6,7 @@
     <title>Healthium | Patient Plan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="../styles.css" />
   </head>
   <body data-page="consultation">
     <main class="detail-page">
@@ -120,7 +120,7 @@
               </button>
               <button id="generateButton" class="btn btn-primary" type="submit">
                 <i data-lucide="sparkles"></i>
-                Generate Patient Plan
+                Create Patient Plan
               </button>
             </div>
           </form>
@@ -128,7 +128,7 @@
 
         <section class="plan-card">
           <div class="plan-header">
-            <h2>AI Generated Patient Plan</h2>
+            <h2>Patient Plan Preview</h2>
             <span id="pipelineStatusPill" class="status-chip">Not generated yet</span>
             <button id="resetDemoButton" class="icon-button" type="button" aria-label="Reset demo">
               <i data-lucide="refresh-cw"></i>
@@ -136,7 +136,7 @@
           </div>
 
           <div id="validationPanel" class="validation-area">
-            <div class="empty-state">Generate a patient plan to validate the intake.</div>
+            <div class="empty-state">Create a patient plan to check the consultation details.</div>
           </div>
           <span id="validationStatusPill" class="hidden">Waiting for input</span>
 
@@ -168,14 +168,14 @@
               <i data-lucide="copy"></i>
               Copy Summary
             </button>
-            <a class="btn btn-primary" href="./patient.html">
-              <i data-lucide="send"></i>
-              Send to Patient
+            <a id="patientViewLink" class="btn btn-primary is-disabled" href="../patient/dashboard.html" aria-disabled="true">
+              <i data-lucide="external-link"></i>
+              Open Patient View
             </a>
           </div>
 
           <details class="json-details">
-            <summary>Standardized JSON</summary>
+            <summary>Record data</summary>
             <button id="toggleJsonButton" class="hidden" type="button">Collapse JSON</button>
             <pre id="jsonOutput" class="json-box">No validated record yet.</pre>
           </details>
@@ -184,6 +184,6 @@
     </main>
 
     <div id="toastHost" class="toast-host" aria-live="polite" aria-atomic="true"></div>
-    <script src="./app.js" defer></script>
+    <script src="../app.js" defer></script>
   </body>
 </html>

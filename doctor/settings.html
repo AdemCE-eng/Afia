@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Healthium | Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body data-page="settings">
+    <main class="portal-shell doctor-shell">
+      <aside class="portal-sidebar">
+        <div class="brand"><div class="brand-mark"><i data-lucide="heart-pulse"></i></div><div><div class="brand-name">Healthium</div><div id="doctorLabel" class="brand-subtitle">Doctor workspace</div></div></div>
+        <nav class="side-nav" aria-label="Doctor navigation">
+          <a class="nav-item" href="./dashboard.html"><i data-lucide="home"></i> Dashboard</a>
+          <a class="nav-item" href="./appointments.html"><i data-lucide="calendar-days"></i> Appointments</a>
+          <a class="nav-item" href="./reports.html"><i data-lucide="bar-chart-3"></i> Reports</a>
+          <a class="nav-item active" href="./settings.html"><i data-lucide="settings"></i> Settings</a>
+        </nav>
+        <button id="logoutButton" class="nav-item logout-item" type="button"><i data-lucide="log-out"></i> Log out</button>
+      </aside>
+      <section class="portal-main utility-main">
+        <section class="patients-card">
+          <div class="patients-header">
+            <div><h1 class="page-title">Settings</h1><p class="page-caption">Demo workspace defaults for the doctor experience.</p></div>
+          </div>
+          <div id="settingsPanel"></div>
+        </section>
+      </section>
+    </main>
+    <div id="toastHost" class="toast-host" aria-live="polite" aria-atomic="true"></div>
+    <script src="../app.js" defer></script>
+  </body>
+</html>
