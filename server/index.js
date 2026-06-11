@@ -1,9 +1,15 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 const { GoogleGenAI } = require('@google/genai');
 
-dotenv.config();
+[
+    path.resolve(__dirname, '..', '.env'),
+    path.resolve(__dirname, '.env')
+].forEach((envPath) => {
+    dotenv.config({ path: envPath, override: false });
+});
 
 const app = express();
 app.use(cors());
@@ -11,10 +17,26 @@ app.use(express.json());
 
 // Initialize Gemini Client
 // Requires GEMINI_API_KEY to be set in .env
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const geminiApiKey = process.env.GEMINI_API_KEY;
+const ai = geminiApiKey ? new GoogleGenAI({ apiKey: geminiApiKey }) : null;
+
+function parseJsonResponse(text) {
+    try {
+        return JSON.parse(text);
+    } catch (error) {
+        const cleaned = text.replace(/^```json\s*/i, '').replace(/```$/i, '').trim();
+        return JSON.parse(cleaned);
+    }
+}
 
 app.post('/api/generate-plan', async (req, res) => {
     try {
+        if (!ai) {
+            return res.status(503).json({
+                error: 'Gemini API key is not configured. Add GEMINI_API_KEY to .env in the project root or server folder.'
+            });
+        }
+
         const { record } = req.body;
         
         if (!record) {
@@ -42,7 +64,7 @@ app.post('/api/generate-plan', async (req, res) => {
             }
         });
         
-        const summary = JSON.parse(summaryResponse.text);
+        const summary = parseJsonResponse(summaryResponse.text);
 
         // 2. Generate Risk Assessment
         const riskPrompt = `
@@ -67,7 +89,7 @@ app.post('/api/generate-plan', async (req, res) => {
             }
         });
 
-        const risk = JSON.parse(riskResponse.text);
+        const risk = parseJsonResponse(riskResponse.text);
 
         res.json({
             summary,
@@ -76,11 +98,14 @@ app.post('/api/generate-plan', async (req, res) => {
 
     } catch (error) {
         console.error("AI Generation Error:", error);
-        res.status(500).json({ error: 'Failed to generate plan from AI' });
+        res.status(500).json({
+            error: 'Failed to generate plan from Gemini',
+            detail: error.message
+        });
     }
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`MediBrief AI Backend is running on port ${PORT}`);
+    console.log(`Healthium AI Backend is running on port ${PORT}`);
 });

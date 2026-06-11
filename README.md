@@ -11,6 +11,30 @@ Demo login:
 - Doctor ID: `dr.khalid`
 - Password: `healthium-demo`
 
+## Gemini Backend
+
+The doctor consultation flow calls Gemini when **Create Patient Plan** is clicked.
+
+1. Create a `.env` file in either the project root or `server/`.
+2. Add your Gemini key:
+
+```env
+GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+3. Start the backend:
+
+```powershell
+cd D:\guedr\Desktop\Adam\Projects\Healthium\server
+npm start
+```
+
+The frontend calls:
+
+```txt
+POST http://localhost:3000/api/generate-plan
+```
+
 ## MVP Flow
 
 1. Log in with the demo doctor account.
