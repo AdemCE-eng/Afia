@@ -4,7 +4,25 @@ Static MVP for Healthium with a doctor workspace and patient portal.
 
 ## How to Run
 
-Open `index.html` in a browser.
+1. Create `server/.env`:
+
+   ```env
+   GEMINI_API_KEY=your_key_here
+   ```
+
+2. Start the application:
+
+   ```powershell
+   cd server
+   npm install
+   npm start
+   ```
+
+3. Open `http://localhost:3000`.
+
+Opening `index.html` directly still displays the frontend, but Gemini generation
+requires the Node server. GitHub Pages hosts static files only and cannot run the
+API server.
 
 Demo login:
 

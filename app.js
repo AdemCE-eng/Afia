@@ -548,7 +548,7 @@
     let summary;
     let risk;
     try {
-      const response = await fetch('http://localhost:3000/api/generate-plan', {
+      const response = await fetch(`${getApiBaseUrl()}/api/generate-plan`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -1740,6 +1740,12 @@
 
   function goTo(url) {
     window.location.href = url;
+  }
+
+  function getApiBaseUrl() {
+    if (window.HEALTHIUM_API_URL) return String(window.HEALTHIUM_API_URL).replace(/\/$/, "");
+    if (window.location.protocol === "file:") return "http://localhost:3000";
+    return window.location.origin;
   }
 
   function refreshIcons() {

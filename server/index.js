@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 const { GoogleGenAI } = require('@google/genai');
 
 dotenv.config();
@@ -12,6 +13,13 @@ app.use(express.json());
 // Initialize Gemini Client
 // Requires GEMINI_API_KEY to be set in .env
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+app.get('/api/health', (req, res) => {
+    res.json({
+        status: 'ok',
+        geminiConfigured: Boolean(process.env.GEMINI_API_KEY),
+    });
+});
 
 app.post('/api/generate-plan', async (req, res) => {
     try {
@@ -80,7 +88,13 @@ app.post('/api/generate-plan', async (req, res) => {
     }
 });
 
+app.use(express.static(path.join(__dirname, '..')));
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
+    if (!process.env.GEMINI_API_KEY) {
+        console.warn('GEMINI_API_KEY is missing. AI generation will not work.');
+    }
     console.log(`MediBrief AI Backend is running on port ${PORT}`);
+    console.log(`Open http://localhost:${PORT}`);
 });
