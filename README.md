@@ -29,6 +29,13 @@ Demo login:
 - Doctor ID: `dr.khalid`
 - Password: `healthium-demo`
 
+## Gemini Backend
+
+The doctor consultation flow calls Gemini when **Create Patient Plan** is clicked.
+It creates the simplified bilingual patient summary and a basic medication risk
+assessment. If the backend is unavailable, the frontend uses its local fallback
+summary instead.
+
 ## MVP Flow
 
 1. Log in with the demo doctor account.
