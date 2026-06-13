@@ -5,6 +5,7 @@
     session: "healthium.session",
     patients: "healthium.patients",
     selectedPatient: "healthium.selectedPatientId",
+    chat: "healthium.patientChat",
   };
 
   const DEMO_PATIENTS = [
@@ -418,6 +419,9 @@
     document.querySelectorAll("[data-floating-question]").forEach((button) => {
       button.addEventListener("click", () => submitFloatingQuestion(button.dataset.floatingQuestion));
     });
+    $("floatingAssistantExpand")?.addEventListener("click", toggleFloatingAssistantSize);
+    $("floatingAssistantBackdrop")?.addEventListener("click", closeFloatingAssistant);
+    $("clearPatientChat")?.addEventListener("click", clearPatientChat);
 
     // Wire patient summary tabs (Overview / Treatment Plan / Medications / Doctor Notes)
     document.querySelectorAll('.patient-tab[data-panel-target]').forEach(tab => {
@@ -479,6 +483,7 @@
     state.lastSummary = null;
     state.lastSchedule = null;
     state.lastIssues = [];
+    localStorage.removeItem(STORAGE.chat);
     savePatients();
     persistSelectedPatient();
 
@@ -1194,9 +1199,7 @@
       if ($("patientPastReminderList")) $("patientPastReminderList").innerHTML = renderPastReminders(record);
     }
 
-    if ($("chatMessages") && !$("chatMessages").children.length) $("chatMessages").innerHTML = `
-      <div class="chat-message bot">${escapeHtml(uiText(`Hello ${patient.fullName}. How can I help you today?`, `مرحبًا ${patient.fullName}. كيف أستطيع مساعدتك اليوم؟`))}</div>
-    `;
+    renderAssistantMessages("chatMessages");
     refreshIcons();
   }
 
@@ -1213,30 +1216,63 @@
             <strong>${escapeHtml(uiText("Health Assistant", "مساعد عافية"))}</strong>
             <span>${escapeHtml(uiText("Answers from your care plan", "إجابات من خطتك العلاجية"))}</span>
           </div>
-          <button class="icon-button" type="button" aria-label="Close assistant" id="floatingAssistantClose">
-            <i data-lucide="x"></i>
-          </button>
+          <div class="floating-chat-actions">
+            <button class="icon-button" type="button" aria-label="Expand conversation" id="floatingAssistantExpand">
+              <i data-lucide="maximize-2"></i>
+            </button>
+            <button class="icon-button" type="button" aria-label="Close assistant" id="floatingAssistantClose">
+              <i data-lucide="x"></i>
+            </button>
+          </div>
         </div>
-        <div id="floatingChatMessages" class="floating-chat-messages">
-          <div class="chat-message bot">${escapeHtml(uiText(`Hi ${patient.fullName}. Ask me about your plan.`, `مرحبًا ${patient.fullName}. اسألني عن خطتك.`))}</div>
-        </div>
+        <div id="floatingChatMessages" class="floating-chat-messages"></div>
         <div class="floating-questions">
-          <button type="button" data-floating-question="When should I take my medication?">${escapeHtml(uiText("Medication time", "وقت الدواء"))}</button>
-          <button type="button" data-floating-question="What if I miss a dose?">${escapeHtml(uiText("Missed dose", "نسيت جرعة"))}</button>
-          <button type="button" data-floating-question="When is my next appointment?">${escapeHtml(uiText("Appointment", "الموعد"))}</button>
+          <button type="button" data-floating-question="${escapeHtml(uiText("When should I take my medication?", "\u0645\u062a\u0649 \u0623\u062a\u0646\u0627\u0648\u0644 \u062f\u0648\u0627\u0626\u064a\u061f"))}">${escapeHtml(uiText("Medication time", "وقت الدواء"))}</button>
+          <button type="button" data-floating-question="${escapeHtml(uiText("What if I miss a dose?", "\u0645\u0627\u0630\u0627 \u0623\u0641\u0639\u0644 \u0625\u0630\u0627 \u0646\u0633\u064a\u062a \u062c\u0631\u0639\u0629\u061f"))}">${escapeHtml(uiText("Missed dose", "نسيت جرعة"))}</button>
+          <button type="button" data-floating-question="${escapeHtml(uiText("When is my next appointment?", "\u0645\u062a\u0649 \u0645\u0648\u0639\u062f\u064a \u0627\u0644\u0642\u0627\u062f\u0645\u061f"))}">${escapeHtml(uiText("Appointment", "الموعد"))}</button>
         </div>
         <form id="floatingChatForm" class="chat-input-row">
           <input id="floatingChatInput" placeholder="${escapeHtml(uiText("Ask about your plan...", "اسأل عن خطتك..."))}" />
           <button class="icon-button" type="submit" aria-label="Send message"><i data-lucide="send"></i></button>
         </form>
       </div>
+      <div id="floatingAssistantBackdrop" class="floating-chat-backdrop" aria-hidden="true"></div>
+      <div id="floatingAssistantNudge" class="floating-chat-nudge">
+        <span>${escapeHtml(uiText("Need help with your plan?", "\u0647\u0644 \u0644\u062f\u064a\u0643 \u0633\u0624\u0627\u0644\u061f"))}</span>
+      </div>
       <button id="floatingAssistantToggle" class="floating-chat-button" type="button" aria-label="Open AI health assistant">
+        <span class="floating-chat-alert" aria-hidden="true"></span>
         <i data-lucide="message-circle"></i>
         <span class="floating-chat-label">${escapeHtml(uiText("Afia", "\u0639\u0627\u0641\u064a\u0629"))}</span>
       </button>
     `;
     document.body.appendChild(widget);
-    $("floatingAssistantClose")?.addEventListener("click", () => $("floatingAssistantPanel")?.classList.remove("open"));
+    renderAssistantMessages("floatingChatMessages");
+    $("floatingAssistantClose")?.addEventListener("click", closeFloatingAssistant);
+  }
+
+  function toggleFloatingAssistantSize() {
+    const panel = $("floatingAssistantPanel");
+    const button = $("floatingAssistantExpand");
+    if (!panel || !button) return;
+
+    panel.classList.add("open");
+    const expanded = panel.classList.toggle("expanded");
+    button.setAttribute("aria-label", expanded ? "Collapse conversation" : "Expand conversation");
+    const icon = button.querySelector("i");
+    if (icon) icon.setAttribute("data-lucide", expanded ? "minimize-2" : "maximize-2");
+    refreshIcons();
+    $("floatingChatMessages")?.scrollTo({ top: $("floatingChatMessages").scrollHeight, behavior: "smooth" });
+  }
+
+  function closeFloatingAssistant() {
+    const panel = $("floatingAssistantPanel");
+    const button = $("floatingAssistantExpand");
+    panel?.classList.remove("open", "expanded");
+    button?.setAttribute("aria-label", "Expand conversation");
+    const icon = button?.querySelector("i");
+    if (icon) icon.setAttribute("data-lucide", "maximize-2");
+    refreshIcons();
   }
 
   function renderDoctorUtilityPanels() {
@@ -1538,17 +1574,21 @@
 
   async function submitPatientQuestion(question) {
     appendChat("user", question);
+    savePatientChatMessage("user", question);
     const pending = appendChat("bot", uiText("Afia assistant is checking your care plan...", "\u0645\u0633\u0627\u0639\u062f \u0639\u0627\u0641\u064a\u0629 \u064a\u0631\u0627\u062c\u0639 \u062e\u0637\u062a\u0643 \u0627\u0644\u0639\u0644\u0627\u062c\u064a\u0629..."));
     const answer = await getPatientAiAnswer(question);
     updateChatMessage(pending, answer);
+    savePatientChatMessage("bot", answer);
   }
 
   async function submitFloatingQuestion(question) {
     $("floatingAssistantPanel")?.classList.add("open");
     appendFloatingChat("user", question);
+    savePatientChatMessage("user", question);
     const pending = appendFloatingChat("bot", uiText("Afia assistant is checking your care plan...", "\u0645\u0633\u0627\u0639\u062f \u0639\u0627\u0641\u064a\u0629 \u064a\u0631\u0627\u062c\u0639 \u062e\u0637\u062a\u0643 \u0627\u0644\u0639\u0644\u0627\u062c\u064a\u0629..."));
     const answer = await getPatientAiAnswer(question);
     updateChatMessage(pending, answer);
+    savePatientChatMessage("bot", answer);
   }
 
   async function getPatientAiAnswer(question) {
@@ -1604,26 +1644,30 @@
     const firstTimes = schedule.medication_events.slice(0, 2).map((event) => formatTime(event.scheduled_datetime.split("T")[1]));
     const followUp = latest.record.clinical_data.follow_up;
     const normalized = question.toLowerCase();
+    const asksMedicationTime = (normalized.includes("when") && normalized.includes("medication")) || (/متى|وقت/.test(normalized) && /دواء|دوائي|العلاج/.test(normalized));
+    const asksMissedDose = normalized.includes("miss") || normalized.includes("نسيت") || normalized.includes("جرعة");
+    const asksDiet = normalized.includes("fruit") || normalized.includes("eat") || normalized.includes("فاكه") || normalized.includes("أكل") || normalized.includes("اكل") || normalized.includes("طعام");
+    const asksAppointment = normalized.includes("appointment") || normalized.includes("موعد");
 
-    if (normalized.includes("when") && normalized.includes("medication")) {
+    if (asksMedicationTime) {
       return uiText(
         `You should take ${medication.drug_name} ${medication.dose_amount} ${medication.dose_unit} ${formatFrequency(medication.frequency)}: ${firstTimes.join(" and ")}, ${formatMealRelation(medication.meal_relation).toLowerCase()}.`,
         `موعد ${medication.drug_name} ${medication.dose_amount} ${medication.dose_unit}: ${firstTimes.join(" و ")}، ${formatMealRelation(medication.meal_relation)}.`
       );
     }
-    if (normalized.includes("miss")) {
+    if (asksMissedDose) {
       return uiText(
         "If you miss a dose, follow the instructions your doctor gave you. If you are unsure, contact your doctor before changing the schedule.",
         "إذا نسيت جرعة، اتبع تعليمات الطبيب. إذا لم تكن متأكدًا، تواصل مع الطبيب قبل تغيير الجدول."
       );
     }
-    if (normalized.includes("fruit") || normalized.includes("eat")) {
+    if (asksDiet) {
       return uiText(
         "Your documented plan says to avoid sugary drinks and high-carb foods. For specific diet changes, ask your doctor.",
         "خطتك الموثقة تنص على تجنب المشروبات السكرية والأطعمة عالية الكربوهيدرات. لأي تغيير غذائي محدد، اسأل الطبيب."
       );
     }
-    if (normalized.includes("appointment")) {
+    if (asksAppointment) {
       return uiText(
         `Your next appointment is ${formatFullDate(followUp.date)} at 10:30 AM.`,
         `موعدك القادم هو ${formatFullDate(followUp.date)} الساعة 10:30 ص.`
@@ -1657,6 +1701,42 @@
     if (!node) return;
     node.textContent = message;
     node.classList.add("chat-message-ready");
+  }
+
+  function getPatientChatHistory() {
+    const patient = getSelectedPatient();
+    const chats = readJson(STORAGE.chat, {});
+    return Array.isArray(chats[patient.id]) ? chats[patient.id] : [];
+  }
+
+  function savePatientChatMessage(role, message) {
+    const patient = getSelectedPatient();
+    const chats = readJson(STORAGE.chat, {});
+    const history = Array.isArray(chats[patient.id]) ? chats[patient.id] : [];
+    chats[patient.id] = [...history, { role, message, createdAt: new Date().toISOString() }].slice(-60);
+    writeJson(STORAGE.chat, chats);
+  }
+
+  function renderAssistantMessages(containerId) {
+    const container = $(containerId);
+    if (!container) return;
+
+    const patient = getSelectedPatient();
+    const history = getPatientChatHistory();
+    container.innerHTML = history.length
+      ? history.map((item) => `<div class="chat-message ${escapeHtml(item.role)}">${escapeHtml(item.message)}</div>`).join("")
+      : `<div class="chat-message bot">${escapeHtml(uiText(`Hello ${patient.fullName}. How can I help you today?`, `مرحبًا ${patient.fullName}. كيف أستطيع مساعدتك اليوم؟`))}</div>`;
+    container.scrollTo({ top: container.scrollHeight, behavior: "auto" });
+  }
+
+  function clearPatientChat() {
+    const patient = getSelectedPatient();
+    const chats = readJson(STORAGE.chat, {});
+    delete chats[patient.id];
+    writeJson(STORAGE.chat, chats);
+    renderAssistantMessages("chatMessages");
+    renderAssistantMessages("floatingChatMessages");
+    showToast(uiText("Conversation cleared", "تم مسح المحادثة"), uiText("The assistant conversation was reset.", "تمت إعادة محادثة المساعد."), "success");
   }
 
   function handleValidationClick(event) {
