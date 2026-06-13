@@ -277,7 +277,9 @@
     });
 
     document.querySelectorAll('.mic-button').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
         startDictation(btn.dataset.micTarget, btn);
       });
     });
@@ -286,7 +288,7 @@
   let activeRecognition = null;
   let activeDictation = null;
 
-  function startDictation(targetId, btnElement) {
+  async function startDictation(targetId, btnElement) {
     if (activeDictation) {
       stopDictation();
       return;
@@ -295,8 +297,31 @@
     const targetInput = $(targetId);
     if (!targetInput) return;
 
-    if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
-      showToast("Not Supported", "Speech recognition is not supported in this browser.", "warning");
+    if (!supportsSpeechRecognition()) {
+      showToast(
+        uiText("Mic not supported", "الميكروفون غير مدعوم"),
+        uiText("Speech dictation works in Chrome or Edge only.", "الإملاء الصوتي يعمل في Chrome أو Edge فقط."),
+        "warning"
+      );
+      return;
+    }
+
+    if (!canUseMicrophoneOnThisOrigin()) {
+      showToast(
+        uiText("Open with localhost", "افتح التطبيق عبر localhost"),
+        uiText("Microphone access needs localhost or HTTPS. Run the app server and open http://localhost:3000.", "صلاحية الميكروفون تحتاج localhost أو HTTPS. شغل الخادم وافتح http://localhost:3000."),
+        "warning"
+      );
+      return;
+    }
+
+    const permission = await ensureMicrophonePermission();
+    if (!permission.ok) {
+      showToast(
+        uiText("Mic blocked", "الميكروفون محظور"),
+        permission.message,
+        "warning"
+      );
       return;
     }
 
@@ -320,9 +345,14 @@
     activeDictation = session;
     activeRecognition = recognition;
     btnElement.classList.add("mic-listening");
+    btnElement.setAttribute("aria-pressed", "true");
 
-    const langName = recognition.lang === "ar-SA" ? "Arabic" : "English";
-    showToast("Listening", `Speak in ${langName}. Click the microphone again to stop.`, "success");
+    const langName = recognition.lang === "ar-SA" ? uiText("Arabic", "العربية") : uiText("English", "الإنجليزية");
+    showToast(
+      uiText("Listening", "جاري الاستماع"),
+      uiText(`Speak in ${langName}. Click the microphone again to stop.`, `تحدث باللغة ${langName}. اضغط الميكروفون مرة أخرى للإيقاف.`),
+      "success"
+    );
 
     recognition.onresult = function(event) {
       let interimText = "";
@@ -339,6 +369,7 @@
       }
 
       targetInput.value = joinText(session.baseText, session.committedText, interimText);
+      targetInput.dispatchEvent(new Event("input", { bubbles: true }));
     };
 
     recognition.onend = function() {
@@ -354,24 +385,30 @@
           recognition.start();
         } catch {
           finishDictationSession(session);
-          showToast("Mic Error", "Dictation stopped unexpectedly. Click the microphone to try again.", "warning");
+          showToast(
+            uiText("Mic stopped", "توقف الميكروفون"),
+            uiText("Dictation stopped unexpectedly. Click the microphone to try again.", "توقف الإملاء بشكل غير متوقع. اضغط الميكروفون للمحاولة مرة أخرى."),
+            "warning"
+          );
         }
       }, 180);
     };
 
     recognition.onerror = function(event) {
-      const recoverable = event.error === "no-speech" || event.error === "aborted";
-      if (!recoverable) {
-        session.shouldContinue = false;
-        showToast("Mic Error", "Could not pick up audio. Allow microphone access.", "warning");
-      }
+      if (event.error === "aborted" && !session.shouldContinue) return;
+      session.shouldContinue = false;
+      showToast(uiText("Mic error", "مشكلة في الميكروفون"), speechErrorMessage(event.error), "warning");
     };
 
     try {
       recognition.start();
     } catch {
       finishDictationSession(session);
-      showToast("Mic Error", "Could not start speech recognition.", "warning");
+      showToast(
+        uiText("Mic error", "مشكلة في الميكروفون"),
+        uiText("Could not start speech recognition. Refresh and allow microphone access.", "تعذر بدء الإملاء الصوتي. حدث الصفحة واسمح بصلاحية الميكروفون."),
+        "warning"
+      );
     }
   }
 
@@ -393,11 +430,57 @@
     if (session.restartTimer) window.clearTimeout(session.restartTimer);
     session.targetInput.value = session.targetInput.value.trim();
     session.button.classList.remove("mic-listening");
+    session.button.setAttribute("aria-pressed", "false");
 
     if (activeDictation === session) {
       activeDictation = null;
       activeRecognition = null;
     }
+  }
+
+  function supportsSpeechRecognition() {
+    return "webkitSpeechRecognition" in window || "SpeechRecognition" in window;
+  }
+
+  function canUseMicrophoneOnThisOrigin() {
+    const host = window.location.hostname;
+    const isLocalhost = host === "localhost" || host === "127.0.0.1" || host === "::1";
+    return window.isSecureContext || isLocalhost;
+  }
+
+  async function ensureMicrophonePermission() {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      return { ok: true };
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach((track) => track.stop());
+      return { ok: true };
+    } catch (error) {
+      const denied = error?.name === "NotAllowedError" || error?.name === "SecurityError";
+      const missing = error?.name === "NotFoundError" || error?.name === "DevicesNotFoundError";
+      return {
+        ok: false,
+        message: denied
+          ? uiText("Allow microphone access from the browser address bar, then click the mic again.", "اسمح بالميكروفون من شريط عنوان المتصفح، ثم اضغط الميكروفون مرة أخرى.")
+          : missing
+            ? uiText("No microphone device was found on this computer.", "لم يتم العثور على ميكروفون في هذا الجهاز.")
+            : uiText("The browser could not access the microphone.", "تعذر على المتصفح الوصول إلى الميكروفون."),
+      };
+    }
+  }
+
+  function speechErrorMessage(error) {
+    const messages = {
+      "not-allowed": uiText("Microphone permission was denied. Allow it from the browser address bar.", "تم رفض صلاحية الميكروفون. اسمح بها من شريط عنوان المتصفح."),
+      "service-not-allowed": uiText("The browser blocked the speech recognition service.", "المتصفح منع خدمة التعرف على الصوت."),
+      "audio-capture": uiText("No working microphone was detected.", "لم يتم العثور على ميكروفون يعمل."),
+      network: uiText("Speech recognition needs an internet connection in this browser.", "التعرف على الصوت يحتاج اتصال إنترنت في هذا المتصفح."),
+      "no-speech": uiText("I did not hear anything. Try again and speak closer to the microphone.", "لم أسمع أي صوت. حاول مرة أخرى وتحدث بالقرب من الميكروفون."),
+      "language-not-supported": uiText("This speech language is not supported by the browser.", "لغة الإملاء هذه غير مدعومة في المتصفح."),
+    };
+    return messages[error] || uiText("Could not start dictation. Check browser microphone permission.", "تعذر بدء الإملاء. تحقق من صلاحية الميكروفون في المتصفح.");
   }
 
   function joinText(...parts) {
