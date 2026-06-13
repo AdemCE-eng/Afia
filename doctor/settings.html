@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="ar" dir="rtl">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Healthium | Settings</title>
+    <title>عافية | الإعدادات</title>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <link rel="stylesheet" href="../styles.css" />
   </head>
@@ -11,131 +11,133 @@
     <main class="portal-shell doctor-shell">
       <aside class="portal-sidebar">
         <div class="brand">
-          <div class="brand-mark"><i data-lucide="heart-pulse"></i></div>
+          <div class="brand-mark" aria-hidden="true"></div>
           <div>
-            <div class="brand-name">Healthium</div>
-            <div id="doctorLabel" class="brand-subtitle" data-i18n="doctor.workspace">Doctor workspace</div>
+            <div class="brand-name">عافية</div>
+            <div id="doctorLabel" class="brand-subtitle">مساحة الطبيب</div>
           </div>
         </div>
+
         <nav class="side-nav" aria-label="Doctor navigation">
-          <a class="nav-item" href="./dashboard.html"><i data-lucide="home"></i><span data-i18n="nav.dashboard">Dashboard</span></a>
-          <a class="nav-item" href="./appointments.html"><i data-lucide="calendar-days"></i><span data-i18n="nav.appointments">Appointments</span></a>
-          <a class="nav-item" href="./reports.html"><i data-lucide="bar-chart-3"></i><span data-i18n="nav.reports">Reports</span></a>
-          <a class="nav-item active" href="./settings.html"><i data-lucide="settings"></i><span data-i18n="nav.settings">Settings</span></a>
+          <a class="nav-item" href="./dashboard.html"><i data-lucide="home"></i><span>الرئيسية</span></a>
+          <a class="nav-item" href="./appointments.html"><i data-lucide="calendar-days"></i><span>المواعيد</span></a>
+          <a class="nav-item" href="./reports.html"><i data-lucide="bar-chart-3"></i><span>التقارير</span></a>
+          <a class="nav-item active" href="./settings.html"><i data-lucide="settings"></i><span>الإعدادات</span></a>
         </nav>
-        <button id="logoutButton" class="nav-item logout-item" type="button"><i data-lucide="log-out"></i><span data-i18n="nav.logout">Log out</span></button>
+
+        <button id="logoutButton" class="nav-item logout-item" type="button"><i data-lucide="log-out"></i><span>تسجيل الخروج</span></button>
       </aside>
 
       <section class="settings-page-main">
         <section class="patient-card settings-card">
           <header class="settings-page-header">
-            <h1 class="page-title" data-i18n="settings.title">Settings</h1>
-            <p class="page-caption" data-i18n="settings.doctor_caption">Manage your profile, AI preferences, and workspace.</p>
+            <h1 class="page-title">الإعدادات</h1>
+            <p class="page-caption">إدارة حساب الطبيب وتفضيلات المساعد الذكي.</p>
           </header>
 
           <div class="settings-content">
             <div class="settings-profile-banner">
               <div class="avatar">K</div>
               <div class="settings-profile-copy">
-                <strong>Dr. Khalid</strong>
-                <span>Internal Medicine - Healthium Demo Clinic</span>
+                <strong>د. خالد</strong>
+                <span>طب باطني - عيادة عافية التجريبية</span>
               </div>
-              <button class="settings-btn" type="button" onclick="notify('Profile editing coming in the full release.')" data-i18n="settings.edit_profile">Edit Profile</button>
+              <button class="settings-btn" type="button" onclick="notify('تعديل الملف الشخصي سيكون متاحًا لاحقًا.')">تعديل الملف</button>
             </div>
 
             <section class="settings-section">
-              <h2 class="settings-section-title" data-i18n="settings.account">Account</h2>
+              <h2 class="settings-section-title">الحساب</h2>
               <div class="settings-group">
                 <div class="settings-row">
-                  <div class="settings-row-label"><strong data-i18n="settings.doctor_id">Doctor ID</strong><span>dr.khalid</span></div>
-                  <button class="settings-btn" type="button" onclick="notify('ID cannot be changed in demo mode.')" data-i18n="settings.locked">Locked</button>
+                  <div class="settings-row-label"><strong>معرف الطبيب</strong><span>dr.khalid</span></div>
+                  <button class="settings-btn" type="button" onclick="notify('لا يمكن تغيير المعرف في وضع التجربة.')">مغلق</button>
                 </div>
                 <div class="settings-row">
-                  <div class="settings-row-label"><strong data-i18n="settings.email">Email</strong><span>dr.khalid@healthium.clinic</span></div>
-                  <button class="settings-btn" type="button" onclick="notify('Email editing coming soon.')" data-i18n="settings.edit">Edit</button>
+                  <div class="settings-row-label"><strong>البريد الإلكتروني</strong><span>dr.khalid@afia.clinic</span></div>
+                  <button class="settings-btn" type="button" onclick="notify('تعديل البريد سيكون متاحًا لاحقًا.')">تعديل</button>
                 </div>
                 <div class="settings-row">
-                  <div class="settings-row-label"><strong data-i18n="settings.password">Password</strong><span data-i18n="settings.password_hint">Last changed: 90 days ago</span></div>
-                  <button class="settings-btn" type="button" onclick="notify('Password reset coming soon.')" data-i18n="settings.change">Change</button>
+                  <div class="settings-row-label"><strong>كلمة المرور</strong><span>آخر تغيير قبل 90 يومًا</span></div>
+                  <button class="settings-btn" type="button" onclick="notify('إعادة تعيين كلمة المرور ستكون متاحة لاحقًا.')">تغيير</button>
                 </div>
               </div>
             </section>
 
             <section class="settings-section">
-              <h2 class="settings-section-title" data-i18n="settings.language_display">Language &amp; Display</h2>
+              <h2 class="settings-section-title">اللغة والعرض</h2>
               <div class="settings-group">
                 <div class="settings-row language-setting-row">
                   <div class="settings-row-label">
-                    <strong data-i18n="settings.app_language">App Language</strong>
-                    <span data-i18n="settings.language_hint">Choose your preferred display language</span>
+                    <strong>لغة التطبيق</strong>
+                    <span>اختر لغة واجهة المستخدم</span>
                   </div>
                   <div class="language-toggle" aria-label="App language">
-                    <button class="language-option active" type="button" data-set-language="en" data-i18n="settings.english">English</button>
-                    <button class="language-option" type="button" data-set-language="ar" data-i18n="settings.arabic">Arabic</button>
+                    <button class="language-option" type="button" data-set-language="en">English</button>
+                    <button class="language-option active" type="button" data-set-language="ar">العربية</button>
                   </div>
                 </div>
               </div>
             </section>
 
             <section class="settings-section">
-              <h2 class="settings-section-title" data-i18n="settings.ai">Agentic AI Preferences</h2>
+              <h2 class="settings-section-title">تفضيلات المساعد الذكي</h2>
               <div class="settings-group">
                 <div class="settings-row">
                   <div class="settings-row-label">
-                    <strong data-i18n="settings.summary_language">Default Summary Language</strong>
-                    <span data-i18n="settings.summary_language_hint">Language used when generating patient summaries</span>
+                    <strong>لغة ملخص المريض</strong>
+                    <span>اللغة المستخدمة عند إنشاء الملخصات العلاجية</span>
                   </div>
                 </div>
                 <div class="ai-choice-grid">
                   <button class="ai-option selected" type="button" onclick="selectAI(this)">
-                    <span class="ai-dot"></span><span><strong data-i18n="settings.bilingual">Bilingual</strong><span data-i18n="settings.bilingual_hint">Summary shown in English and Arabic</span></span>
+                    <span class="ai-dot"></span><span><strong>العربية</strong><span>ملخص واضح للمريض باللغة العربية</span></span>
                   </button>
                   <button class="ai-option" type="button" onclick="selectAI(this)">
-                    <span class="ai-dot"></span><span><strong data-i18n="settings.english_only">English Only</strong><span data-i18n="settings.english_only_hint">Summary in English</span></span>
+                    <span class="ai-dot"></span><span><strong>العربية والإنجليزية</strong><span>عرض مزدوج عند الحاجة الطبية</span></span>
                   </button>
                   <button class="ai-option" type="button" onclick="selectAI(this)">
-                    <span class="ai-dot"></span><span><strong data-i18n="settings.arabic_only">Arabic Only</strong><span data-i18n="settings.arabic_only_hint">Summary in Arabic</span></span>
+                    <span class="ai-dot"></span><span><strong>الإنجليزية فقط</strong><span>للمراجعة الداخلية فقط</span></span>
                   </button>
                 </div>
                 <div class="settings-row">
-                  <div class="settings-row-label"><strong data-i18n="settings.risk_sensitivity">Risk Detection Sensitivity</strong><span data-i18n="settings.risk_hint">Alert threshold for potential drug interactions</span></div>
+                  <div class="settings-row-label"><strong>حساسية تنبيهات المخاطر</strong><span>مستوى التنبيه عند احتمال تعارض دوائي</span></div>
                   <select class="settings-select">
-                    <option data-i18n="settings.risk_high">High (recommended)</option>
-                    <option data-i18n="settings.risk_medium">Medium</option>
-                    <option data-i18n="settings.risk_low">Low</option>
+                    <option>عالية (موصى بها)</option>
+                    <option>متوسطة</option>
+                    <option>منخفضة</option>
                   </select>
                 </div>
               </div>
             </section>
 
             <section class="settings-section">
-              <h2 class="settings-section-title" data-i18n="settings.notifications">Notifications</h2>
+              <h2 class="settings-section-title">الإشعارات</h2>
               <div class="settings-group">
                 <div class="settings-row">
-                  <div class="settings-row-label"><strong data-i18n="settings.high_risk_alerts">High-Risk Prescription Alerts</strong><span data-i18n="settings.high_risk_hint">Immediate warning when AI flags a risk</span></div>
+                  <div class="settings-row-label"><strong>تنبيهات الوصفات عالية الخطورة</strong><span>تنبيه فوري عندما يرصد المساعد خطرًا محتملاً</span></div>
                   <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
                 </div>
                 <div class="settings-row">
-                  <div class="settings-row-label"><strong data-i18n="settings.appointment_reminders">Appointment Reminders</strong><span data-i18n="settings.appointment_reminders_doctor_hint">Email digest each morning with today's schedule</span></div>
+                  <div class="settings-row-label"><strong>تذكير المواعيد</strong><span>ملخص صباحي بزيارات اليوم</span></div>
                   <label class="toggle-switch"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
                 </div>
                 <div class="settings-row">
-                  <div class="settings-row-label"><strong data-i18n="settings.patient_updates">Patient Plan Updates</strong><span data-i18n="settings.patient_updates_hint">Notify when a patient acknowledges their plan</span></div>
+                  <div class="settings-row-label"><strong>تحديثات خطة المريض</strong><span>تنبيه عند تأكيد المريض استلام الخطة</span></div>
                   <label class="toggle-switch"><input type="checkbox" /><span class="toggle-slider"></span></label>
                 </div>
               </div>
             </section>
 
             <section class="settings-section">
-              <h2 class="settings-section-title" data-i18n="settings.data">Data</h2>
+              <h2 class="settings-section-title">بيانات التجربة</h2>
               <div class="settings-group">
                 <div class="settings-row">
-                  <div class="settings-row-label"><strong data-i18n="settings.reset">Reset Demo Data</strong><span data-i18n="settings.reset_hint">Restore all patients to default demo state</span></div>
-                  <button id="resetDemoButton" class="settings-btn danger" type="button" data-i18n="settings.reset_button">Reset Demo</button>
+                  <div class="settings-row-label"><strong>إعادة بيانات التجربة</strong><span>إرجاع المرضى والخطط إلى الحالة الافتراضية</span></div>
+                  <button id="resetDemoButton" class="settings-btn danger" type="button">إعادة التجربة</button>
                 </div>
                 <div class="settings-row">
-                  <div class="settings-row-label"><strong data-i18n="settings.export_all">Export All Data</strong><span data-i18n="settings.export_all_hint">Download your patient records as JSON</span></div>
-                  <button class="settings-btn" type="button" onclick="notify('Export coming in the full release.')" data-i18n="settings.export">Export</button>
+                  <div class="settings-row-label"><strong>تصدير البيانات</strong><span>تنزيل سجلات المرضى بصيغة JSON لاحقًا</span></div>
+                  <button class="settings-btn" type="button" onclick="notify('التصدير سيكون متاحًا في النسخة الكاملة.')">تصدير</button>
                 </div>
               </div>
             </section>
@@ -158,6 +160,7 @@
         host.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
       }
+
       function selectAI(element) {
         document.querySelectorAll(".ai-option").forEach((option) => option.classList.remove("selected"));
         element.classList.add("selected");

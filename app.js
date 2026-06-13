@@ -178,14 +178,14 @@
     try {
       const permission = await Notification.requestPermission();
       showToast(
-        permission === "granted" ? "Notifications enabled" : "Notifications unavailable",
+        permission === "granted" ? uiText("Notifications enabled", "تم تفعيل الإشعارات") : uiText("Notifications unavailable", "الإشعارات غير متاحة"),
         permission === "granted"
-          ? "Healthium can show treatment reminders while the app is open."
-          : "Browser notification permission was not granted.",
+          ? uiText("Afia can show treatment reminders while the app is open.", "يمكن لعافية عرض تذكيرات العلاج أثناء فتح التطبيق.")
+          : uiText("Browser notification permission was not granted.", "لم يمنح المتصفح صلاحية الإشعارات."),
         permission === "granted" ? "success" : "warning"
       );
     } catch {
-      showToast("Notifications unavailable", "This browser could not enable notifications.", "warning");
+      showToast(uiText("Notifications unavailable", "الإشعارات غير متاحة"), uiText("This browser could not enable notifications.", "تعذر على المتصفح تفعيل الإشعارات."), "warning");
     }
   }
 
@@ -207,8 +207,8 @@
         if (delay > 2147483647) return;
 
         window.setTimeout(() => {
-          new Notification("Healthium medication reminder", {
-            body: `Take ${event.medication_name} ${event.dose_display}.`,
+          new Notification(uiText("Afia medication reminder", "تذكير دواء من عافية"), {
+            body: uiText(`Take ${event.medication_name} ${event.dose_display}.`, `حان موعد ${event.medication_name} ${event.dose_display}.`),
             tag: event.event_id,
           });
         }, delay);
@@ -227,7 +227,7 @@
         document.querySelectorAll("[data-login-role]").forEach((item) => {
           item.classList.toggle("active", item.dataset.loginRole === state.loginRole);
         });
-        setText("loginModeLabel", state.loginRole === "doctor" ? "Doctor workspace" : "Patient portal");
+        setText("loginModeLabel", state.loginRole === "doctor" ? uiText("Doctor workspace", "مساحة الطبيب") : uiText("Patient portal", "بوابة المريض"));
       });
     });
   }
@@ -452,7 +452,7 @@
 
     if (!doctorId || !password) {
       const error = $("loginError");
-      error.textContent = "Enter the demo Doctor ID and password.";
+      error.textContent = uiText("Enter the demo Doctor ID and password.", "أدخل معرف الطبيب وكلمة مرور التجربة.");
       error.classList.remove("hidden");
       return;
     }
@@ -484,7 +484,7 @@
 
     if (page === "dashboard") renderDashboardPage();
     if (page === "consultation") renderConsultationPage();
-    showToast("Demo reset", "Patient data returned to the clean demo state.", "success");
+    showToast(uiText("Demo reset", "تمت إعادة التجربة"), uiText("Patient data returned to the clean demo state.", "تمت إعادة بيانات المرضى إلى الحالة التجريبية الأصلية."), "success");
   }
 
   function handleAddPatient(event) {
@@ -492,7 +492,7 @@
     const patientName = $("newPatientName").value.trim();
 
     if (!patientName) {
-      showToast("Missing name", "Add the patient name first.", "warning");
+      showToast(uiText("Missing name", "الاسم مطلوب"), uiText("Add the patient name first.", "أضف اسم المريض أولًا."), "warning");
       return;
     }
 
@@ -514,7 +514,7 @@
     event.currentTarget.reset();
     event.currentTarget.classList.add("hidden");
     renderDashboardPage();
-    showToast("Patient added", `${patient.fullName} is ready for medical info.`, "success");
+    showToast(uiText("Patient added", "تمت إضافة المريض"), uiText(`${patient.fullName} is ready for medical info.`, `${patient.fullName} جاهز لإدخال المعلومات الطبية.`), "success");
   }
 
   async function handleVisitSubmit(event) {
@@ -526,8 +526,8 @@
     state.lastSchedule = null;
     state.lastIssues = [];
     clearPlanOutputs();
-    startProcessing("Creating plan");
-    setPipelineStatus("Checking details", "status-chip");
+    startProcessing(uiText("Creating plan", "جاري إنشاء الخطة"));
+    setPipelineStatus(uiText("Checking details", "مراجعة البيانات"), "status-chip");
     await wait(260);
 
     const validation = validateIntake(collectVisitInput());
@@ -536,25 +536,30 @@
     if ($("jsonOutput")) $("jsonOutput").textContent = JSON.stringify(validation.record, null, 2);
 
     if (validation.validation_status !== "complete") {
-      setPipelineStatus("Needs details", "status-chip warning");
+      setPipelineStatus(uiText("Needs details", "تحتاج بيانات"), "status-chip warning");
       clearPlanOutputs({ keepValidation: true, keepJson: true, keepStatus: true });
-      showToast("Validation needs attention", "Click an issue to jump to the missing field.", "warning");
+      showToast(uiText("Validation needs attention", "تحتاج البيانات إلى مراجعة"), uiText("Click an issue to jump to the missing field.", "اضغط على التنبيه للانتقال إلى الحقل المطلوب."), "warning");
       finishProcessing();
       return;
     }
 
-    setPipelineStatus("Generating AI Plan", "status-chip");
+    setPipelineStatus(uiText("Generating AI Plan", "جاري إنشاء الخطة الذكية"), "status-chip");
     
     let summary;
     let risk;
+    let aiTimeout;
     try {
+      const controller = new AbortController();
+      aiTimeout = window.setTimeout(() => controller.abort(), 3200);
       const response = await fetch(`${getApiBaseUrl()}/api/generate-plan`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ record: validation.record })
+        body: JSON.stringify({ record: validation.record }),
+        signal: controller.signal
       });
+      window.clearTimeout(aiTimeout);
       
       if (!response.ok) {
         throw new Error('Failed to fetch AI plan');
@@ -564,8 +569,9 @@
       summary = aiData.summary;
       risk = aiData.risk;
     } catch (error) {
+      if (aiTimeout) window.clearTimeout(aiTimeout);
       console.error(error);
-      showToast("AI Error", "Failed to connect to the AI Agent backend. Falling back to local generation.", "warning");
+      showToast(uiText("AI Error", "تعذر الاتصال بالذكاء الاصطناعي"), uiText("Failed to connect to the AI Agent backend. Falling back to local generation.", "سيتم استخدام الإنشاء المحلي مؤقتًا."), "warning");
       summary = generatePatientSummary(validation.record);
     }
 
@@ -574,7 +580,7 @@
 
     // If high risk, alert the doctor
     if (risk && risk.has_risk && risk.risk_level === 'high') {
-      showToast("Critical Warning", "High risk detected in medication plan: " + risk.risk_description, "warning");
+      showToast(uiText("Critical Warning", "تنبيه مهم"), uiText("High risk detected in medication plan: ", "تم اكتشاف خطر في الخطة الدوائية: ") + risk.risk_description, "warning");
     }
 
     const visit = {
@@ -599,8 +605,8 @@
 
     renderPlanOutputs(validation.record, summary, schedule);
     enablePatientViewLink();
-    setPipelineStatus("Generated by Agent AI", "status-chip ready");
-    showToast("Patient plan ready", "The AI summary and reminder schedule are ready.", "success");
+    setPipelineStatus(uiText("Generated by Agent AI", "تم الإنشاء بالذكاء الاصطناعي"), "status-chip ready");
+    showToast(uiText("Patient plan ready", "خطة المريض جاهزة"), uiText("The AI summary and reminder schedule are ready.", "تم إنشاء الملخص وجدول التذكيرات."), "success");
     finishProcessing();
   }
 
@@ -672,7 +678,10 @@
   function renderConsultationPage() {
     const patient = getSelectedPatient();
     setText("recordPatientName", patient.fullName);
-    setText("selectedPatientLine", `${patient.age || "Age not set"} years - ${patient.gender || "Not set"} - Patient ID: ${patient.id}`);
+    setText("selectedPatientLine", uiText(
+      `${patient.age || "Age not set"} years - ${patient.gender || "Not set"} - Patient ID: ${patient.id}`,
+      `${patient.age || "غير محدد"} سنة - ${translateGender(patient.gender)} - رقم المريض: ${patient.id}`
+    ));
     setText("recordAvatar", initials(patient.fullName));
     $("recordAvatar")?.classList.toggle("female", patient.gender === "Female");
     loadSampleVisit({ silent: true });
@@ -698,10 +707,10 @@
             <div class="avatar ${patient.gender === "Female" ? "female" : ""}">${escapeHtml(initials(patient.fullName))}</div>
             <div>
               <div class="patient-name">${escapeHtml(patient.fullName)}</div>
-              <div class="patient-meta">${escapeHtml(patient.age || "Age not set")} years - ${escapeHtml(patient.gender || "Not set")}</div>
+              <div class="patient-meta">${escapeHtml(uiText(`${patient.age || "Age not set"} years - ${patient.gender || "Not set"}`, `${patient.age || "غير محدد"} سنة - ${translateGender(patient.gender)}`))}</div>
             </div>
-            <div class="condition-cell">${escapeHtml(patient.condition || "New consultation")}</div>
-            <div class="next-visit${today ? " today" : ""}">Next Visit: ${today ? "Today" : formatFullDate(patient.nextVisit)}</div>
+            <div class="condition-cell">${escapeHtml(translateCondition(patient.condition) || uiText("New consultation", "استشارة جديدة"))}</div>
+            <div class="next-visit${today ? " today" : ""}">${escapeHtml(uiText("Next Visit", "الزيارة القادمة"))}: ${today ? escapeHtml(uiText("Today", "اليوم")) : formatFullDate(patient.nextVisit)}</div>
             <i data-lucide="chevron-right"></i>
           </button>
         `;
@@ -734,12 +743,17 @@
           <div class="text-xs font-bold text-slate-500">${escapeHtml(patient.id)}</div>
         </div>
       </div>
-      ${overviewItem("Condition", patient.condition)}
-      ${overviewItem("Profile", `${patient.age || "Age not set"} years - ${patient.gender || "Not set"}`)}
-      ${overviewItem("Next visit", formatFullDate(patient.nextVisit))}
-      ${overviewItem("Care plans", patient.visits.length)}
+      ${overviewItem(uiText("Condition", "الحالة"), translateCondition(patient.condition))}
+      ${overviewItem(uiText("Profile", "الملف"), uiText(`${patient.age || "Age not set"} years - ${patient.gender || "Not set"}`, `${patient.age || "غير محدد"} سنة - ${translateGender(patient.gender)}`))}
+      ${overviewItem(uiText("Next visit", "الزيارة القادمة"), formatFullDate(patient.nextVisit))}
+      ${overviewItem(uiText("Care plans", "الخطط العلاجية"), patient.visits.length)}
     `;
-    setText("selectedPatientLine", `${patient.fullName} - ${patient.condition}`);
+    setText("selectedPatientLine", "");
+    const selectedCard = document.querySelector(".selected-care-card");
+    selectedCard?.classList.remove("selected-card-updated");
+    window.requestAnimationFrame(() => {
+      selectedCard?.classList.add("selected-card-updated");
+    });
   }
 
   function renderDashboardMetrics() {
@@ -754,7 +768,7 @@
     return `
       <div class="overview-item">
         <div class="overview-label">${escapeHtml(label)}</div>
-        <div class="overview-value">${escapeHtml(value || "Not set")}</div>
+        <div class="overview-value">${escapeHtml(value || uiText("Not set", "غير محدد"))}</div>
       </div>
     `;
   }
@@ -792,12 +806,12 @@
       issues.push({ field, severity: "critical", message, requested_clarification: message });
     };
 
-    if (!input.diagnosis) addIssue("clinical_data.diagnosis.text", "Diagnosis or condition is required.");
-    if (!input.medication.drug_name) addIssue("clinical_data.medications[0].drug_name", "Medication name is required.");
-    if (!input.medication.dose_amount) addIssue("clinical_data.medications[0].dose_amount", "Dose amount is required.");
-    if (!input.medication.frequency) addIssue("clinical_data.medications[0].frequency", "Medication frequency is required.");
-    if (!input.medication.duration_value) addIssue("clinical_data.medications[0].duration.value", "Treatment duration is required.");
-    if (input.follow_up.needed && !input.follow_up.date) addIssue("clinical_data.follow_up.date", "Follow-up date is required.");
+    if (!input.diagnosis) addIssue("clinical_data.diagnosis.text", uiText("Diagnosis or condition is required.", "التشخيص أو الحالة مطلوب."));
+    if (!input.medication.drug_name) addIssue("clinical_data.medications[0].drug_name", uiText("Medication name is required.", "اسم الدواء مطلوب."));
+    if (!input.medication.dose_amount) addIssue("clinical_data.medications[0].dose_amount", uiText("Dose amount is required.", "الجرعة مطلوبة."));
+    if (!input.medication.frequency) addIssue("clinical_data.medications[0].frequency", uiText("Medication frequency is required.", "تكرار الدواء مطلوب."));
+    if (!input.medication.duration_value) addIssue("clinical_data.medications[0].duration.value", uiText("Treatment duration is required.", "مدة العلاج مطلوبة."));
+    if (input.follow_up.needed && !input.follow_up.date) addIssue("clinical_data.follow_up.date", uiText("Follow-up date is required.", "موعد المتابعة مطلوب."));
 
     const status = issues.length ? "needs_clarification" : "complete";
     return {
@@ -823,7 +837,7 @@
         physician_id: state.session?.doctorId || "dr.khalid",
         physician_name: state.session?.doctorName || "Dr. Khalid",
         visit_date: input.visitDate,
-        clinic: "Healthium Demo Clinic",
+        clinic: uiText("Afia Demo Clinic", "عيادة عافية التجريبية"),
       },
       clinical_data: {
         diagnosis: {
@@ -869,26 +883,62 @@
   }
 
   function generatePatientSummary(record) {
-    const patientName = record.patient.full_name || "The patient";
-    const diagnosis = record.clinical_data.diagnosis.text || "the documented condition";
+    const patientName = record.patient.full_name || uiText("The patient", "المريض");
+    const diagnosis = translateCondition(record.clinical_data.diagnosis.text) || uiText("the documented condition", "الحالة الموثقة");
     const medication = record.clinical_data.medications[0];
     const doseText = `${medication.dose_amount} ${medication.dose_unit}`.trim();
     const instructions = record.clinical_data.care_instructions.length
-      ? record.clinical_data.care_instructions
-      : ["Take medications as prescribed."];
-    const labs = record.clinical_data.lab_tests.map((test) => test.test_name);
+      ? record.clinical_data.care_instructions.map(translateInstruction)
+      : [uiText("Take medications as prescribed.", "تناول الأدوية حسب وصف الطبيب.")];
+    const labs = record.clinical_data.lab_tests.map((test) => translateLabName(test.test_name));
     const followUp = record.clinical_data.follow_up;
 
     return {
-      language: "en",
-      condition_summary: `${patientName} has ${diagnosis}. The treatment plan includes ${medication.drug_name}, lifestyle instructions, and follow-up monitoring. Follow the plan carefully and contact the doctor if symptoms change.`,
-      medication_plan: [`${medication.drug_name} ${doseText} ${formatFrequency(medication.frequency)}, ${formatMealRelation(medication.meal_relation).toLowerCase()}.`],
-      important_instructions: ["Take medications as prescribed.", ...instructions],
-      lab_tests: labs.length ? labs.map((test) => `Complete ${test}.`) : ["No lab tests were documented for this visit."],
+      language: uiText("en", "ar"),
+      condition_summary: uiText(
+        `${patientName} has ${diagnosis}. The treatment plan includes ${medication.drug_name}, lifestyle instructions, and follow-up monitoring. Follow the plan carefully and contact the doctor if symptoms change.`,
+        `${patientName} لديه حالة ${diagnosis}. تشمل الخطة العلاجية دواء ${medication.drug_name} وتعليمات يومية ومتابعة مع الطبيب. اتبع الخطة كما هي، وتواصل مع الطبيب إذا تغيرت الأعراض.`
+      ),
+      medication_plan: [uiText(
+        `${medication.drug_name} ${doseText} ${formatFrequency(medication.frequency)}, ${formatMealRelation(medication.meal_relation).toLowerCase()}.`,
+        `${medication.drug_name} ${doseText} ${formatFrequency(medication.frequency)}، ${formatMealRelation(medication.meal_relation)}.`
+      )],
+      important_instructions: [uiText("Take medications as prescribed.", "تناول الأدوية حسب وصف الطبيب."), ...instructions],
+      lab_tests: labs.length ? labs.map((test) => uiText(`Complete ${test}.`, `إجراء ${test}.`)) : [uiText("No lab tests were documented for this visit.", "لم يتم توثيق تحاليل لهذه الزيارة.")],
       appointments: followUp.needed
-        ? [`Follow-up: ${formatFullDate(followUp.date)}${followUp.reason ? `, reason: ${followUp.reason}` : ""}.`]
-        : ["No follow-up appointment was documented."],
+        ? [uiText(`Follow-up: ${formatFullDate(followUp.date)}${followUp.reason ? `, reason: ${followUp.reason}` : ""}.`, `المتابعة: ${formatFullDate(followUp.date)}${followUp.reason ? `، السبب: ${followUp.reason}` : ""}.`)]
+        : [uiText("No follow-up appointment was documented.", "لم يتم توثيق موعد متابعة.")],
     };
+  }
+
+  function localizeSummary(summary, record) {
+    if (window.HealthiumI18n?.getLanguage?.() !== "ar") return summary;
+    if (!summary) return generatePatientSummary(record);
+
+    const fallback = generatePatientSummary(record);
+    const conditionSummary = containsArabic(summary.condition_summary)
+      ? summary.condition_summary
+      : fallback.condition_summary;
+
+    return {
+      ...summary,
+      language: "ar",
+      condition_summary: conditionSummary,
+      medication_plan: (summary.medication_plan || fallback.medication_plan).map((item, index) =>
+        containsArabic(item) ? item : fallback.medication_plan[index] || item
+      ),
+      important_instructions: (summary.important_instructions || fallback.important_instructions).map(translateInstruction),
+      lab_tests: (summary.lab_tests || fallback.lab_tests).map((item, index) =>
+        containsArabic(item) ? item : fallback.lab_tests[index] || item
+      ),
+      appointments: (summary.appointments || fallback.appointments).map((item, index) =>
+        containsArabic(item) ? item : fallback.appointments[index] || item
+      ),
+    };
+  }
+
+  function containsArabic(text) {
+    return /[\u0600-\u06FF]/.test(String(text || ""));
   }
 
   function buildReminderSchedule(record) {
@@ -938,7 +988,7 @@
     if (followUp.needed) {
       events.push({
         event_type: "doctor_appointment",
-        title: followUp.reason || "Doctor Appointment",
+        title: followUp.reason || uiText("Doctor Appointment", "موعد الطبيب"),
         scheduled_date: followUp.date,
         reminder_offsets: ["24h_before", "2h_before"],
       });
@@ -952,12 +1002,12 @@
     if (!panel) return;
 
     if (validation.validation_status === "complete") {
-      setText("validationStatusPill", "Complete");
-      panel.innerHTML = `<div class="success-note">All required details are complete.</div>`;
+      setText("validationStatusPill", uiText("Complete", "مكتمل"));
+      panel.innerHTML = `<div class="success-note">${escapeHtml(uiText("All required details are complete.", "كل البيانات المطلوبة مكتملة."))}</div>`;
       return;
     }
 
-    setText("validationStatusPill", "Needs clarification");
+    setText("validationStatusPill", uiText("Needs clarification", "يحتاج توضيح"));
     panel.innerHTML = `
       <div class="validation-list">
         ${validation.validation_issues
@@ -973,7 +1023,7 @@
   }
 
   function renderPlanOutputs(record, summary, schedule) {
-    renderSummaryOutput(record, summary);
+    renderSummaryOutput(record, localizeSummary(summary, record));
     renderReminderOutput(schedule);
     if ($("jsonOutput")) $("jsonOutput").textContent = JSON.stringify(record, null, 2);
   }
@@ -981,7 +1031,7 @@
   function renderSummaryOutput(record, summary) {
     $("summaryPanel").innerHTML = `
       <div class="plan-summary">
-        <h3>Patient Summary</h3>
+        <h3>${escapeHtml(uiText("Patient Summary", "ملخص المريض"))}</h3>
         <p>${escapeHtml(summary.condition_summary)}</p>
       </div>
     `;
@@ -991,7 +1041,7 @@
       .join("");
 
     setText("recordPatientName", record.patient.full_name);
-    setText("patientCondition", record.clinical_data.diagnosis.text);
+    setText("patientCondition", translateCondition(record.clinical_data.diagnosis.text));
     refreshIcons();
   }
 
@@ -1001,7 +1051,7 @@
   }
 
   function renderSchedule(schedule) {
-    if (!schedule.medication_events.length) return `<div class="empty-state">No fixed reminders for as-needed medication.</div>`;
+    if (!schedule.medication_events.length) return `<div class="empty-state">${escapeHtml(uiText("No fixed reminders for as-needed medication.", "لا توجد تذكيرات ثابتة لدواء يؤخذ عند الحاجة."))}</div>`;
 
     return schedule.medication_events
       .slice(0, 2)
@@ -1027,20 +1077,20 @@
 
   function clearPlanOutputs(options = {}) {
     if (!options.keepValidation && $("validationPanel")) {
-      $("validationPanel").innerHTML = `<div class="empty-state">Create a patient plan to check the consultation details.</div>`;
+      $("validationPanel").innerHTML = `<div class="empty-state">${escapeHtml(uiText("Create a patient plan to check the consultation details.", "أنشئ خطة المريض لفحص بيانات الاستشارة."))}</div>`;
     }
     if ($("summaryPanel")) {
       $("summaryPanel").innerHTML = `
         <div class="plan-summary empty-plan">
-          <h3>Patient Summary</h3>
-          <p>The generated summary will appear here after the doctor submits medical information.</p>
+          <h3>${escapeHtml(uiText("Patient Summary", "ملخص المريض"))}</h3>
+          <p>${escapeHtml(uiText("The generated summary will appear here after the doctor submits medical information.", "سيظهر الملخص بعد إدخال الطبيب للمعلومات الطبية."))}</p>
         </div>
       `;
     }
-    if ($("schedulePanel")) $("schedulePanel").innerHTML = `<div class="empty-state">No reminder schedule yet.</div>`;
-    if ($("instructionsPanel")) $("instructionsPanel").innerHTML = `<div class="empty-state">Instructions will appear after generation.</div>`;
-    if (!options.keepJson && $("jsonOutput")) $("jsonOutput").textContent = "No validated record yet.";
-    if (!options.keepStatus) setPipelineStatus("Not generated yet", "status-chip");
+    if ($("schedulePanel")) $("schedulePanel").innerHTML = `<div class="empty-state">${escapeHtml(uiText("No reminder schedule yet.", "لا يوجد جدول تذكيرات بعد."))}</div>`;
+    if ($("instructionsPanel")) $("instructionsPanel").innerHTML = `<div class="empty-state">${escapeHtml(uiText("Instructions will appear after generation.", "ستظهر التعليمات بعد الإنشاء."))}</div>`;
+    if (!options.keepJson && $("jsonOutput")) $("jsonOutput").textContent = uiText("No validated record yet.", "لا يوجد سجل معتمد بعد.");
+    if (!options.keepStatus) setPipelineStatus(uiText("Not generated yet", "لم يتم الإنشاء بعد"), "status-chip");
     disablePatientViewLink();
   }
 
@@ -1095,25 +1145,25 @@
     setValue("followUpDate", patient.nextVisit || addDays(todayIso(), 7));
     setValue("followUpReason", isDiabetes ? "Review blood sugar readings" : "Review symptoms and treatment response");
 
-    if (!options.silent) showToast("Sample loaded", "The medical information form is ready.", "success");
+    if (!options.silent) showToast(uiText("Sample loaded", "تم تحميل المثال"), uiText("The medical information form is ready.", "نموذج المعلومات الطبية جاهز."), "success");
   }
 
   function renderPatientPortal() {
     const patient = getSelectedPatient();
     const latest = patient.visits[0] || buildFallbackVisit(patient);
     const record = latest.record;
-    const summary = latest.summary;
+    const summary = localizeSummary(latest.summary, record);
     const schedule = latest.schedule;
 
     setText("patientMiniName", patient.fullName);
     setText("patientAvatarMini", initials(patient.fullName));
     $("patientAvatarMini")?.classList.toggle("female", patient.gender === "Female");
-    setText("patientWelcome", `Welcome back, ${patient.fullName}`);
-    setText("patientCondition", record.clinical_data.diagnosis.text || patient.condition);
-    setText("patientLastUpdated", `Last updated: ${formatFullDate(record.visit.visit_date || todayIso())}`);
+    setText("patientWelcome", uiText(`Welcome back, ${patient.fullName}`, `مرحبًا بعودتك، ${patient.fullName}`));
+    setText("patientCondition", translateCondition(record.clinical_data.diagnosis.text || patient.condition));
+    setText("patientLastUpdated", uiText(`Last updated: ${formatFullDate(record.visit.visit_date || todayIso())}`, `آخر تحديث: ${formatFullDate(record.visit.visit_date || todayIso())}`));
 
     if ($("patientPlanSnapshot")) $("patientPlanSnapshot").innerHTML = renderPatientPlanSnapshot(record, summary, schedule);
-    setText("planUpdatedChip", `Updated ${formatFullDate(record.visit.visit_date || todayIso())}`);
+    setText("planUpdatedChip", uiText(`Updated ${formatFullDate(record.visit.visit_date || todayIso())}`, `تم التحديث ${formatFullDate(record.visit.visit_date || todayIso())}`));
     if ($("nextAppointment")) $("nextAppointment").innerHTML = renderNextAppointment(record);
 
     // Populate the overview text in the summary page (the panel with id overviewConditionText)
@@ -1123,7 +1173,7 @@
     // Also populate legacy patientSummaryPanel on dashboard
     if ($("patientSummaryPanel") && !$("overviewConditionText")) {
       $("patientSummaryPanel").innerHTML = `
-        <h3>Your Summary</h3>
+        <h3>${escapeHtml(uiText("Your Summary", "ملخصك"))}</h3>
         <p>${escapeHtml(summary.condition_summary)}</p>
       `;
     }
@@ -1145,7 +1195,7 @@
     }
 
     if ($("chatMessages") && !$("chatMessages").children.length) $("chatMessages").innerHTML = `
-      <div class="chat-message bot">Hello ${escapeHtml(patient.fullName)}. How can I help you today?</div>
+      <div class="chat-message bot">${escapeHtml(uiText(`Hello ${patient.fullName}. How can I help you today?`, `مرحبًا ${patient.fullName}. كيف أستطيع مساعدتك اليوم؟`))}</div>
     `;
     refreshIcons();
   }
@@ -1160,23 +1210,23 @@
       <div id="floatingAssistantPanel" class="floating-chat-panel">
         <div class="floating-chat-header">
           <div>
-            <strong>Health Assistant</strong>
-            <span>Answers from your care plan</span>
+            <strong>${escapeHtml(uiText("Health Assistant", "مساعد عافية"))}</strong>
+            <span>${escapeHtml(uiText("Answers from your care plan", "إجابات من خطتك العلاجية"))}</span>
           </div>
           <button class="icon-button" type="button" aria-label="Close assistant" id="floatingAssistantClose">
             <i data-lucide="x"></i>
           </button>
         </div>
         <div id="floatingChatMessages" class="floating-chat-messages">
-          <div class="chat-message bot">Hi ${escapeHtml(patient.fullName)}. Ask me about your plan.</div>
+          <div class="chat-message bot">${escapeHtml(uiText(`Hi ${patient.fullName}. Ask me about your plan.`, `مرحبًا ${patient.fullName}. اسألني عن خطتك.`))}</div>
         </div>
         <div class="floating-questions">
-          <button type="button" data-floating-question="When should I take my medication?">Medication time</button>
-          <button type="button" data-floating-question="What if I miss a dose?">Missed dose</button>
-          <button type="button" data-floating-question="When is my next appointment?">Appointment</button>
+          <button type="button" data-floating-question="When should I take my medication?">${escapeHtml(uiText("Medication time", "وقت الدواء"))}</button>
+          <button type="button" data-floating-question="What if I miss a dose?">${escapeHtml(uiText("Missed dose", "نسيت جرعة"))}</button>
+          <button type="button" data-floating-question="When is my next appointment?">${escapeHtml(uiText("Appointment", "الموعد"))}</button>
         </div>
         <form id="floatingChatForm" class="chat-input-row">
-          <input id="floatingChatInput" placeholder="Ask about your plan..." />
+          <input id="floatingChatInput" placeholder="${escapeHtml(uiText("Ask about your plan...", "اسأل عن خطتك..."))}" />
           <button class="icon-button" type="submit" aria-label="Send message"><i data-lucide="send"></i></button>
         </form>
       </div>
@@ -1197,17 +1247,29 @@
     if ($("appointmentsList")) {
       $("appointmentsList").innerHTML = state.patients
         .map((item, idx) => {
-          const times = ['09:30 AM', '11:00 AM', '02:00 PM', '04:15 PM'];
-          const labels = ['Today', 'Today', 'Tomorrow', 'Tomorrow'];
+          const times = [
+            uiText("09:30 AM", "09:30 ص"),
+            uiText("11:00 AM", "11:00 ص"),
+            uiText("02:00 PM", "02:00 م"),
+            uiText("04:15 PM", "04:15 م"),
+          ];
+          const labels = [
+            uiText("Today", "اليوم"),
+            uiText("Today", "اليوم"),
+            uiText("Tomorrow", "غدًا"),
+            uiText("Tomorrow", "غدًا"),
+          ];
+          const visitLabel = labels[idx] || formatFullDate(item.nextVisit);
+          const visitTime = times[idx] || uiText("10:00 AM", "10:00 ص");
           return `
           <div class="utility-row">
             <div class="avatar ${item.gender === "Female" ? "female" : ""}">${escapeHtml(initials(item.fullName))}</div>
             <div style="flex:1;">
               <div class="font-black text-slate-900" style="font-size:15px;">${escapeHtml(item.fullName)}</div>
-              <div class="text-sm font-bold text-slate-500">${escapeHtml(item.condition)}</div>
-              <div style="font-size:12px; margin-top:2px; color:var(--blue); font-weight:800;">${labels[idx] || formatFullDate(item.nextVisit)} &mdash; ${times[idx] || '10:00 AM'}</div>
+              <div class="text-sm font-bold text-slate-500">${escapeHtml(translateCondition(item.condition))}</div>
+              <div style="font-size:12px; margin-top:2px; color:var(--blue); font-weight:800;">${escapeHtml(visitLabel)} - ${escapeHtml(visitTime)}</div>
             </div>
-            <button class="btn btn-secondary" type="button" data-appointment-patient-id="${escapeHtml(item.id)}">Open File</button>
+            <button class="btn btn-secondary" type="button" data-appointment-patient-id="${escapeHtml(item.id)}">${escapeHtml(uiText("Open File", "فتح الملف"))}</button>
           </div>`;
         })
         .join("");
@@ -1279,12 +1341,12 @@
     const medication = record.clinical_data.medications[0];
     const steps = [
       {
-        title: `Take ${medication.drug_name} as prescribed`,
-        detail: `${medication.dose_amount} ${medication.dose_unit}, ${formatFrequency(medication.frequency)}, ${formatMealRelation(medication.meal_relation).toLowerCase()}.`,
+        title: uiText(`Take ${medication.drug_name} as prescribed`, `تناول ${medication.drug_name} حسب وصف الطبيب`),
+        detail: `${medication.dose_amount} ${medication.dose_unit}، ${formatFrequency(medication.frequency)}، ${formatMealRelation(medication.meal_relation)}.`,
       },
       ...summary.important_instructions.slice(0, 3).map((instruction) => ({
         title: instruction.replace(/\.$/, ""),
-        detail: "Follow this instruction throughout your current treatment plan.",
+        detail: uiText("Follow this instruction throughout your current treatment plan.", "استمر على هذه التعليمات طوال الخطة الحالية."),
       })),
     ];
 
@@ -1309,7 +1371,7 @@
     const followUp = record.clinical_data.follow_up;
     const notes = [
       {
-        title: record.visit.physician_name || "Your doctor",
+        title: translateDoctorName(record.visit.physician_name || uiText("Your doctor", "طبيبك")),
         detail: instructions.length
           ? instructions.join(" ")
           : "Continue following the treatment plan as documented.",
@@ -1373,13 +1435,17 @@
         duration_unit: "days",
       },
       care_instructions: /diabetes/i.test(patient.condition)
-        ? ["Avoid sugary drinks and high-carb foods.", "Exercise for at least 30 minutes daily.", "Monitor blood sugar regularly."]
-        : ["Follow the doctor's documented instructions."],
-      lab_tests: /diabetes/i.test(patient.condition) ? ["Blood test"] : [],
+        ? [
+            uiText("Avoid sugary drinks and high-carb foods.", "تجنب المشروبات السكرية والأطعمة عالية الكربوهيدرات."),
+            uiText("Exercise for at least 30 minutes daily.", "مارس المشي أو نشاطًا خفيفًا لمدة 30 دقيقة يوميًا."),
+            uiText("Monitor blood sugar regularly.", "راقب مستوى السكر بانتظام."),
+          ]
+        : [uiText("Follow the doctor's documented instructions.", "اتبع تعليمات الطبيب الموثقة.")],
+      lab_tests: /diabetes/i.test(patient.condition) ? [uiText("Blood test", "تحليل الدم")] : [],
       follow_up: {
         needed: true,
         date: patient.nextVisit || addDays(todayIso(), 7),
-        reason: "Doctor appointment",
+        reason: uiText("Doctor appointment", "موعد الطبيب"),
       },
     };
     const validation = validateIntake(input);
@@ -1393,30 +1459,30 @@
   function renderPatientPlanSnapshot(record, summary, schedule) {
     const medication = record.clinical_data.medications[0];
     const nextDose = schedule.medication_events[0];
-    const nextDoseTime = nextDose ? formatTime(nextDose.scheduled_datetime.split("T")[1]) : "As directed";
-    const instruction = summary.important_instructions[1] || "Follow the documented care plan.";
+    const nextDoseTime = nextDose ? formatTime(nextDose.scheduled_datetime.split("T")[1]) : uiText("As directed", "حسب التوجيه");
+    const instruction = summary.important_instructions[1] || uiText("Follow the documented care plan.", "اتبع الخطة العلاجية الموثقة.");
     return `
       <div class="plan-snapshot-row primary">
         <i data-lucide="pill"></i>
         <div>
-          <span>Medication</span>
+          <span>${escapeHtml(uiText("Medication", "الدواء"))}</span>
           <strong>${escapeHtml(medication.drug_name)} ${escapeHtml(medication.dose_amount)} ${escapeHtml(medication.dose_unit)}</strong>
-          <small>${escapeHtml(formatFrequency(medication.frequency))} - next reminder ${escapeHtml(nextDoseTime)}</small>
+          <small>${escapeHtml(formatFrequency(medication.frequency))} - ${escapeHtml(uiText("next reminder", "التذكير القادم"))} ${escapeHtml(nextDoseTime)}</small>
         </div>
       </div>
       <div class="plan-snapshot-row">
         <i data-lucide="clipboard-check"></i>
         <div>
-          <span>Care instruction</span>
+          <span>${escapeHtml(uiText("Care instruction", "تعليمات الرعاية"))}</span>
           <strong>${escapeHtml(instruction.replace(/\.$/, ""))}</strong>
         </div>
       </div>
       <div class="plan-snapshot-row">
         <i data-lucide="calendar-days"></i>
         <div>
-          <span>Follow-up</span>
+          <span>${escapeHtml(uiText("Follow-up", "المتابعة"))}</span>
           <strong>${escapeHtml(formatFullDate(record.clinical_data.follow_up.date))}</strong>
-          <small>${escapeHtml(record.visit.physician_name || "Doctor")}</small>
+          <small>${escapeHtml(translateDoctorName(record.visit.physician_name || uiText("Doctor", "الطبيب")))}</small>
         </div>
       </div>
     `;
@@ -1426,8 +1492,8 @@
     const followUp = record.clinical_data.follow_up;
     return `
       <strong>${formatFullDate(followUp.date)}</strong>
-      <div>10:30 AM</div>
-      <div>${escapeHtml(record.visit.physician_name || "Doctor")}</div>
+      <div>${escapeHtml(uiText("10:30 AM", "10:30 ص"))}</div>
+      <div>${escapeHtml(translateDoctorName(record.visit.physician_name || uiText("Doctor", "الطبيب")))}</div>
     `;
   }
 
@@ -1436,17 +1502,17 @@
       <div class="reminder-item">
         <i data-lucide="bell"></i>
         <div>
-          <div class="font-black text-slate-900">Take ${escapeHtml(event.medication_name)}</div>
-          <div class="text-sm font-bold text-slate-500">${formatTime(event.scheduled_datetime.split("T")[1])} - Daily</div>
+          <div class="font-black text-slate-900">${escapeHtml(uiText("Take", "تناول"))} ${escapeHtml(event.medication_name)}</div>
+          <div class="text-sm font-bold text-slate-500">${formatTime(event.scheduled_datetime.split("T")[1])} - ${escapeHtml(uiText("Daily", "يوميًا"))}</div>
         </div>
-        <span class="due-chip">In ${index === 0 ? "2 h" : "12 h"}</span>
+        <span class="due-chip">${escapeHtml(uiText(`In ${index === 0 ? "2 h" : "12 h"}`, `بعد ${index === 0 ? "ساعتين" : "12 ساعة"}`))}</span>
       </div>
     `);
     const followUp = record.clinical_data.follow_up.needed
-      ? `<div class="reminder-item"><i data-lucide="calendar-days"></i><div><div class="font-black text-slate-900">Doctor Appointment</div><div class="text-sm font-bold text-slate-500">${formatFullDate(record.clinical_data.follow_up.date)} - 10:30 AM</div></div><span class="due-chip">In 5 days</span></div>`
+      ? `<div class="reminder-item"><i data-lucide="calendar-days"></i><div><div class="font-black text-slate-900">${escapeHtml(uiText("Doctor Appointment", "موعد الطبيب"))}</div><div class="text-sm font-bold text-slate-500">${formatFullDate(record.clinical_data.follow_up.date)} - ${escapeHtml(uiText("10:30 AM", "10:30 ص"))}</div></div><span class="due-chip">${escapeHtml(uiText("In 5 days", "بعد 5 أيام"))}</span></div>`
       : "";
     const lab = record.clinical_data.lab_tests[0]
-      ? `<div class="reminder-item"><i data-lucide="clipboard"></i><div><div class="font-black text-slate-900">${escapeHtml(record.clinical_data.lab_tests[0].test_name)}</div><div class="text-sm font-bold text-slate-500">${formatFullDate(addDays(todayIso(), 7))} - 9:00 AM</div></div><span class="due-chip">In 7 days</span></div>`
+      ? `<div class="reminder-item"><i data-lucide="clipboard"></i><div><div class="font-black text-slate-900">${escapeHtml(record.clinical_data.lab_tests[0].test_name)}</div><div class="text-sm font-bold text-slate-500">${formatFullDate(addDays(todayIso(), 7))} - ${escapeHtml(uiText("9:00 AM", "9:00 ص"))}</div></div><span class="due-chip">${escapeHtml(uiText("In 7 days", "بعد 7 أيام"))}</span></div>`
       : "";
     return [...medicationRows, followUp, lab].join("");
   }
@@ -1490,18 +1556,33 @@
     const normalized = question.toLowerCase();
 
     if (normalized.includes("when") && normalized.includes("medication")) {
-      return `You should take ${medication.drug_name} ${medication.dose_amount} ${medication.dose_unit} ${formatFrequency(medication.frequency)}: ${firstTimes.join(" and ")}, ${formatMealRelation(medication.meal_relation).toLowerCase()}.`;
+      return uiText(
+        `You should take ${medication.drug_name} ${medication.dose_amount} ${medication.dose_unit} ${formatFrequency(medication.frequency)}: ${firstTimes.join(" and ")}, ${formatMealRelation(medication.meal_relation).toLowerCase()}.`,
+        `موعد ${medication.drug_name} ${medication.dose_amount} ${medication.dose_unit}: ${firstTimes.join(" و ")}، ${formatMealRelation(medication.meal_relation)}.`
+      );
     }
     if (normalized.includes("miss")) {
-      return "If you miss a dose, follow the instructions your doctor gave you. If you are unsure, contact your doctor before changing the schedule.";
+      return uiText(
+        "If you miss a dose, follow the instructions your doctor gave you. If you are unsure, contact your doctor before changing the schedule.",
+        "إذا نسيت جرعة، اتبع تعليمات الطبيب. إذا لم تكن متأكدًا، تواصل مع الطبيب قبل تغيير الجدول."
+      );
     }
     if (normalized.includes("fruit") || normalized.includes("eat")) {
-      return "Your documented plan says to avoid sugary drinks and high-carb foods. For specific diet changes, ask your doctor.";
+      return uiText(
+        "Your documented plan says to avoid sugary drinks and high-carb foods. For specific diet changes, ask your doctor.",
+        "خطتك الموثقة تنص على تجنب المشروبات السكرية والأطعمة عالية الكربوهيدرات. لأي تغيير غذائي محدد، اسأل الطبيب."
+      );
     }
     if (normalized.includes("appointment")) {
-      return `Your next appointment is ${formatFullDate(followUp.date)} at 10:30 AM.`;
+      return uiText(
+        `Your next appointment is ${formatFullDate(followUp.date)} at 10:30 AM.`,
+        `موعدك القادم هو ${formatFullDate(followUp.date)} الساعة 10:30 ص.`
+      );
     }
-    return "I can answer based on your saved treatment plan. For symptoms, dose changes, or new medical concerns, contact your doctor.";
+    return uiText(
+      "I can answer based on your saved treatment plan. For symptoms, dose changes, or new medical concerns, contact your doctor.",
+      "أستطيع الإجابة بناءً على خطتك العلاجية المحفوظة. للأعراض الجديدة أو تغيير الجرعات أو أي قلق طبي، تواصل مع الطبيب."
+    );
   }
 
   function appendChat(role, message) {
@@ -1540,26 +1621,26 @@
 
   async function copySummary() {
     if (!state.lastSummary) {
-      showToast("Nothing to copy", "Create a patient plan first.", "warning");
+      showToast(uiText("Nothing to copy", "لا يوجد ما يمكن نسخه"), uiText("Create a patient plan first.", "أنشئ خطة المريض أولًا."), "warning");
       return;
     }
     const text = [
-      "Patient Summary",
+      uiText("Patient Summary", "ملخص المريض"),
       state.lastSummary.condition_summary,
-      "Medication Schedule",
+      uiText("Medication Schedule", "جدول الأدوية"),
       ...state.lastSummary.medication_plan,
-      "Important Instructions",
+      uiText("Important Instructions", "تعليمات مهمة"),
       ...state.lastSummary.important_instructions,
     ].join("\n");
     try {
       await navigator.clipboard.writeText(text);
-      showToast("Summary copied", "Patient summary copied to clipboard.", "success");
+      showToast(uiText("Summary copied", "تم نسخ الملخص"), uiText("Patient summary copied to clipboard.", "تم نسخ ملخص المريض."), "success");
     } catch {
-      showToast("Copy unavailable", "Your browser blocked clipboard access for this local file.", "warning");
+      showToast(uiText("Copy unavailable", "النسخ غير متاح"), uiText("Your browser blocked clipboard access for this local file.", "منع المتصفح الوصول إلى الحافظة لهذا الملف المحلي."), "warning");
     }
   }
 
-  function startProcessing(label = "Running") {
+  function startProcessing(label = uiText("Running", "جاري التشغيل")) {
     state.processing = true;
     disablePlanButton();
     const button = $("generateButton");
@@ -1573,7 +1654,7 @@
     state.processing = false;
     const button = $("generateButton");
     if (button) {
-      button.innerHTML = `<i data-lucide="sparkles"></i> Create Patient Plan`;
+      button.innerHTML = `<i data-lucide="sparkles"></i> ${escapeHtml(uiText("Create Patient Plan", "إنشاء خطة المريض"))}`;
     }
     setPlanButtonState();
     refreshIcons();
@@ -1587,7 +1668,7 @@
   }
 
   function setDoctorLabel() {
-    setText("doctorLabel", state.session?.doctorName || "Dr. Khalid");
+    setText("doctorLabel", translateDoctorName(state.session?.doctorName || "Dr. Khalid"));
   }
 
   function showToast(title, message, type = "success") {
@@ -1634,18 +1715,73 @@
     return map[frequency] || [];
   }
 
+  function uiText(en, ar) {
+    return window.HealthiumI18n?.getLanguage?.() === "ar" ? ar : en;
+  }
+
+  function translateDoctorName(name) {
+    if (!name || name === "Dr. Khalid") return uiText("Dr. Khalid", "د. خالد");
+    return name;
+  }
+
+  function translateGender(gender) {
+    if (!gender) return uiText("Not set", "غير محدد");
+    if (gender === "Male") return uiText("Male", "ذكر");
+    if (gender === "Female") return uiText("Female", "أنثى");
+    return gender;
+  }
+
+  function translateCondition(condition) {
+    const map = {
+      "Type II Diabetes": uiText("Type II Diabetes", "السكري من النوع الثاني"),
+      Asthma: uiText("Asthma", "الربو"),
+      Hypertension: uiText("Hypertension", "ارتفاع ضغط الدم"),
+      Thyroid: uiText("Thyroid", "اضطراب الغدة الدرقية"),
+      "High Cholesterol": uiText("High Cholesterol", "ارتفاع الكوليسترول"),
+    };
+    return map[condition] || condition || uiText("Not set", "غير محدد");
+  }
+
+  function translateInstruction(instruction) {
+    const map = {
+      "Take medications as prescribed.": uiText("Take medications as prescribed.", "تناول الأدوية حسب وصف الطبيب."),
+      "Avoid sugary drinks and high-carb foods.": uiText("Avoid sugary drinks and high-carb foods.", "تجنب المشروبات السكرية والأطعمة عالية الكربوهيدرات."),
+      "Exercise for at least 30 minutes daily.": uiText("Exercise for at least 30 minutes daily.", "مارس المشي أو نشاطًا خفيفًا لمدة 30 دقيقة يوميًا."),
+      "Exercise for 30 minutes daily.": uiText("Exercise for 30 minutes daily.", "مارس نشاطًا خفيفًا لمدة 30 دقيقة يوميًا."),
+      "Monitor blood sugar regularly.": uiText("Monitor blood sugar regularly.", "راقب مستوى السكر بانتظام."),
+      "Follow the doctor's documented instructions.": uiText("Follow the doctor's documented instructions.", "اتبع تعليمات الطبيب الموثقة."),
+    };
+    return map[instruction] || instruction;
+  }
+
+  function translateLabName(testName) {
+    const map = {
+      "Blood test": uiText("Blood test", "تحليل الدم"),
+      "Blood sugar test": uiText("Blood sugar test", "تحليل السكر"),
+      CBC: uiText("CBC", "صورة دم كاملة"),
+    };
+    return map[testName] || testName;
+  }
+
   function formatFrequency(frequency) {
-    return frequency || "as documented";
+    const map = {
+      "once daily": uiText("once daily", "مرة يوميًا"),
+      "twice daily": uiText("twice daily", "مرتين يوميًا"),
+      "three times daily": uiText("three times daily", "ثلاث مرات يوميًا"),
+      "every 8 hours": uiText("every 8 hours", "كل 8 ساعات"),
+      "as needed": uiText("as needed", "عند الحاجة"),
+    };
+    return map[frequency] || frequency || uiText("as documented", "حسب توجيه الطبيب");
   }
 
   function formatMealRelation(value) {
     const map = {
-      before_meal: "Before meals",
-      after_meal: "After meals",
-      with_meal: "With food",
-      not_specified: "As directed",
+      before_meal: uiText("Before meals", "قبل الطعام"),
+      after_meal: uiText("After meals", "بعد الطعام"),
+      with_meal: uiText("With food", "مع الطعام"),
+      not_specified: uiText("As directed", "حسب التوجيه"),
     };
-    return map[value] || value || "As directed";
+    return map[value] || value || uiText("As directed", "حسب التوجيه");
   }
 
   function durationToDays(value, unit) {
@@ -1677,16 +1813,16 @@
   }
 
   function formatFullDate(dateString) {
-    if (!dateString) return "Not scheduled";
+    if (!dateString) return uiText("Not scheduled", "غير مجدول");
     const date = isoDateToUtcDate(dateString);
-    return new Intl.DateTimeFormat("en", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(date);
+    return new Intl.DateTimeFormat(uiText("en", "ar-SA"), { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(date);
   }
 
   function formatTime(timeString) {
     if (!timeString) return "";
     const [hour, minute] = timeString.split(":").map(Number);
     const date = new Date(Date.UTC(2026, 0, 1, hour, minute));
-    return new Intl.DateTimeFormat("en", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "UTC" }).format(date);
+    return new Intl.DateTimeFormat(uiText("en", "ar-SA"), { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "UTC" }).format(date);
   }
 
   function isoDateToUtcDate(dateString) {

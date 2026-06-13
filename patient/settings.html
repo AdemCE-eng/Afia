@@ -1,34 +1,34 @@
 <!doctype html>
-<html lang="en">
+<html lang="ar" dir="rtl">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Healthium | Patient Settings</title>
+    <title>عافية | إعدادات المريض</title>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <link rel="stylesheet" href="../styles.css" />
   </head>
   <body data-page="patient-settings">
     <main class="portal-shell patient-shell">
       <aside class="portal-sidebar patient-sidebar">
-        <div class="brand"><div class="brand-mark"><i data-lucide="heart-pulse"></i></div><div class="brand-name">Healthium</div></div>
+        <div class="brand"><div class="brand-mark" aria-hidden="true"></div><div class="brand-name">عافية</div></div>
         <nav class="side-nav" aria-label="Patient navigation">
-          <a class="nav-item" href="./dashboard.html"><i data-lucide="home"></i><span data-i18n="nav.dashboard">Dashboard</span></a>
-          <a class="nav-item" href="./summary.html"><i data-lucide="clipboard-list"></i><span data-i18n="nav.summary">My Summary</span></a>
-          <a class="nav-item" href="./medications.html"><i data-lucide="pill"></i><span data-i18n="nav.medications">Medications</span></a>
-          <a class="nav-item" href="./reminders.html"><i data-lucide="alarm-clock"></i><span data-i18n="nav.reminders">Reminders</span></a>
-          <a class="nav-item active" href="./settings.html"><i data-lucide="settings"></i><span data-i18n="nav.settings">Settings</span></a>
+          <a class="nav-item" href="./dashboard.html"><i data-lucide="home"></i><span data-i18n="nav.dashboard">الرئيسية</span></a>
+          <a class="nav-item" href="./summary.html"><i data-lucide="clipboard-list"></i><span data-i18n="nav.summary">ملخصي</span></a>
+          <a class="nav-item" href="./medications.html"><i data-lucide="pill"></i><span data-i18n="nav.medications">الأدوية</span></a>
+          <a class="nav-item" href="./reminders.html"><i data-lucide="alarm-clock"></i><span data-i18n="nav.reminders">التذكيرات</span></a>
+          <a class="nav-item active" href="./settings.html"><i data-lucide="settings"></i><span data-i18n="nav.settings">الإعدادات</span></a>
         </nav>
         <div class="patient-profile-mini">
           <div id="patientAvatarMini" class="avatar">Y</div>
-          <div><div id="patientMiniName" style="font-weight:900;color:var(--ink);">Patient</div><div style="font-size:12px;color:var(--muted);font-weight:700;">View Profile</div></div>
+          <div><div id="patientMiniName" style="font-weight:900;color:var(--ink);">Yousef</div><div style="font-size:12px;color:var(--muted);font-weight:700;">عرض الملف</div></div>
         </div>
       </aside>
 
       <section class="settings-page-main">
         <section class="patient-card settings-card">
           <header class="settings-page-header">
-            <h1 class="page-title" data-i18n="settings.title">Settings</h1>
-            <p class="page-caption" data-i18n="settings.patient_caption">Your personal preferences and account details.</p>
+            <h1 class="page-title" data-i18n="settings.title">الإعدادات</h1>
+            <p class="page-caption" data-i18n="settings.patient_caption">تفضيلاتك الشخصية وتفاصيل حسابك.</p>
           </header>
 
           <div class="settings-content">
@@ -36,73 +36,73 @@
               <div id="patientAvatarLarge" class="avatar">Y</div>
               <div class="settings-profile-copy">
                 <strong id="profileName">Yousef</strong>
-                <span>Patient ID: P-10023</span>
+                <span>رقم المريض: P-10023</span>
               </div>
-              <button class="settings-btn" type="button" onclick="showToastDemo('Profile editing coming soon.')" data-i18n="settings.edit_photo">Edit Photo</button>
+              <button class="settings-btn" type="button" onclick="showToastDemo('تعديل الملف سيكون متاحًا لاحقًا.')" data-i18n="settings.edit_photo">تعديل الصورة</button>
             </div>
 
             <section class="settings-section">
-              <h2 class="settings-section-title" data-i18n="settings.profile">Profile</h2>
+              <h2 class="settings-section-title" data-i18n="settings.profile">الملف الشخصي</h2>
               <div class="settings-group">
                 <div class="settings-row">
-                  <div class="settings-row-label"><strong data-i18n="settings.full_name">Full Name</strong><span id="profileNameDisplay">Yousef Al-Rashidi</span></div>
-                  <button class="settings-btn" type="button" onclick="showToastDemo('Name editing coming soon.')" data-i18n="settings.edit">Edit</button>
+                  <div class="settings-row-label"><strong data-i18n="settings.full_name">الاسم الكامل</strong><span id="profileNameDisplay">Yousef</span></div>
+                  <button class="settings-btn" type="button" onclick="showToastDemo('تعديل الاسم سيكون متاحًا لاحقًا.')" data-i18n="settings.edit">تعديل</button>
                 </div>
                 <div class="settings-row">
-                  <div class="settings-row-label"><strong data-i18n="settings.phone">Phone Number</strong><span>+966 55 123 4567</span></div>
-                  <button class="settings-btn" type="button" onclick="showToastDemo('Phone editing coming soon.')" data-i18n="settings.edit">Edit</button>
+                  <div class="settings-row-label"><strong data-i18n="settings.phone">رقم الجوال</strong><span dir="ltr">+966 55 123 4567</span></div>
+                  <button class="settings-btn" type="button" onclick="showToastDemo('تعديل رقم الجوال سيكون متاحًا لاحقًا.')" data-i18n="settings.edit">تعديل</button>
                 </div>
                 <div class="settings-row">
-                  <div class="settings-row-label"><strong data-i18n="settings.emergency">Emergency Contact</strong><span data-i18n="settings.not_set">Not set</span></div>
-                  <button class="settings-btn" type="button" onclick="showToastDemo('Emergency contact coming soon.')" data-i18n="settings.add">Add</button>
+                  <div class="settings-row-label"><strong data-i18n="settings.emergency">جهة اتصال للطوارئ</strong><span data-i18n="settings.not_set">غير محددة</span></div>
+                  <button class="settings-btn" type="button" onclick="showToastDemo('إضافة جهة الطوارئ ستكون متاحة لاحقًا.')" data-i18n="settings.add">إضافة</button>
                 </div>
               </div>
             </section>
 
             <section class="settings-section">
-              <h2 class="settings-section-title" data-i18n="settings.language_display">Language &amp; Display</h2>
+              <h2 class="settings-section-title" data-i18n="settings.language_display">اللغة والعرض</h2>
               <div class="settings-group">
                 <div class="settings-row language-setting-row">
                   <div class="settings-row-label">
-                    <strong data-i18n="settings.app_language">App Language</strong>
-                    <span data-i18n="settings.language_hint">Choose your preferred display language</span>
+                    <strong data-i18n="settings.app_language">لغة التطبيق</strong>
+                    <span data-i18n="settings.language_hint">اختر لغة واجهة المستخدم</span>
                   </div>
                   <div class="language-toggle" aria-label="App language">
-                    <button class="language-option active" type="button" data-set-language="en" data-i18n="settings.english">English</button>
-                    <button class="language-option" type="button" data-set-language="ar" data-i18n="settings.arabic">Arabic</button>
+                    <button class="language-option active" type="button" data-set-language="ar" data-i18n="settings.arabic">العربية</button>
+                    <button class="language-option" type="button" data-set-language="en" data-i18n="settings.english">English</button>
                   </div>
                 </div>
               </div>
             </section>
 
             <section class="settings-section">
-              <h2 class="settings-section-title" data-i18n="settings.notifications">Notifications</h2>
+              <h2 class="settings-section-title" data-i18n="settings.notifications">الإشعارات</h2>
               <div class="settings-group">
                 <div class="settings-row">
-                  <div class="settings-row-label"><strong data-i18n="settings.medication_reminders">Medication Reminders</strong><span data-i18n="settings.medication_reminders_hint">Push notifications for each dose</span></div>
+                  <div class="settings-row-label"><strong data-i18n="settings.medication_reminders">تذكير الأدوية</strong><span data-i18n="settings.medication_reminders_hint">إشعار لكل جرعة</span></div>
                   <label class="toggle-switch"><input id="toggleMed" type="checkbox" checked /><span class="toggle-slider"></span></label>
                 </div>
                 <div class="settings-row">
-                  <div class="settings-row-label"><strong data-i18n="settings.appointment_reminders">Appointment Alerts</strong><span data-i18n="settings.appointment_reminders_patient_hint">Notifications 24h and 1h before</span></div>
+                  <div class="settings-row-label"><strong data-i18n="settings.appointment_reminders">تنبيهات المواعيد</strong><span data-i18n="settings.appointment_reminders_patient_hint">تنبيه قبل الموعد بـ 24 ساعة وساعة واحدة</span></div>
                   <label class="toggle-switch"><input id="toggleAppt" type="checkbox" checked /><span class="toggle-slider"></span></label>
                 </div>
                 <div class="settings-row">
-                  <div class="settings-row-label"><strong data-i18n="settings.sms_alerts">SMS Alerts</strong><span data-i18n="settings.sms_alerts_hint">Backup SMS for critical reminders</span></div>
+                  <div class="settings-row-label"><strong data-i18n="settings.sms_alerts">رسائل SMS</strong><span data-i18n="settings.sms_alerts_hint">رسائل احتياطية للتذكيرات المهمة</span></div>
                   <label class="toggle-switch"><input id="toggleSMS" type="checkbox" /><span class="toggle-slider"></span></label>
                 </div>
               </div>
             </section>
 
             <section class="settings-section">
-              <h2 class="settings-section-title" data-i18n="settings.privacy">Privacy &amp; Access</h2>
+              <h2 class="settings-section-title" data-i18n="settings.privacy">الخصوصية والوصول</h2>
               <div class="settings-group">
                 <div class="settings-row">
-                  <div class="settings-row-label"><strong data-i18n="settings.care_access">Care Plan Access</strong><span data-i18n="settings.care_access_hint">Allow your doctor to view your care plan</span></div>
+                  <div class="settings-row-label"><strong data-i18n="settings.care_access">الوصول للخطة العلاجية</strong><span data-i18n="settings.care_access_hint">السماح للطبيب بعرض خطتك العلاجية</span></div>
                   <label class="toggle-switch"><input id="toggleAccess" type="checkbox" checked /><span class="toggle-slider"></span></label>
                 </div>
                 <div class="settings-row">
-                  <div class="settings-row-label"><strong data-i18n="settings.export_history">Data Export</strong><span data-i18n="settings.export_history_hint">Download your full health history</span></div>
-                  <button class="settings-btn" type="button" onclick="showToastDemo('Export will be available in full release.')" data-i18n="settings.export">Export</button>
+                  <div class="settings-row-label"><strong data-i18n="settings.export_history">تصدير البيانات</strong><span data-i18n="settings.export_history_hint">تنزيل سجلك الصحي كاملًا</span></div>
+                  <button class="settings-btn" type="button" onclick="showToastDemo('التصدير سيكون متاحًا في النسخة الكاملة.')" data-i18n="settings.export">تصدير</button>
                 </div>
               </div>
             </section>

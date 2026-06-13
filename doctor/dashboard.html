@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="ar" dir="rtl">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Healthium | Doctor Dashboard</title>
+    <title>عافية | لوحة الطبيب</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <link rel="stylesheet" href="../styles.css" />
@@ -12,9 +12,9 @@
     <main class="portal-shell doctor-shell">
       <aside class="portal-sidebar">
         <div class="brand">
-          <div class="brand-mark"><i data-lucide="heart-pulse"></i></div>
+          <div class="brand-mark" aria-hidden="true"></div>
           <div>
-            <div class="brand-name">Healthium</div>
+            <div class="brand-name">عافية</div>
             <div id="doctorLabel" class="brand-subtitle">Doctor workspace</div>
           </div>
         </div>
@@ -30,98 +30,97 @@
       </aside>
 
       <section class="portal-main doctor-dashboard-main">
-        <section class="doctor-dashboard-column">
-          <section class="doctor-hero-panel">
-            <div>
-              <p class="section-label">Doctor Dashboard</p>
-              <h1 class="page-title">Patient care panel</h1>
-              <p class="page-caption">Select a patient, review their latest status, and update the treatment plan.</p>
+        <section class="doctor-hero-panel">
+          <div>
+            <p class="section-label">Doctor Dashboard</p>
+            <h1 class="page-title">Patient care panel</h1>
+            <p class="page-caption">Select a patient, review their latest status, and update the treatment plan.</p>
+          </div>
+          <div class="doctor-metric-grid">
+            <div class="doctor-metric">
+              <span id="totalPatientsMetric">0</span>
+              <p>Patients</p>
             </div>
-            <div class="doctor-metric-grid">
-              <div class="doctor-metric">
-                <span id="totalPatientsMetric">0</span>
-                <p>Patients</p>
-              </div>
-              <div class="doctor-metric">
-                <span id="todayVisitsMetric">0</span>
-                <p>Due today</p>
-              </div>
-              <div class="doctor-metric">
-                <span id="carePlansMetric">0</span>
-                <p>Care plans</p>
-              </div>
+            <div class="doctor-metric">
+              <span id="todayVisitsMetric">0</span>
+              <p>Due today</p>
             </div>
+            <div class="doctor-metric">
+              <span id="carePlansMetric">0</span>
+              <p>Care plans</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="dashboard-content-grid">
+          <section class="patients-card">
+            <div class="patients-header">
+              <div>
+                <h1 class="page-title">Patients Overview</h1>
+                <p class="page-caption">Select a patient to update their care plan.</p>
+              </div>
+              <button id="addPatientToggle" class="btn btn-primary" type="button">
+                <i data-lucide="plus"></i>
+                Add Patient
+              </button>
+            </div>
+
+            <form id="addPatientForm" class="add-patient-form hidden">
+              <div class="field">
+                <label for="newPatientName">Patient name</label>
+                <input id="newPatientName" placeholder="Patient name" />
+              </div>
+              <div class="field">
+                <label for="newPatientAge">Age</label>
+                <input id="newPatientAge" type="number" min="0" max="120" placeholder="42" />
+              </div>
+              <div class="field">
+                <label for="newPatientGender">Gender</label>
+                <select id="newPatientGender">
+                  <option>Female</option>
+                  <option>Male</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="newPatientCondition">Condition</label>
+                <input id="newPatientCondition" placeholder="e.g. Asthma" />
+              </div>
+              <button class="btn btn-secondary" type="submit">
+                <i data-lucide="check"></i>
+                Save
+              </button>
+            </form>
+
+            <div class="search-row">
+              <div class="field search-field">
+                <label for="patientSearch">Search patients</label>
+                <input id="patientSearch" placeholder="Search patients..." />
+              </div>
+              <button class="filter-button" type="button" title="Filter patients">
+                <i data-lucide="sliders-horizontal"></i>
+              </button>
+            </div>
+
+            <div id="patientList" class="patient-overview-list"></div>
           </section>
 
-          <section class="patients-card">
-          <div class="patients-header">
-            <div>
-              <h1 class="page-title">Patients Overview</h1>
-              <p class="page-caption">Select a patient to update their care plan.</p>
-            </div>
-            <button id="addPatientToggle" class="btn btn-primary" type="button">
-              <i data-lucide="plus"></i>
-              Add Patient
+          <aside class="selected-card selected-care-card">
+            <div class="selected-card-kicker">Selected Patient</div>
+            <div id="patientOverview" class="selected-patient-preview"></div>
+            <a class="btn btn-primary w-full" href="./consultation.html">
+              <i data-lucide="clipboard-pen-line"></i>
+              Update medical info
+            </a>
+            <a class="btn btn-secondary w-full" href="../patient/dashboard.html">
+              <i data-lucide="smartphone"></i>
+              Patient view
+            </a>
+            <button id="resetDemoButton" class="btn btn-secondary w-full" type="button">
+              <i data-lucide="rotate-ccw"></i>
+              Reset demo
             </button>
-          </div>
-
-          <form id="addPatientForm" class="add-patient-form hidden">
-            <div class="field">
-              <label for="newPatientName">Patient name</label>
-              <input id="newPatientName" placeholder="Patient name" />
-            </div>
-            <div class="field">
-              <label for="newPatientAge">Age</label>
-              <input id="newPatientAge" type="number" min="0" max="120" placeholder="42" />
-            </div>
-            <div class="field">
-              <label for="newPatientGender">Gender</label>
-              <select id="newPatientGender">
-                <option>Female</option>
-                <option>Male</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="newPatientCondition">Condition</label>
-              <input id="newPatientCondition" placeholder="e.g. Asthma" />
-            </div>
-            <button class="btn btn-secondary" type="submit">
-              <i data-lucide="check"></i>
-              Save
-            </button>
-          </form>
-
-          <div class="search-row">
-            <div class="field search-field">
-              <label for="patientSearch">Search patients</label>
-              <input id="patientSearch" placeholder="Search patients..." />
-            </div>
-            <button class="filter-button" type="button" title="Filter patients">
-              <i data-lucide="sliders-horizontal"></i>
-            </button>
-          </div>
-
-          <div id="patientList" class="patient-overview-list"></div>
+          </aside>
         </section>
-        </section>
-
-        <aside class="selected-card selected-care-card">
-          <div class="selected-card-kicker">Selected Patient</div>
-          <div id="patientOverview" class="selected-patient-preview"></div>
-          <p id="selectedPatientLine" class="selected-line"></p>
-          <a class="btn btn-primary w-full" href="./consultation.html">
-            <i data-lucide="clipboard-pen-line"></i>
-            Update medical info
-          </a>
-          <a class="btn btn-secondary w-full" href="../patient/dashboard.html">
-            <i data-lucide="smartphone"></i>
-            Patient view
-          </a>
-          <button id="resetDemoButton" class="btn btn-secondary w-full" type="button">
-            <i data-lucide="rotate-ccw"></i>
-            Reset demo
-          </button>
-        </aside>
       </section>
     </main>
 

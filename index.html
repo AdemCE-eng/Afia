@@ -1,21 +1,27 @@
 <!doctype html>
-<html lang="en">
+<html lang="ar" dir="rtl">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Healthium | Login</title>
-    <meta name="description" content="Healthium doctor-first care console MVP." />
+    <title>عافية | تسجيل الدخول</title>
+    <meta name="description" content="عافية doctor-first care console MVP." />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body data-page="login">
     <main class="login-shell">
+      <section class="login-brand-panel" aria-label="عافية">
+        <img src="./assets/afia-logo-clean.png" alt="شعار عافية" />
+        <div class="login-brand-word">عافية</div>
+        <p>صحتك بين يديك</p>
+      </section>
+
       <section class="login-card">
         <div class="brand mb-10">
-          <div class="brand-mark"><i data-lucide="heart-pulse"></i></div>
+          <div class="brand-mark" aria-hidden="true"></div>
           <div>
-            <div class="brand-name">Healthium</div>
+            <div class="brand-name">عافية</div>
             <div id="loginModeLabel" class="brand-subtitle">Doctor workspace</div>
           </div>
         </div>

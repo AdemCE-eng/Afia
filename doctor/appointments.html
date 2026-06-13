@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="ar" dir="rtl">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Healthium | Appointments</title>
+    <title>عافية | المواعيد</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <link rel="stylesheet" href="../styles.css" />
@@ -11,42 +11,42 @@
   <body data-page="appointments">
     <main class="portal-shell doctor-shell">
       <aside class="portal-sidebar">
-        <div class="brand"><div class="brand-mark"><i data-lucide="heart-pulse"></i></div><div><div class="brand-name">Healthium</div><div id="doctorLabel" class="brand-subtitle" data-i18n="doctor.workspace">Doctor workspace</div></div></div>
+        <div class="brand"><div class="brand-mark" aria-hidden="true"></div><div><div class="brand-name">عافية</div><div id="doctorLabel" class="brand-subtitle">مساحة الطبيب</div></div></div>
         <nav class="side-nav" aria-label="Doctor navigation">
-          <a class="nav-item" href="./dashboard.html"><i data-lucide="home"></i> Dashboard</a>
-          <a class="nav-item active" href="./appointments.html"><i data-lucide="calendar-days"></i> Appointments</a>
-          <a class="nav-item" href="./reports.html"><i data-lucide="bar-chart-3"></i> Reports</a>
-          <a class="nav-item" href="./settings.html"><i data-lucide="settings"></i> Settings</a>
+          <a class="nav-item" href="./dashboard.html"><i data-lucide="home"></i> الرئيسية</a>
+          <a class="nav-item active" href="./appointments.html"><i data-lucide="calendar-days"></i> المواعيد</a>
+          <a class="nav-item" href="./reports.html"><i data-lucide="bar-chart-3"></i> التقارير</a>
+          <a class="nav-item" href="./settings.html"><i data-lucide="settings"></i> الإعدادات</a>
         </nav>
-        <button id="logoutButton" class="nav-item logout-item" type="button"><i data-lucide="log-out"></i> Log out</button>
+        <button id="logoutButton" class="nav-item logout-item" type="button"><i data-lucide="log-out"></i> تسجيل الخروج</button>
       </aside>
       <section class="portal-main utility-main">
         <section class="patients-card">
           <div class="patients-header">
-            <div><h1 class="page-title" data-i18n="appointments.title">Appointments</h1><p class="page-caption" data-i18n="appointments.caption">Upcoming visits for your patient panel.</p></div>
-            <a class="btn btn-primary" href="./dashboard.html"><i data-lucide="users"></i><span data-i18n="appointments.select_patient">Select patient</span></a>
+            <div><h1 class="page-title" data-i18n="appointments.title">المواعيد</h1><p class="page-caption" data-i18n="appointments.caption">الزيارات القادمة لمرضى العيادة.</p></div>
+            <a class="btn btn-primary" href="./dashboard.html"><i data-lucide="users"></i><span data-i18n="appointments.select_patient">اختيار مريض</span></a>
           </div>
           <div id="appointmentsList" class="utility-list">
             <div class="utility-row">
               <div>
-                <strong style="color:var(--ink); font-size: 16px;">Today, 09:30 AM - Yousef (Type II Diabetes)</strong>
-                <span style="display:block; color:var(--muted); font-size:13px;">Follow-up on A1C levels and diet.</span>
+                <strong style="color:var(--ink); font-size: 16px;">اليوم، 09:30 ص - Yousef (السكري من النوع الثاني)</strong>
+                <span style="display:block; color:var(--muted); font-size:13px;">متابعة مستوى السكر وخطة الغذاء.</span>
               </div>
-              <a class="btn btn-secondary" href="./consultation.html">Open File</a>
+              <a class="btn btn-secondary" href="./consultation.html">فتح الملف</a>
             </div>
             <div class="utility-row">
               <div>
-                <strong style="color:var(--ink); font-size: 16px;">Today, 11:00 AM - Sara (Asthma)</strong>
-                <span style="display:block; color:var(--muted); font-size:13px;">Inhaler refill and breathing test.</span>
+                <strong style="color:var(--ink); font-size: 16px;">اليوم، 11:00 ص - Sara (الربو)</strong>
+                <span style="display:block; color:var(--muted); font-size:13px;">متابعة البخاخ واختبار التنفس.</span>
               </div>
-              <a class="btn btn-secondary" href="./consultation.html">Open File</a>
+              <a class="btn btn-secondary" href="./consultation.html">فتح الملف</a>
             </div>
             <div class="utility-row">
               <div>
-                <strong style="color:var(--ink); font-size: 16px;">Tomorrow, 02:00 PM - Ali (Hypertension)</strong>
-                <span style="display:block; color:var(--muted); font-size:13px;">Routine checkup and blood pressure reading.</span>
+                <strong style="color:var(--ink); font-size: 16px;">غدًا، 02:00 م - Ali (ارتفاع ضغط الدم)</strong>
+                <span style="display:block; color:var(--muted); font-size:13px;">فحص دوري وقراءة ضغط الدم.</span>
               </div>
-              <button class="btn btn-secondary" type="button" disabled>Upcoming</button>
+              <button class="btn btn-secondary" type="button" disabled>قادمة</button>
             </div>
           </div>
         </section>

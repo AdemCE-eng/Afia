@@ -1,181 +1,212 @@
 <!doctype html>
-<html lang="en">
+<html lang="ar" dir="rtl">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Healthium | My Summary</title>
+    <title>عافية | ملخصي</title>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <link rel="stylesheet" href="../styles.css" />
     <style>
       .summary-tabs {
-        display:flex; gap:6px; margin-bottom:20px; padding:5px;
-        border:1px solid #cfe0ff; border-radius:12px;
-        background:#f4f8ff; flex-wrap:wrap;
+        display: flex;
+        gap: 6px;
+        margin: 20px 0;
+        padding: 5px;
+        border: 1px solid #cfe0ff;
+        border-radius: 12px;
+        background: #f4f8ff;
+        flex-wrap: wrap;
       }
+
       .summary-tab {
-        min-height:40px; padding: 8px 18px; border-radius:8px;
-        border:1px solid transparent; background:transparent; color:var(--blue-dark);
-        font-weight:900; cursor:pointer;
-        transition: all 140ms ease; font-size: 13px;
+        min-height: 40px;
+        padding: 8px 18px;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--blue-dark);
+        font-size: 13px;
+        font-weight: 900;
+        cursor: pointer;
+        transition: all 140ms ease;
       }
-      .summary-tab:hover {
-        border-color:#b8d0fb; background:white; color:var(--blue);
-      }
-      .summary-tab:focus-visible {
-        outline:3px solid rgba(37,99,235,0.2); outline-offset:2px;
-      }
+
+      .summary-tab:hover,
       .summary-tab.active {
-        border-color:var(--blue); background:var(--blue); color:white;
-        box-shadow:0 6px 14px rgba(37,99,235,0.2);
+        border-color: var(--blue);
+        background: var(--blue);
+        color: #ffffff;
+        box-shadow: 0 6px 14px rgba(37, 99, 235, 0.2);
       }
-      .summary-panel { display: none; }
-      .summary-panel.active { display: block; }
-      .summary-section-title { font-size:18px; font-weight:900; color:var(--ink); margin:0 0 12px; }
-      .summary-text { color: var(--muted); line-height:1.7; font-weight:600; }
-      .key-point { display:flex; gap:10px; align-items:flex-start; padding:12px 0; border-bottom:1px solid var(--line); }
-      .key-point:last-child { border-bottom:none; }
-      .key-point i { color:var(--green); flex-shrink:0; margin-top:2px; }
-      .key-point span { color:var(--ink); font-weight:700; }
+
+      .summary-panel {
+        display: none;
+      }
+
+      .summary-panel.active {
+        display: block;
+      }
+
+      .summary-section-title {
+        color: var(--ink);
+        font-size: 18px;
+        font-weight: 950;
+        margin: 0 0 12px;
+      }
+
+      .summary-text,
+      .step-body p,
+      .med-detail-card p,
+      .note-card p {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 1.7;
+        margin: 0;
+      }
+
+      .treatment-step,
       .med-detail-card {
-        border: 1px solid var(--line); border-radius:10px; padding:18px;
-        display:flex; justify-content:space-between; align-items:center;
-        margin-bottom:12px; background:white;
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        margin-bottom: 14px;
       }
-      .med-detail-card h3 { margin:0 0 4px; font-size:16px; color:var(--ink); }
-      .med-detail-card p { margin:0; color:var(--muted); font-size:13px; font-weight:600; }
-      .med-freq { font-size:22px; font-weight:950; color:var(--blue); }
-      .med-freq small { display:block; font-size:12px; color:var(--muted); font-weight:700; }
-      .note-card { background: #f8faff; border-left: 4px solid var(--blue); border-radius: 0 8px 8px 0; padding: 14px 16px; margin-bottom:12px; }
-      .note-card strong { display:block; color:var(--ink); font-size:15px; margin-bottom:4px; }
-      .note-card p { margin:0; color:var(--muted); font-size:13px; line-height:1.6; }
-      .treatment-step { display:flex; gap:16px; align-items:flex-start; margin-bottom:20px; }
-      .step-num { width:32px; height:32px; border-radius:50%; background:var(--blue); color:white; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:14px; flex-shrink:0; }
-      .step-body strong { display:block; color:var(--ink); font-weight:900; margin-bottom:4px; }
-      .step-body p { margin:0; color:var(--muted); font-size:13px; line-height:1.6; }
+
+      .step-num {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--blue);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 950;
+        flex-shrink: 0;
+      }
+
+      .step-body strong,
+      .med-detail-card h3,
+      .note-card strong {
+        display: block;
+        color: var(--ink);
+        font-weight: 950;
+        margin-bottom: 4px;
+      }
+
+      .med-detail-card,
+      .note-card {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #ffffff;
+        padding: 16px;
+      }
+
+      .med-detail-card {
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .med-freq {
+        color: var(--blue);
+        font-size: 22px;
+        font-weight: 950;
+        text-align: center;
+      }
+
+      .med-freq small {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+      }
     </style>
   </head>
   <body data-page="patient-summary">
     <main class="portal-shell patient-shell">
       <aside class="portal-sidebar patient-sidebar">
-        <div class="brand"><div class="brand-mark"><i data-lucide="heart-pulse"></i></div><div class="brand-name">Healthium</div></div>
+        <div class="brand"><div class="brand-mark" aria-hidden="true"></div><div class="brand-name">عافية</div></div>
         <nav class="side-nav" aria-label="Patient navigation">
-          <a class="nav-item" href="./dashboard.html"><i data-lucide="home"></i> Dashboard</a>
-          <a class="nav-item active" href="./summary.html"><i data-lucide="clipboard-list"></i> My Summary</a>
-          <a class="nav-item" href="./medications.html"><i data-lucide="pill"></i> Medications</a>
-          <a class="nav-item" href="./reminders.html"><i data-lucide="alarm-clock"></i> Reminders</a>
-          <a class="nav-item" href="./settings.html"><i data-lucide="settings"></i> Settings</a>
+          <a class="nav-item" href="./dashboard.html"><i data-lucide="home"></i> الرئيسية</a>
+          <a class="nav-item active" href="./summary.html"><i data-lucide="clipboard-list"></i> ملخصي</a>
+          <a class="nav-item" href="./medications.html"><i data-lucide="pill"></i> الأدوية</a>
+          <a class="nav-item" href="./reminders.html"><i data-lucide="alarm-clock"></i> التذكيرات</a>
+          <a class="nav-item" href="./settings.html"><i data-lucide="settings"></i> الإعدادات</a>
         </nav>
         <div class="patient-profile-mini">
           <div id="patientAvatarMini" class="avatar">Y</div>
-          <div><div id="patientMiniName" style="font-weight:900; color:var(--ink);">Patient</div><div style="font-size:12px; color:var(--muted); font-weight:700;">View Profile</div></div>
+          <div><div id="patientMiniName" style="font-weight:900; color:var(--ink);">Yousef</div><div style="font-size:12px; color:var(--muted); font-weight:700;">عرض الملف</div></div>
         </div>
       </aside>
 
       <section class="patient-main">
         <section class="patient-card" style="padding:28px;">
-          <h1 class="page-title">My Treatment Summary</h1>
-          <p class="page-caption">Your latest doctor-approved care plan.</p>
+          <h1 class="page-title">ملخص الخطة العلاجية</h1>
+          <p class="page-caption">آخر خطة علاجية معتمدة من الطبيب.</p>
 
-          <div class="summary-tabs" style="margin-top:20px;">
-            <button class="summary-tab active" data-panel="#panel-overview">Overview</button>
-            <button class="summary-tab" data-panel="#panel-treatment">Treatment Plan</button>
-            <button class="summary-tab" data-panel="#panel-medications">Medications</button>
-            <button class="summary-tab" data-panel="#panel-notes">Doctor Notes</button>
+          <div class="summary-tabs">
+            <button class="summary-tab active" type="button" data-panel="#panel-overview">نظرة عامة</button>
+            <button class="summary-tab" type="button" data-panel="#panel-treatment">الخطة العلاجية</button>
+            <button class="summary-tab" type="button" data-panel="#panel-medications">الأدوية</button>
+            <button class="summary-tab" type="button" data-panel="#panel-notes">ملاحظات الطبيب</button>
           </div>
 
-          <!-- Overview Panel -->
           <div id="panel-overview" class="summary-panel active">
             <div id="patientSummaryPanel">
-              <h2 class="summary-section-title">Condition Summary</h2>
-              <p class="summary-text" id="overviewConditionText">Loading your plan...</p>
+              <h2 class="summary-section-title">ملخص الحالة</h2>
+              <p class="summary-text" id="overviewConditionText">جاري تحميل خطتك...</p>
             </div>
             <div id="patientKeyPoints" style="margin-top:20px;"></div>
           </div>
 
-          <!-- Treatment Plan Panel -->
           <div id="panel-treatment" class="summary-panel">
-            <h2 class="summary-section-title">Your Treatment Steps</h2>
-            <div id="treatmentSteps">
-              <div class="treatment-step">
-                <div class="step-num">1</div>
-                <div class="step-body">
-                  <strong>Take your prescribed medication daily</strong>
-                  <p>Follow the dosage and timing exactly as prescribed by your doctor. Do not skip doses.</p>
-                </div>
-              </div>
-              <div class="treatment-step">
-                <div class="step-num">2</div>
-                <div class="step-body">
-                  <strong>Dietary adjustments</strong>
-                  <p>Avoid sugary drinks and high-carbohydrate foods. Eat balanced meals at regular intervals.</p>
-                </div>
-              </div>
-              <div class="treatment-step">
-                <div class="step-num">3</div>
-                <div class="step-body">
-                  <strong>Physical activity</strong>
-                  <p>At least 30 minutes of moderate exercise daily — walking, swimming, or cycling.</p>
-                </div>
-              </div>
-              <div class="treatment-step">
-                <div class="step-num">4</div>
-                <div class="step-body">
-                  <strong>Monitor and report</strong>
-                  <p>Track your blood sugar regularly. Report any values outside your target range to your doctor.</p>
-                </div>
-              </div>
-              <div class="treatment-step">
-                <div class="step-num">5</div>
-                <div class="step-body">
-                  <strong>Follow-up appointment</strong>
-                  <p id="followUpText">Attend your next scheduled appointment to review your progress.</p>
-                </div>
-              </div>
+            <h2 class="summary-section-title">خطوات الخطة العلاجية</h2>
+            <div class="treatment-step">
+              <div class="step-num">1</div>
+              <div class="step-body"><strong>تناول الدواء حسب الوصفة</strong><p>التزم بالجرعة والوقت كما حدده الطبيب.</p></div>
+            </div>
+            <div class="treatment-step">
+              <div class="step-num">2</div>
+              <div class="step-body"><strong>تنظيم الغذاء</strong><p>تجنب المشروبات السكرية والأطعمة عالية الكربوهيدرات.</p></div>
+            </div>
+            <div class="treatment-step">
+              <div class="step-num">3</div>
+              <div class="step-body"><strong>النشاط البدني</strong><p>مارس نشاطًا خفيفًا لمدة 30 دقيقة يوميًا.</p></div>
+            </div>
+            <div class="treatment-step">
+              <div class="step-num">4</div>
+              <div class="step-body"><strong>المتابعة</strong><p>راقب مستوى السكر بانتظام واحضر موعد المتابعة القادم.</p></div>
             </div>
           </div>
 
-          <!-- Medications Panel -->
           <div id="panel-medications" class="summary-panel">
-            <h2 class="summary-section-title">Your Medications</h2>
+            <h2 class="summary-section-title">أدويتك</h2>
             <div id="patientMedicationList">
               <div class="med-detail-card">
                 <div>
                   <h3>Metformin 500mg</h3>
-                  <p>Take 1 tablet with meals &mdash; Morning &amp; Evening</p>
-                  <p style="margin-top:6px; color:var(--blue); font-weight:800;">For: Type II Diabetes</p>
+                  <p>قرص واحد مع الطعام - صباحًا ومساءً</p>
+                  <p style="margin-top:6px; color:var(--blue); font-weight:900;">لـ: السكري من النوع الثاني</p>
                 </div>
-                <div style="text-align:center;">
-                  <div class="med-freq">2x<small>Daily</small></div>
-                </div>
-              </div>
-              <div class="med-detail-card">
-                <div>
-                  <h3>Vitamin D3 1000 IU</h3>
-                  <p>Take 1 capsule after breakfast</p>
-                  <p style="margin-top:6px; color:var(--green); font-weight:800;">Supplement</p>
-                </div>
-                <div style="text-align:center;">
-                  <div class="med-freq">1x<small>Daily</small></div>
-                </div>
+                <div class="med-freq">2x<small>يوميًا</small></div>
               </div>
             </div>
           </div>
 
-          <!-- Doctor Notes Panel -->
           <div id="panel-notes" class="summary-panel">
-            <h2 class="summary-section-title">Doctor Notes</h2>
+            <h2 class="summary-section-title">ملاحظات الطبيب</h2>
             <div id="doctorNotes">
               <div class="note-card">
-                <strong>Dr. Khalid &mdash; <span id="noteDate">Jun 11, 2026</span></strong>
-                <p id="noteText">Patient presents with well-controlled Type II Diabetes. A1C levels are within acceptable range. Continue current Metformin regimen. Emphasize adherence to diet and exercise. Schedule blood panel in 30 days.</p>
+                <strong>د. خالد - 11 يونيو 2026</strong>
+                <p>الحالة مستقرة. الاستمرار على Metformin مع الالتزام بالغذاء والنشاط، ومراجعة الطبيب في الموعد القادم.</p>
               </div>
               <div class="note-card">
-                <strong>Instructions</strong>
-                <p>Do not take Metformin on an empty stomach. If you experience nausea, dizziness, or unusual fatigue, contact the clinic immediately at your emergency line.</p>
+                <strong>تعليمات</strong>
+                <p>لا تتناول الدواء على معدة فارغة. إذا ظهرت أعراض غير معتادة، تواصل مع العيادة.</p>
               </div>
             </div>
           </div>
-
         </section>
       </section>
     </main>
@@ -183,13 +214,12 @@
     <script src="../lang.js" defer></script>
     <script src="../app.js" defer></script>
     <script>
-      // Tab switching for summary page
-      document.querySelectorAll('.summary-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-          document.querySelectorAll('.summary-tab').forEach(t => t.classList.remove('active'));
-          tab.classList.add('active');
-          document.querySelectorAll('.summary-panel').forEach(p => p.classList.remove('active'));
-          document.querySelector(tab.dataset.panel)?.classList.add('active');
+      document.querySelectorAll(".summary-tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          document.querySelectorAll(".summary-tab").forEach((item) => item.classList.remove("active"));
+          tab.classList.add("active");
+          document.querySelectorAll(".summary-panel").forEach((panel) => panel.classList.remove("active"));
+          document.querySelector(tab.dataset.panel)?.classList.add("active");
         });
       });
     </script>

@@ -1,90 +1,21 @@
 (function () {
   const STORAGE_KEY = "healthium_lang";
-
-  const translations = {
-    ar: {
-      "nav.dashboard": "لوحة التحكم",
-      "nav.appointments": "المواعيد",
-      "nav.reports": "التقارير",
-      "nav.settings": "الإعدادات",
-      "nav.summary": "ملخصي",
-      "nav.medications": "الأدوية",
-      "nav.reminders": "التذكيرات",
-      "nav.logout": "تسجيل الخروج",
-      "doctor.workspace": "مساحة الطبيب",
-      "settings.title": "الإعدادات",
-      "settings.doctor_caption": "إدارة ملفك وتفضيلات الذكاء الاصطناعي ومساحة العمل.",
-      "settings.patient_caption": "تفضيلاتك الشخصية وتفاصيل حسابك.",
-      "settings.profile": "الملف الشخصي",
-      "settings.account": "الحساب",
-      "settings.language_display": "اللغة والعرض",
-      "settings.app_language": "لغة التطبيق",
-      "settings.language_hint": "اختر لغة عرض الواجهة المفضلة لديك",
-      "settings.english": "English",
-      "settings.arabic": "العربية",
-      "settings.notifications": "الإشعارات",
-      "settings.data": "البيانات",
-      "settings.privacy": "الخصوصية والوصول",
-      "settings.ai": "تفضيلات الذكاء الاصطناعي",
-      "settings.doctor_id": "معرّف الطبيب",
-      "settings.email": "البريد الإلكتروني",
-      "settings.password": "كلمة المرور",
-      "settings.password_hint": "آخر تغيير: قبل 90 يومًا",
-      "settings.edit_profile": "تعديل الملف",
-      "settings.edit_photo": "تعديل الصورة",
-      "settings.edit": "تعديل",
-      "settings.change": "تغيير",
-      "settings.locked": "مقفل",
-      "settings.full_name": "الاسم الكامل",
-      "settings.phone": "رقم الهاتف",
-      "settings.emergency": "جهة اتصال الطوارئ",
-      "settings.not_set": "غير محدد",
-      "settings.add": "إضافة",
-      "settings.summary_language": "لغة الملخص الافتراضية",
-      "settings.summary_language_hint": "اللغة المستخدمة عند إنشاء ملخصات المرضى",
-      "settings.bilingual": "ثنائي اللغة",
-      "settings.bilingual_hint": "عرض الملخص بالعربية والإنجليزية",
-      "settings.english_only": "الإنجليزية فقط",
-      "settings.english_only_hint": "الملخص باللغة الإنجليزية",
-      "settings.arabic_only": "العربية فقط",
-      "settings.arabic_only_hint": "الملخص باللغة العربية",
-      "settings.risk_sensitivity": "حساسية اكتشاف المخاطر",
-      "settings.risk_hint": "حد التنبيه للتعارضات الدوائية المحتملة",
-      "settings.risk_high": "عالية (موصى بها)",
-      "settings.risk_medium": "متوسطة",
-      "settings.risk_low": "منخفضة",
-      "settings.high_risk_alerts": "تنبيهات الوصفات عالية الخطورة",
-      "settings.high_risk_hint": "تنبيه فوري عند اكتشاف خطر محتمل",
-      "settings.appointment_reminders": "تذكيرات المواعيد",
-      "settings.appointment_reminders_doctor_hint": "ملخص صباحي بمواعيد اليوم",
-      "settings.appointment_reminders_patient_hint": "إشعارات قبل الموعد بـ24 ساعة وساعة",
-      "settings.patient_updates": "تحديثات خطة المريض",
-      "settings.patient_updates_hint": "إشعار عند تأكيد المريض لخطته",
-      "settings.medication_reminders": "تذكيرات الأدوية",
-      "settings.medication_reminders_hint": "إشعارات لكل جرعة دوائية",
-      "settings.sms_alerts": "تنبيهات الرسائل النصية",
-      "settings.sms_alerts_hint": "رسائل احتياطية للتذكيرات المهمة",
-      "settings.care_access": "الوصول إلى خطة الرعاية",
-      "settings.care_access_hint": "السماح للطبيب بعرض خطة الرعاية",
-      "settings.reset": "إعادة البيانات التجريبية",
-      "settings.reset_hint": "استعادة بيانات المرضى الافتراضية",
-      "settings.reset_button": "إعادة التعيين",
-      "settings.export_all": "تصدير جميع البيانات",
-      "settings.export_all_hint": "تنزيل سجلات المرضى بصيغة JSON",
-      "settings.export_history": "تصدير البيانات",
-      "settings.export_history_hint": "تنزيل سجلك الصحي الكامل",
-      "settings.export": "تصدير",
-      "appointments.title": "المواعيد",
-      "appointments.caption": "الزيارات القادمة لمرضاك.",
-      "appointments.select_patient": "اختيار مريض",
-      "reports.title": "التقارير",
-      "reports.caption": "مؤشرات سير العمل المدعومة بالذكاء الاصطناعي."
-    }
-  };
+  const MIGRATION_KEY = "afia_language_migration_v1";
 
   const phraseTranslations = {
     ar: {
-      "Dashboard": "لوحة التحكم",
+      "Healthium": "عافية",
+      "Doctor workspace": "مساحة الطبيب",
+      "Patient portal": "بوابة المريض",
+      "Doctor": "طبيب",
+      "Patient": "مريض",
+      "Sign in": "تسجيل الدخول",
+      "Choose how you want to enter the demo.": "اختر طريقة الدخول إلى التجربة.",
+      "Doctor ID": "معرف الطبيب",
+      "Demo password": "كلمة مرور التجربة",
+      "Continue": "متابعة",
+      "Fill demo": "تعبئة بيانات التجربة",
+      "Dashboard": "الرئيسية",
       "Appointments": "المواعيد",
       "Reports": "التقارير",
       "Settings": "الإعدادات",
@@ -92,50 +23,108 @@
       "Medications": "الأدوية",
       "Reminders": "التذكيرات",
       "Log out": "تسجيل الخروج",
-      "Doctor workspace": "مساحة الطبيب",
+      "Logout": "تسجيل الخروج",
+      "Doctor Dashboard": "لوحة الطبيب",
       "Patient care panel": "لوحة رعاية المرضى",
+      "Select a patient, review their latest status, and update the treatment plan.": "اختر المريض، راجع حالته، ثم حدّث الخطة العلاجية.",
+      "Patients": "المرضى",
+      "Due today": "مواعيد اليوم",
+      "Care plans": "خطط علاجية",
       "Patients Overview": "نظرة عامة على المرضى",
+      "Select a patient to update their care plan.": "اختر مريضًا لتحديث خطته العلاجية.",
       "Add Patient": "إضافة مريض",
-      "Select patient": "اختيار مريض",
+      "Patient name": "اسم المريض",
+      "Age": "العمر",
+      "Gender": "الجنس",
+      "Condition": "الحالة",
+      "Save": "حفظ",
+      "Search patients": "البحث عن المرضى",
+      "Selected Patient": "المريض المحدد",
+      "Update medical info": "تحديث المعلومات الطبية",
+      "Patient view": "عرض المريض",
+      "Reset demo": "إعادة التجربة",
+      "Overview": "نظرة عامة",
+      "History": "السجل",
+      "Documents": "المستندات",
       "Update Medical Information": "تحديث المعلومات الطبية",
-      "Create Patient Plan": "إنشاء خطة المريض",
       "Diagnosis / Condition": "التشخيص / الحالة",
+      "Medications": "الأدوية",
+      "Frequency": "التكرار",
+      "Once daily": "مرة يوميًا",
+      "Twice daily": "مرتين يوميًا",
+      "Three times daily": "ثلاث مرات يوميًا",
+      "Every 8 hours": "كل 8 ساعات",
+      "As needed": "عند الحاجة",
+      "Add Medication": "إضافة دواء",
       "Instructions for Patient": "تعليمات للمريض",
-      "Follow-up Date": "تاريخ المتابعة",
+      "Follow-up Date": "موعد المتابعة",
       "Follow-up reason": "سبب المتابعة",
+      "Load sample": "تحميل مثال",
+      "Create Patient Plan": "إنشاء خطة المريض",
+      "Patient Plan Preview": "معاينة خطة المريض",
+      "Not generated yet": "لم يتم الإنشاء بعد",
+      "Create a patient plan to check the consultation details.": "أنشئ خطة المريض لفحص بيانات الاستشارة.",
       "Patient Summary": "ملخص المريض",
-      "Your Summary": "ملخصك",
-      "Medication": "الدواء",
-      "Follow-up": "المتابعة",
-      "Doctor Appointment": "موعد الطبيب",
-      "Profile": "الملف الشخصي",
-      "Notifications": "الإشعارات",
-      "Privacy & Access": "الخصوصية والوصول",
-      "Language & Display": "اللغة والعرض"
+      "The generated summary will appear here after the doctor submits medical information.": "سيظهر الملخص بعد إدخال الطبيب للمعلومات الطبية.",
+      "Medication Schedule": "جدول الأدوية",
+      "No reminder schedule yet.": "لا يوجد جدول تذكيرات بعد.",
+      "Important Instructions": "تعليمات مهمة",
+      "Instructions will appear after generation.": "ستظهر التعليمات بعد الإنشاء.",
+      "Copy Summary": "نسخ الملخص",
+      "Open Patient View": "فتح عرض المريض",
+      "Record data": "بيانات السجل",
+      "No validated record yet.": "لا يوجد سجل معتمد بعد.",
+      "Welcome back": "مرحبًا بعودتك",
+      "Your latest doctor-approved care plan.": "خطة رعايتك المعتمدة من الطبيب.",
+      "Current condition": "الحالة الحالية",
+      "Stable": "مستقرة",
+      "Current Plan": "الخطة الحالية",
+      "Latest plan": "آخر خطة",
+      "Next Appointment": "الموعد القادم",
+      "View Details": "عرض التفاصيل",
+      "My Treatment Summary": "ملخص الخطة العلاجية",
+      "Treatment Plan": "الخطة العلاجية",
+      "Doctor Notes": "ملاحظات الطبيب",
+      "View Full Plan": "عرض الخطة كاملة",
+      "Upcoming": "القادمة",
+      "Past": "السابقة",
+      "View All Reminders": "عرض كل التذكيرات",
+      "View Profile": "عرض الملف",
+      "Health Assistant": "مساعد عافية",
+      "Answers from your care plan": "إجابات من خطتك العلاجية"
     }
   };
 
-  let currentLanguage = normalizeLanguage(localStorage.getItem(STORAGE_KEY));
+  const placeholderTranslations = {
+    ar: {
+      "Search patients...": "ابحث عن مريض...",
+      "Patient name": "اسم المريض",
+      "Type II Diabetes": "السكري من النوع الثاني",
+      "Metformin": "ميتفورمين",
+      "Avoid sugary drinks and high-carb foods.": "تجنب المشروبات السكرية والأطعمة عالية الكربوهيدرات.",
+      "Review symptoms and treatment response": "مراجعة الأعراض والاستجابة للعلاج",
+      "Ask about your plan...": "اسأل عن خطتك..."
+    }
+  };
+
+  let currentLanguage = getInitialLanguage();
   let observer;
 
-  function normalizeLanguage(language) {
-    return language === "ar" ? "ar" : "en";
+  function getInitialLanguage() {
+    if (!localStorage.getItem(MIGRATION_KEY)) {
+      localStorage.setItem(MIGRATION_KEY, "1");
+      localStorage.setItem(STORAGE_KEY, "ar");
+      return "ar";
+    }
+    return normalizeLanguage(localStorage.getItem(STORAGE_KEY));
   }
 
-  function translateElement(element, language) {
-    const key = element.dataset.i18n;
-    if (!key) return;
-
-    if (!element.dataset.i18nEn) {
-      element.dataset.i18nEn = element.textContent.trim();
-    }
-
-    const translated = translations[language]?.[key];
-    element.textContent = language === "en" ? element.dataset.i18nEn : translated || element.dataset.i18nEn;
+  function normalizeLanguage(language) {
+    return language === "en" ? "en" : "ar";
   }
 
   function translateTextNodes(root, language) {
-    const dictionary = phraseTranslations[language] || {};
+    const dictionary = phraseTranslations.ar;
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     const nodes = [];
 
@@ -143,22 +132,36 @@
 
     nodes.forEach((node) => {
       const parent = node.parentElement;
-      if (!parent || parent.closest("script, style, [data-i18n]")) return;
+      if (!parent || parent.closest("script, style, pre, code")) return;
 
       const text = node.nodeValue.trim();
       if (!text) return;
 
-      if (!parent.dataset.originalText && dictionary[text]) {
-        parent.dataset.originalText = text;
+      if (!parent.dataset.originalText && (dictionary[text] || Object.values(dictionary).includes(text))) {
+        parent.dataset.originalText = Object.keys(dictionary).find((key) => dictionary[key] === text) || text;
       }
 
       const original = parent.dataset.originalText;
       if (!original) return;
 
-      node.nodeValue = node.nodeValue.replace(
-        language === "en" ? dictionary[original] || original : original,
-        language === "en" ? original : dictionary[original] || original
-      );
+      const nextText = language === "ar" ? dictionary[original] || original : original;
+      node.nodeValue = node.nodeValue.replace(text, nextText);
+    });
+  }
+
+  function translatePlaceholders(root, language) {
+    const dictionary = placeholderTranslations.ar;
+    root.querySelectorAll?.("[placeholder]").forEach((element) => {
+      if (!element.dataset.originalPlaceholder) {
+        const value = element.getAttribute("placeholder");
+        if (dictionary[value] || Object.values(dictionary).includes(value)) {
+          element.dataset.originalPlaceholder = Object.keys(dictionary).find((key) => dictionary[key] === value) || value;
+        }
+      }
+
+      const original = element.dataset.originalPlaceholder;
+      if (!original) return;
+      element.setAttribute("placeholder", language === "ar" ? dictionary[original] || original : original);
     });
   }
 
@@ -175,11 +178,10 @@
     localStorage.setItem(STORAGE_KEY, currentLanguage);
     document.documentElement.lang = currentLanguage;
     document.documentElement.dir = currentLanguage === "ar" ? "rtl" : "ltr";
+    document.body.classList.toggle("rtl-ui", currentLanguage === "ar");
 
-    document.querySelectorAll("[data-i18n]").forEach((element) => {
-      translateElement(element, currentLanguage);
-    });
     translateTextNodes(document.body, currentLanguage);
+    translatePlaceholders(document.body, currentLanguage);
     updateLanguageControls(currentLanguage);
 
     document.dispatchEvent(new CustomEvent("healthium:languagechange", {
@@ -199,9 +201,8 @@
       mutations.forEach((mutation) => {
         mutation.addedNodes.forEach((node) => {
           if (node.nodeType !== Node.ELEMENT_NODE) return;
-          if (node.matches("[data-i18n]")) translateElement(node, currentLanguage);
-          node.querySelectorAll?.("[data-i18n]").forEach((element) => translateElement(element, currentLanguage));
           translateTextNodes(node, currentLanguage);
+          translatePlaceholders(node, currentLanguage);
         });
       });
       updateLanguageControls(currentLanguage);
