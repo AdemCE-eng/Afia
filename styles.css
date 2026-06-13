@@ -1063,6 +1063,13 @@ a {
   gap: 18px;
 }
 
+.patient-shell .patient-main {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+  padding: 28px;
+}
+
 .settings-page-main {
   padding: 36px;
   display: block;
@@ -2344,6 +2351,12 @@ a {
   margin-inline: auto;
 }
 
+.patient-shell .patient-main {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+}
+
 .doctor-dashboard-main {
   grid-template-columns: minmax(0, 1fr) 320px;
   gap: 22px;
@@ -3222,6 +3235,12 @@ a {
 .patient-main {
   width: min(100%, 1180px);
   margin-inline: auto;
+}
+
+.patient-shell .patient-main {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
 }
 
 .doctor-dashboard-main {

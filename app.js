@@ -49,16 +49,6 @@
       phone: "+966 55 000 1026",
       visits: [],
     },
-    {
-      id: "P-10027",
-      fullName: "Mohammed",
-      age: 45,
-      gender: "Male",
-      condition: "High Cholesterol",
-      nextVisit: addDays(todayIso(), 10),
-      phone: "+966 55 000 1027",
-      visits: [],
-    },
   ];
 
   const FIELD_TARGETS = {
@@ -733,20 +723,22 @@
       "P-1220": { id: "P-10025", fullName: "Ali", condition: "Hypertension" },
     };
 
-    const migrated = patients.map((patient, index) => {
-      const override = byId[patient.id] || {};
-      return {
-        ...patient,
-        ...override,
-        id: override.id || patient.id || DEMO_PATIENTS[index]?.id || `P-${10030 + index}`,
-        fullName: override.fullName || patient.fullName || DEMO_PATIENTS[index]?.fullName || "Patient",
-        age: override.age || patient.age || DEMO_PATIENTS[index]?.age || null,
-        gender: patient.gender || DEMO_PATIENTS[index]?.gender || "Male",
-        condition: override.condition || patient.condition || DEMO_PATIENTS[index]?.condition || "New consultation",
-        nextVisit: patient.nextVisit || DEMO_PATIENTS[index]?.nextVisit || addDays(todayIso(), 7),
-        visits: Array.isArray(patient.visits) ? patient.visits : [],
-      };
-    });
+    const migrated = patients
+      .filter((patient) => patient.id !== "P-10027" && patient.fullName !== "Mohammed")
+      .map((patient, index) => {
+        const override = byId[patient.id] || {};
+        return {
+          ...patient,
+          ...override,
+          id: override.id || patient.id || DEMO_PATIENTS[index]?.id || `P-${10030 + index}`,
+          fullName: override.fullName || patient.fullName || DEMO_PATIENTS[index]?.fullName || "Patient",
+          age: override.age || patient.age || DEMO_PATIENTS[index]?.age || null,
+          gender: patient.gender || DEMO_PATIENTS[index]?.gender || "Male",
+          condition: override.condition || patient.condition || DEMO_PATIENTS[index]?.condition || "New consultation",
+          nextVisit: patient.nextVisit || DEMO_PATIENTS[index]?.nextVisit || addDays(todayIso(), 7),
+          visits: Array.isArray(patient.visits) ? patient.visits : [],
+        };
+      });
 
     DEMO_PATIENTS.forEach((demo) => {
       if (!migrated.some((patient) => patient.id === demo.id)) migrated.push(clone(demo));
