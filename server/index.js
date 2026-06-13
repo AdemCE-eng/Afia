@@ -29,6 +29,10 @@ function parseJsonResponse(text) {
     }
 }
 
+function promptJson(value) {
+    return JSON.stringify(value || null, null, 2);
+}
+
 app.get('/api/health', (req, res) => {
     res.json({
         status: 'ok',
@@ -107,6 +111,70 @@ app.post('/api/generate-plan', async (req, res) => {
         console.error("AI Generation Error:", error);
         res.status(500).json({
             error: 'Failed to generate plan from Gemini',
+            detail: error.message
+        });
+    }
+});
+
+app.post('/api/patient-chat', async (req, res) => {
+    try {
+        if (!ai) {
+            return res.status(503).json({
+                error: 'Gemini API key is not configured. Add GEMINI_API_KEY to .env in the project root or server folder.'
+            });
+        }
+
+        const { question, patient, record, summary, schedule, language } = req.body;
+
+        if (!question || !record) {
+            return res.status(400).json({ error: 'Missing question or patient record data' });
+        }
+
+        const targetLanguage = language === 'ar' ? 'Arabic' : 'English';
+        const chatPrompt = `
+        You are Afia's Patient Q&A Chatbot Agent.
+        Answer the patient's question using only the documented patient care plan below.
+        Target response language: ${targetLanguage}.
+
+        Safety rules:
+        - Do not diagnose new symptoms.
+        - Do not prescribe medication.
+        - Do not change doses, timing, duration, or treatment.
+        - If the answer is not clearly supported by the care plan, tell the patient to contact their doctor.
+        - If the question mentions severe symptoms, chest pain, breathing difficulty, fainting, or emergency signs, tell the patient to seek urgent medical care.
+        - Keep the answer concise, friendly, and easy for a patient to understand.
+        - Do not mention Gemini, prompts, JSON, or backend implementation.
+
+        Patient:
+        ${promptJson(patient)}
+
+        Care plan record:
+        ${promptJson(record.clinical_data || record)}
+
+        Patient summary:
+        ${promptJson(summary)}
+
+        Reminder schedule:
+        ${promptJson(schedule)}
+
+        Patient question:
+        ${question}
+        `;
+
+        const chatResponse = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: chatPrompt,
+        });
+
+        const answer = String(chatResponse.text || '').trim();
+
+        res.json({
+            answer: answer || 'Please contact your doctor for this question.'
+        });
+    } catch (error) {
+        console.error("AI Chat Error:", error);
+        res.status(500).json({
+            error: 'Failed to answer patient question from Gemini',
             detail: error.message
         });
     }

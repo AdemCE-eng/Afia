@@ -1231,7 +1231,8 @@
         </form>
       </div>
       <button id="floatingAssistantToggle" class="floating-chat-button" type="button" aria-label="Open AI health assistant">
-        <span aria-hidden="true">&#129302;</span>
+        <i data-lucide="message-circle"></i>
+        <span class="floating-chat-label">${escapeHtml(uiText("Afia", "\u0639\u0627\u0641\u064a\u0629"))}</span>
       </button>
     `;
     document.body.appendChild(widget);
@@ -1535,15 +1536,64 @@
     submitFloatingQuestion(question);
   }
 
-  function submitPatientQuestion(question) {
+  async function submitPatientQuestion(question) {
     appendChat("user", question);
-    appendChat("bot", answerPatientQuestion(question));
+    const pending = appendChat("bot", uiText("Afia assistant is checking your care plan...", "\u0645\u0633\u0627\u0639\u062f \u0639\u0627\u0641\u064a\u0629 \u064a\u0631\u0627\u062c\u0639 \u062e\u0637\u062a\u0643 \u0627\u0644\u0639\u0644\u0627\u062c\u064a\u0629..."));
+    const answer = await getPatientAiAnswer(question);
+    updateChatMessage(pending, answer);
   }
 
-  function submitFloatingQuestion(question) {
+  async function submitFloatingQuestion(question) {
     $("floatingAssistantPanel")?.classList.add("open");
     appendFloatingChat("user", question);
-    appendFloatingChat("bot", answerPatientQuestion(question));
+    const pending = appendFloatingChat("bot", uiText("Afia assistant is checking your care plan...", "\u0645\u0633\u0627\u0639\u062f \u0639\u0627\u0641\u064a\u0629 \u064a\u0631\u0627\u062c\u0639 \u062e\u0637\u062a\u0643 \u0627\u0644\u0639\u0644\u0627\u062c\u064a\u0629..."));
+    const answer = await getPatientAiAnswer(question);
+    updateChatMessage(pending, answer);
+  }
+
+  async function getPatientAiAnswer(question) {
+    const fallback = answerPatientQuestion(question);
+    const patient = getSelectedPatient();
+    const latest = patient.visits[0] || buildFallbackVisit(patient);
+    let timeout;
+
+    try {
+      const controller = new AbortController();
+      timeout = window.setTimeout(() => controller.abort(), 7000);
+      const response = await fetch(`${getApiBaseUrl()}/api/patient-chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question,
+          language: window.HealthiumI18n?.getLanguage?.() || "en",
+          patient: {
+            id: patient.id,
+            fullName: patient.fullName,
+            age: patient.age,
+            gender: patient.gender,
+            condition: patient.condition,
+            nextVisit: patient.nextVisit,
+          },
+          record: latest.record,
+          summary: latest.summary,
+          schedule: latest.schedule,
+        }),
+        signal: controller.signal,
+      });
+
+      if (!response.ok) throw new Error("Patient chat backend unavailable");
+
+      const data = await response.json();
+      const answer = String(data.answer || "").trim();
+      return answer || fallback;
+    } catch (error) {
+      console.warn("Patient chat fallback:", error);
+      return fallback;
+    } finally {
+      if (timeout) window.clearTimeout(timeout);
+    }
   }
 
   function answerPatientQuestion(question) {
@@ -1590,6 +1640,8 @@
     node.className = `chat-message ${role}`;
     node.textContent = message;
     $("chatMessages")?.appendChild(node);
+    $("chatMessages")?.scrollTo({ top: $("chatMessages").scrollHeight, behavior: "smooth" });
+    return node;
   }
 
   function appendFloatingChat(role, message) {
@@ -1598,6 +1650,13 @@
     node.textContent = message;
     $("floatingChatMessages")?.appendChild(node);
     $("floatingChatMessages")?.scrollTo({ top: $("floatingChatMessages").scrollHeight, behavior: "smooth" });
+    return node;
+  }
+
+  function updateChatMessage(node, message) {
+    if (!node) return;
+    node.textContent = message;
+    node.classList.add("chat-message-ready");
   }
 
   function handleValidationClick(event) {
