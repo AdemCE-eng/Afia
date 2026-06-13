@@ -5215,3 +5215,81 @@ body[data-page="consultation"] .plan-summary {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* Shared control alignment pass */
+body:not([data-page="consultation"]) .record-tabs,
+.patient-tabs,
+.summary-tabs,
+.reminder-tabs {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 5px !important;
+  overflow-x: auto;
+}
+
+.record-tab,
+.patient-tab,
+.summary-tab,
+.reminder-tab-btn {
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 42px !important;
+  height: 42px !important;
+  margin: 0 !important;
+  padding: 0 18px !important;
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+  line-height: 1.1 !important;
+  white-space: nowrap !important;
+  transform: none !important;
+}
+
+.record-tab.active,
+.patient-tab.active,
+.summary-tab.active,
+.reminder-tab-btn.active {
+  border: 1px solid rgba(46, 112, 209, 0.28) !important;
+  background: #ffffff !important;
+  color: var(--blue) !important;
+  transform: none !important;
+}
+
+body[data-page="consultation"] .record-tab {
+  min-height: 36px !important;
+  height: 36px !important;
+}
+
+.settings-row:has(.toggle-switch) {
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 20px !important;
+}
+
+.settings-row:has(.toggle-switch) .settings-row-label {
+  flex: 1 1 auto !important;
+  max-width: min(760px, calc(100% - 96px));
+}
+
+.settings-row:has(.toggle-switch) .toggle-switch {
+  flex: 0 0 44px !important;
+  margin-inline-start: auto !important;
+  margin-inline-end: 0 !important;
+  order: 0 !important;
+}
+
+@media (max-width: 760px) {
+  .settings-row:has(.toggle-switch) {
+    align-items: flex-start !important;
+  }
+
+  .settings-row:has(.toggle-switch) .settings-row-label {
+    max-width: none;
+  }
+
+  .settings-row:has(.toggle-switch) .toggle-switch {
+    margin-inline-start: 0 !important;
+  }
+}
