@@ -362,7 +362,7 @@ a {
   border: 1px solid transparent;
   border-radius: 10px;
   display: grid;
-  grid-template-columns: 62px 1.1fr 0.85fr 0.85fr 24px;
+  grid-template-columns: 62px 1.1fr 0.85fr 0.85fr minmax(74px, auto);
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
@@ -421,6 +421,26 @@ a {
 
 .next-visit.today {
   color: var(--red);
+}
+
+.patient-row-action {
+  justify-self: end;
+  min-width: 74px;
+  padding: 8px 12px;
+  border: 1px solid #c8dcff;
+  border-radius: 999px;
+  color: var(--blue);
+  background: #f3f8ff;
+  font-size: 12px;
+  font-weight: 950;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.patient-button.active .patient-row-action {
+  border-color: #8ddfca;
+  color: #0c8b68;
+  background: #e9fbf6;
 }
 
 .avatar {
@@ -2347,7 +2367,7 @@ a {
 }
 
 [dir="rtl"] .patient-button {
-  grid-template-columns: 56px minmax(120px, 1fr) minmax(140px, 0.7fr) minmax(150px, 0.8fr) 24px;
+  grid-template-columns: 56px minmax(120px, 1fr) minmax(140px, 0.7fr) minmax(150px, 0.8fr) minmax(74px, auto);
 }
 
 [dir="rtl"] .patient-button > i {
@@ -3210,7 +3230,7 @@ a {
 }
 
 [dir="rtl"] .patient-button {
-  grid-template-columns: 56px minmax(120px, 1fr) minmax(140px, 0.7fr) minmax(150px, 0.8fr) 24px;
+  grid-template-columns: 56px minmax(120px, 1fr) minmax(140px, 0.7fr) minmax(150px, 0.8fr) minmax(74px, auto);
 }
 
 [dir="rtl"] .patient-button > i {
@@ -4107,9 +4127,8 @@ a {
 /* Dashboard viewport alignment pass */
 .doctor-shell .portal-main.doctor-dashboard-main {
   padding: 18px 24px 22px !important;
-  height: 100vh;
-  min-height: 0;
-  overflow: hidden;
+  min-height: 100vh;
+  overflow: visible;
 }
 
 .doctor-dashboard-main .doctor-hero-panel {
@@ -4154,8 +4173,7 @@ a {
 .dashboard-content-grid {
   grid-template-columns: minmax(0, 1fr) 300px !important;
   gap: 14px !important;
-  height: calc(100vh - 258px);
-  min-height: 0;
+  min-height: calc(100vh - 258px);
   margin-top: 14px !important;
 }
 
@@ -4210,20 +4228,20 @@ a {
   flex: 1 1 auto;
   min-height: 0;
   margin-top: 16px;
-  overflow-y: auto;
-  padding-inline-end: 4px;
+  overflow: visible;
+  padding-inline-end: 0;
   align-content: start;
 }
 
 .dashboard-content-grid .patient-button {
   min-height: 72px !important;
   padding: 12px 14px !important;
-  grid-template-columns: 48px minmax(110px, 1fr) minmax(135px, 0.8fr) minmax(145px, 0.9fr) 20px !important;
+  grid-template-columns: 48px minmax(110px, 1fr) minmax(135px, 0.8fr) minmax(145px, 0.9fr) minmax(72px, auto) !important;
   gap: 12px !important;
 }
 
 [dir="rtl"] .dashboard-content-grid .patient-button {
-  grid-template-columns: 48px minmax(110px, 1fr) minmax(135px, 0.8fr) minmax(145px, 0.9fr) 20px !important;
+  grid-template-columns: 48px minmax(110px, 1fr) minmax(135px, 0.8fr) minmax(145px, 0.9fr) minmax(72px, auto) !important;
 }
 
 .dashboard-content-grid .avatar {

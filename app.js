@@ -788,7 +788,8 @@
 
     patientList.innerHTML = patients
       .map((patient) => {
-        const active = patient.id === state.selectedPatientId ? " active" : "";
+        const isActive = patient.id === state.selectedPatientId;
+        const active = isActive ? " active" : "";
         const today = patient.nextVisit === todayIso();
         return `
           <button class="patient-button${active}" type="button" data-patient-id="${escapeHtml(patient.id)}">
@@ -799,7 +800,7 @@
             </div>
             <div class="condition-cell">${escapeHtml(translateCondition(patient.condition) || uiText("New consultation", "استشارة جديدة"))}</div>
             <div class="next-visit${today ? " today" : ""}">${escapeHtml(uiText("Next Visit", "الزيارة القادمة"))}: ${today ? escapeHtml(uiText("Today", "اليوم")) : formatFullDate(patient.nextVisit)}</div>
-            <i data-lucide="chevron-right"></i>
+            <span class="patient-row-action">${escapeHtml(isActive ? uiText("Selected", "محدد") : uiText("Select", "اختيار"))}</span>
           </button>
         `;
       })
