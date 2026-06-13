@@ -4103,3 +4103,571 @@ a {
     width: auto !important;
   }
 }
+
+/* Dashboard viewport alignment pass */
+.doctor-shell .portal-main.doctor-dashboard-main {
+  padding: 18px 24px 22px !important;
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.doctor-dashboard-main .doctor-hero-panel {
+  min-height: 132px !important;
+  padding: 18px 26px !important;
+  gap: 12px !important;
+}
+
+.doctor-dashboard-main .doctor-hero-panel > div:first-child {
+  max-width: 560px;
+}
+
+.doctor-dashboard-main .doctor-hero-panel .page-title {
+  font-size: clamp(28px, 2.7vw, 40px) !important;
+}
+
+.doctor-dashboard-main .doctor-hero-panel .page-caption {
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+.doctor-dashboard-main .doctor-metric-grid {
+  grid-template-columns: repeat(3, 118px) !important;
+  gap: 10px !important;
+}
+
+.doctor-dashboard-main .doctor-metric {
+  width: 118px;
+  min-height: 68px !important;
+  padding: 8px !important;
+}
+
+.doctor-dashboard-main .doctor-metric span {
+  font-size: 24px !important;
+}
+
+.doctor-dashboard-main .doctor-metric p {
+  margin-top: 4px !important;
+  font-size: 11px;
+}
+
+.dashboard-content-grid {
+  grid-template-columns: minmax(0, 1fr) 300px !important;
+  gap: 14px !important;
+  height: calc(100vh - 258px);
+  min-height: 0;
+  margin-top: 14px !important;
+}
+
+.dashboard-content-grid .patients-card {
+  min-height: 0;
+  height: 100%;
+}
+
+.dashboard-content-grid .selected-card {
+  min-height: 0;
+  height: auto;
+  max-height: 100%;
+  align-self: start;
+}
+
+.dashboard-content-grid .patients-card {
+  padding: 22px !important;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-content-grid .patients-header {
+  align-items: start;
+  gap: 14px;
+}
+
+.dashboard-content-grid .patients-header .page-title {
+  font-size: 26px;
+}
+
+.dashboard-content-grid .patients-header .page-caption {
+  margin-top: 4px;
+  font-size: 13px;
+}
+
+.dashboard-content-grid .patients-header .btn {
+  width: auto;
+  min-width: 140px;
+  padding: 12px 16px;
+}
+
+.dashboard-content-grid .search-row {
+  margin-top: 18px !important;
+  gap: 10px !important;
+}
+
+.dashboard-content-grid .field label {
+  display: none;
+}
+
+.dashboard-content-grid .patient-overview-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-top: 16px;
+  overflow-y: auto;
+  padding-inline-end: 4px;
+  align-content: start;
+}
+
+.dashboard-content-grid .patient-button {
+  min-height: 72px !important;
+  padding: 12px 14px !important;
+  grid-template-columns: 48px minmax(110px, 1fr) minmax(135px, 0.8fr) minmax(145px, 0.9fr) 20px !important;
+  gap: 12px !important;
+}
+
+[dir="rtl"] .dashboard-content-grid .patient-button {
+  grid-template-columns: 48px minmax(110px, 1fr) minmax(135px, 0.8fr) minmax(145px, 0.9fr) 20px !important;
+}
+
+.dashboard-content-grid .avatar {
+  width: 48px;
+  height: 48px;
+}
+
+.dashboard-content-grid .patient-name {
+  font-size: 14px;
+}
+
+.dashboard-content-grid .patient-meta,
+.dashboard-content-grid .condition-cell,
+.dashboard-content-grid .next-visit {
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.dashboard-content-grid .selected-care-card {
+  position: sticky;
+  top: 18px;
+  padding: 18px !important;
+  gap: 12px !important;
+  overflow: auto;
+}
+
+.selected-care-card .selected-card-kicker {
+  justify-self: center;
+  padding: 6px 12px;
+}
+
+.selected-care-card .selected-patient-preview {
+  gap: 10px !important;
+}
+
+.selected-care-card .selected-patient-preview > .flex {
+  justify-content: center;
+  text-align: center;
+}
+
+.selected-care-card .overview-item {
+  padding: 10px !important;
+}
+
+.selected-care-card .overview-label {
+  font-size: 10px;
+}
+
+.selected-care-card .overview-value {
+  margin-top: 3px;
+  font-size: 13px;
+}
+
+.selected-care-card .btn {
+  min-height: 48px;
+  padding: 11px 14px;
+}
+
+@media (max-height: 760px) and (min-width: 1051px) {
+  .doctor-dashboard-main .doctor-hero-panel {
+    min-height: 112px !important;
+    padding-block: 14px !important;
+  }
+
+  .doctor-dashboard-main .doctor-hero-panel .page-title {
+    font-size: clamp(26px, 2.45vw, 36px) !important;
+  }
+
+  .dashboard-content-grid {
+    height: calc(100vh - 232px);
+  }
+
+  .dashboard-content-grid .patient-button {
+    min-height: 66px !important;
+  }
+
+  .selected-care-card .overview-item {
+    padding: 8px !important;
+  }
+}
+
+@media (max-width: 1050px) {
+  .doctor-shell .portal-main.doctor-dashboard-main {
+    overflow: visible;
+  }
+
+  .dashboard-content-grid {
+    height: auto;
+    grid-template-columns: 1fr !important;
+  }
+
+  .dashboard-content-grid .patients-card,
+  .dashboard-content-grid .selected-card {
+    height: auto;
+  }
+
+  .dashboard-content-grid .selected-care-card {
+    position: static;
+  }
+}
+
+/* Consultation viewport alignment pass */
+body[data-page="consultation"] .detail-page {
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
+  padding: 12px 18px 18px !important;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 12px;
+}
+
+body[data-page="consultation"] .record-header {
+  min-height: 86px;
+  padding: 10px 12px !important;
+  border-radius: 8px;
+  display: grid !important;
+  grid-template-columns: 46px 56px minmax(210px, 0.72fr) minmax(360px, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+body[data-page="consultation"] .record-header > .icon-button {
+  grid-column: 1;
+  width: 42px;
+  height: 42px;
+}
+
+body[data-page="consultation"] .record-header > .large-avatar {
+  grid-column: 2;
+  width: 56px;
+  height: 56px;
+  font-size: 23px;
+}
+
+body[data-page="consultation"] .record-title {
+  grid-column: 3;
+  min-width: 0;
+  margin: 0 !important;
+}
+
+body[data-page="consultation"] .record-title h1 {
+  font-size: 24px;
+  line-height: 1.05;
+  white-space: nowrap;
+}
+
+body[data-page="consultation"] .record-title p {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body[data-page="consultation"] .record-tabs {
+  grid-column: 4;
+  min-width: 0;
+  min-height: 52px;
+  align-self: center !important;
+  justify-self: stretch;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(92px, 1fr));
+  gap: 5px !important;
+  padding: 5px !important;
+  overflow-x: auto;
+}
+
+body[data-page="consultation"] .record-tab {
+  min-height: 42px;
+  padding: 0 12px !important;
+  border: 0 !important;
+  white-space: nowrap;
+}
+
+body[data-page="consultation"] .record-header > div:last-child {
+  grid-column: 5;
+  justify-self: end;
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center;
+}
+
+body[data-page="consultation"] #langToggleBtn {
+  height: 42px;
+  padding: 0 14px !important;
+  border-radius: 999px !important;
+}
+
+body[data-page="consultation"] #logoutButton {
+  min-height: 42px;
+  padding: 0 14px;
+  width: auto;
+}
+
+body[data-page="consultation"] .tab-content.active {
+  min-height: 0;
+  height: 100%;
+}
+
+body[data-page="consultation"] .record-layout {
+  height: 100%;
+  min-height: 0;
+  margin-top: 0 !important;
+  grid-template-columns: minmax(520px, 1fr) minmax(560px, 1fr) !important;
+  gap: 16px !important;
+  align-items: stretch !important;
+}
+
+body[data-page="consultation"] .medical-form-card,
+body[data-page="consultation"] .plan-card {
+  height: 100%;
+  min-height: 0;
+  overflow: auto;
+  padding: 18px !important;
+}
+
+body[data-page="consultation"] .medical-form-card h2,
+body[data-page="consultation"] .plan-card h2 {
+  font-size: 23px;
+  line-height: 1.2;
+}
+
+body[data-page="consultation"] .doctor-form {
+  margin-top: 16px !important;
+  gap: 12px !important;
+}
+
+body[data-page="consultation"] .field {
+  gap: 6px;
+}
+
+body[data-page="consultation"] .field label {
+  font-size: 13px;
+}
+
+body[data-page="consultation"] .field input,
+body[data-page="consultation"] .field select,
+body[data-page="consultation"] .field textarea,
+body[data-page="consultation"] .medicine-input {
+  min-height: 44px;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+body[data-page="consultation"] .medicine-input {
+  padding: 0 10px;
+}
+
+body[data-page="consultation"] .medicine-input input {
+  padding: 0;
+}
+
+body[data-page="consultation"] .doctor-form .medication-row,
+[dir="rtl"] body[data-page="consultation"] .doctor-form .medication-row {
+  grid-template-columns: minmax(150px, 1fr) 76px 74px minmax(118px, 0.78fr) 34px !important;
+  gap: 8px !important;
+}
+
+body[data-page="consultation"] #instructions {
+  min-height: 96px !important;
+  max-height: 120px;
+  resize: vertical;
+}
+
+body[data-page="consultation"] .small-link {
+  margin-top: 8px;
+}
+
+body[data-page="consultation"] .form-actions {
+  margin-top: 2px;
+  gap: 10px;
+}
+
+body[data-page="consultation"] .form-actions .btn,
+body[data-page="consultation"] .plan-actions .btn {
+  min-height: 46px;
+  padding: 10px 16px;
+}
+
+body[data-page="consultation"] .plan-header {
+  margin-bottom: 14px !important;
+  gap: 10px;
+}
+
+body[data-page="consultation"] .status-chip {
+  margin-left: 0;
+  margin-inline-start: auto;
+}
+
+body[data-page="consultation"] .validation-area {
+  margin-bottom: 8px;
+}
+
+body[data-page="consultation"] .empty-state {
+  padding: 12px;
+}
+
+body[data-page="consultation"] .plan-summary {
+  padding: 18px;
+}
+
+body[data-page="consultation"] .plan-summary h3,
+body[data-page="consultation"] .mini-plan-card h3 {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+body[data-page="consultation"] .plan-summary p {
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+body[data-page="consultation"] .plan-grid {
+  margin-top: 14px !important;
+  gap: 12px !important;
+}
+
+body[data-page="consultation"] .mini-plan-card {
+  padding: 14px !important;
+}
+
+body[data-page="consultation"] .schedule-preview,
+body[data-page="consultation"] .instruction-list {
+  gap: 8px;
+}
+
+body[data-page="consultation"] .schedule-row {
+  padding: 10px 0;
+  grid-template-columns: 78px 1fr auto;
+}
+
+body[data-page="consultation"] .instruction-item {
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+body[data-page="consultation"] .plan-actions {
+  margin-top: 14px !important;
+  gap: 10px;
+}
+
+body[data-page="consultation"] .json-details {
+  margin-top: 10px !important;
+}
+
+body[data-page="consultation"] .json-box {
+  max-height: 180px;
+}
+
+@media (max-height: 820px) and (min-width: 1101px) {
+  body[data-page="consultation"] .detail-page {
+    padding: 10px 16px 14px !important;
+    gap: 10px;
+  }
+
+  body[data-page="consultation"] .record-header {
+    min-height: 76px;
+    grid-template-columns: 40px 48px minmax(190px, 0.65fr) minmax(330px, 1fr) auto;
+  }
+
+  body[data-page="consultation"] .record-header > .icon-button,
+  body[data-page="consultation"] #langToggleBtn,
+  body[data-page="consultation"] #logoutButton {
+    min-height: 38px;
+    height: 38px;
+  }
+
+  body[data-page="consultation"] .record-header > .large-avatar {
+    width: 48px;
+    height: 48px;
+  }
+
+  body[data-page="consultation"] .medical-form-card,
+  body[data-page="consultation"] .plan-card {
+    padding: 16px !important;
+  }
+
+  body[data-page="consultation"] .doctor-form {
+    margin-top: 12px !important;
+    gap: 10px !important;
+  }
+
+  body[data-page="consultation"] #instructions {
+    min-height: 82px !important;
+  }
+}
+
+@media (max-width: 1180px) {
+  body[data-page="consultation"] .detail-page {
+    height: auto;
+    overflow: visible;
+  }
+
+  body[data-page="consultation"] .record-header {
+    grid-template-columns: 46px 56px minmax(180px, 1fr) auto;
+  }
+
+  body[data-page="consultation"] .record-tabs {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  body[data-page="consultation"] .record-header > div:last-child {
+    grid-column: 4;
+  }
+
+  body[data-page="consultation"] .record-layout {
+    height: auto;
+    grid-template-columns: 1fr !important;
+  }
+
+  body[data-page="consultation"] .medical-form-card,
+  body[data-page="consultation"] .plan-card {
+    height: auto;
+    overflow: visible;
+  }
+}
+
+@media (max-width: 720px) {
+  body[data-page="consultation"] .detail-page {
+    padding: 12px !important;
+  }
+
+  body[data-page="consultation"] .record-header {
+    grid-template-columns: 42px 50px minmax(0, 1fr);
+  }
+
+  body[data-page="consultation"] .record-header > div:last-child {
+    grid-column: 1 / -1;
+    justify-self: stretch;
+  }
+
+  body[data-page="consultation"] .record-header > div:last-child > * {
+    flex: 1;
+  }
+
+  body[data-page="consultation"] .record-tabs {
+    grid-template-columns: repeat(4, minmax(112px, 1fr));
+  }
+
+  body[data-page="consultation"] .doctor-form .medication-row,
+  [dir="rtl"] body[data-page="consultation"] .doctor-form .medication-row {
+    grid-template-columns: 1fr !important;
+  }
+}

@@ -1132,8 +1132,8 @@
     const patient = getSelectedPatient();
     const isDiabetes = /diabetes/i.test(patient.condition);
 
-    setValue("diagnosis", patient.condition || "Type II Diabetes");
-    setValue("medicationName", isDiabetes ? "Metformin" : "Amoxicillin");
+    setValue("diagnosis", translateCondition(patient.condition || "Type II Diabetes"));
+    setValue("medicationName", isDiabetes ? uiText("Metformin", "ميتفورمين") : uiText("Amoxicillin", "أموكسيسيلين"));
     setValue("doseAmount", isDiabetes ? "500" : "500");
     setValue("doseUnit", "mg");
     setValue("frequency", isDiabetes ? "twice daily" : "twice daily");
@@ -1143,12 +1143,17 @@
     setValue("durationValue", isDiabetes ? "30" : "7");
     setValue("durationUnit", "days");
     setValue("instructions", isDiabetes
-      ? "Avoid sugary drinks and high-carb foods.\nExercise for 30 minutes daily.\nMonitor blood sugar regularly."
-      : "Drink fluids.\nAvoid physical effort.");
-    setValue("labs", isDiabetes ? "Blood sugar test" : "CBC");
+      ? uiText(
+          "Avoid sugary drinks and high-carb foods.\nExercise for 30 minutes daily.\nMonitor blood sugar regularly.",
+          "تجنب المشروبات السكرية والأطعمة عالية الكربوهيدرات.\nمارس نشاطًا خفيفًا لمدة 30 دقيقة يوميًا.\nراقب مستوى السكر بانتظام."
+        )
+      : uiText("Drink fluids.\nAvoid physical effort.", "اشرب سوائل كافية.\nتجنب المجهود البدني."));
+    setValue("labs", isDiabetes ? uiText("Blood sugar test", "تحليل سكر الدم") : "CBC");
     setValue("followUpNeeded", "yes");
     setValue("followUpDate", patient.nextVisit || addDays(todayIso(), 7));
-    setValue("followUpReason", isDiabetes ? "Review blood sugar readings" : "Review symptoms and treatment response");
+    setValue("followUpReason", isDiabetes
+      ? uiText("Review blood sugar readings", "مراجعة قراءات سكر الدم")
+      : uiText("Review symptoms and treatment response", "مراجعة الأعراض والاستجابة للعلاج"));
 
     if (!options.silent) showToast(uiText("Sample loaded", "تم تحميل المثال"), uiText("The medical information form is ready.", "نموذج المعلومات الطبية جاهز."), "success");
   }
