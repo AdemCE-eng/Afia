@@ -42,6 +42,36 @@ function readSecretValue(valueName, pathName) {
     return value.replace(/\\n/g, '\n');
 }
 
+function normalizePublicKey(key) {
+    const trimmed = String(key || '').trim().replace(/^"|"$/g, '');
+    if (!trimmed) return '';
+    if (trimmed.includes('BEGIN PUBLIC KEY') || trimmed.includes('BEGIN RSA PUBLIC KEY')) {
+        return trimmed;
+    }
+
+    const compact = trimmed.replace(/\s+/g, '');
+    const wrapped = compact.match(/.{1,64}/g)?.join('\n') || compact;
+    return `-----BEGIN PUBLIC KEY-----\n${wrapped}\n-----END PUBLIC KEY-----`;
+}
+
+function encryptUserPayload(publicKey, userPayload) {
+    const normalizedKey = normalizePublicKey(publicKey);
+    const rsaKey = new NodeRSA(normalizedKey);
+    return rsaKey.encrypt(Buffer.from(JSON.stringify(userPayload), 'utf8'), 'base64');
+}
+
+function canEncryptWithIbmKey() {
+    const ibmPublicKey = readSecretValue('WXO_IBM_PUBLIC_KEY', 'WXO_IBM_PUBLIC_KEY_PATH');
+    if (!ibmPublicKey) return false;
+
+    try {
+        encryptUserPayload(ibmPublicKey, { test: true });
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
 function parseCookies(header) {
     return String(header || '')
         .split(';')
@@ -90,7 +120,7 @@ function createWatsonToken(req, res) {
     const payload = {
         sub: userId,
         user_payload: ibmPublicKey
-            ? new NodeRSA(ibmPublicKey).encrypt(Buffer.from(JSON.stringify(userPayload), 'utf8'), 'base64')
+            ? encryptUserPayload(ibmPublicKey, userPayload)
             : userPayload,
         context: {
             app: 'Afia',
@@ -132,6 +162,7 @@ app.get('/api/health', (req, res) => {
         geminiConfigured: Boolean(process.env.GEMINI_API_KEY),
         watsonTokenConfigured: Boolean(readSecretValue('WXO_JWT_PRIVATE_KEY', 'WXO_JWT_PRIVATE_KEY_PATH')),
         watsonEncryptionConfigured: Boolean(readSecretValue('WXO_IBM_PUBLIC_KEY', 'WXO_IBM_PUBLIC_KEY_PATH')),
+        watsonEncryptionUsable: canEncryptWithIbmKey(),
     });
 });
 
