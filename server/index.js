@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
-const NodeRSA = require('node-rsa');
+const { NodeRSA } = require('node-rsa');
 const { GoogleGenAI } = require('@google/genai');
 
 [
