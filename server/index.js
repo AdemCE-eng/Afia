@@ -43,15 +43,19 @@ function readSecretValue(valueName, pathName) {
 }
 
 function normalizePublicKey(key) {
-    const trimmed = String(key || '').trim().replace(/^"|"$/g, '');
+    const trimmed = String(key || '')
+        .trim()
+        .replace(/^"|"$/g, '')
+        .replace(/^base64:/i, '')
+        .replace(/\\n/g, '\n');
     if (!trimmed) return '';
-    if (trimmed.includes('BEGIN PUBLIC KEY') || trimmed.includes('BEGIN RSA PUBLIC KEY')) {
-        return trimmed;
-    }
 
-    const compact = trimmed.replace(/\s+/g, '');
+    const pemMatch = trimmed.match(/-----BEGIN (RSA )?PUBLIC KEY-----([\s\S]*?)-----END (RSA )?PUBLIC KEY-----/);
+    const keyType = pemMatch?.[1] ? 'RSA PUBLIC KEY' : 'PUBLIC KEY';
+    const keyBody = pemMatch ? pemMatch[2] : trimmed;
+    const compact = keyBody.replace(/[^A-Za-z0-9+/=]/g, '');
     const wrapped = compact.match(/.{1,64}/g)?.join('\n') || compact;
-    return `-----BEGIN PUBLIC KEY-----\n${wrapped}\n-----END PUBLIC KEY-----`;
+    return `-----BEGIN ${keyType}-----\n${wrapped}\n-----END ${keyType}-----`;
 }
 
 function encryptUserPayload(publicKey, userPayload) {
