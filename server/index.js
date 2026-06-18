@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
+const NodeRSA = require('node-rsa');
 const { GoogleGenAI } = require('@google/genai');
 
 [
@@ -74,6 +75,7 @@ function getOrCreateAnonymousUserId(req, res) {
 
 function createWatsonToken(req, res) {
     const privateKey = readSecretValue('WXO_JWT_PRIVATE_KEY', 'WXO_JWT_PRIVATE_KEY_PATH');
+    const ibmPublicKey = readSecretValue('WXO_IBM_PUBLIC_KEY', 'WXO_IBM_PUBLIC_KEY_PATH');
     if (!privateKey) {
         return res.status(503).json({
             error: 'WXO_JWT_PRIVATE_KEY or WXO_JWT_PRIVATE_KEY_PATH is required for Watson embedded chat.',
@@ -81,10 +83,18 @@ function createWatsonToken(req, res) {
     }
 
     const userId = getOrCreateAnonymousUserId(req, res);
+    const userPayload = {
+        name: req.query.name || 'Afia User',
+        custom_user_id: userId,
+    };
     const payload = {
         sub: userId,
+        user_payload: ibmPublicKey
+            ? new NodeRSA(ibmPublicKey).encrypt(Buffer.from(JSON.stringify(userPayload), 'utf8'), 'base64')
+            : userPayload,
         context: {
             app: 'Afia',
+            name: userPayload.name,
             role: req.query.role || 'patient',
             locale: req.query.locale || 'en',
         },
@@ -121,6 +131,7 @@ app.get('/api/health', (req, res) => {
         status: 'ok',
         geminiConfigured: Boolean(process.env.GEMINI_API_KEY),
         watsonTokenConfigured: Boolean(readSecretValue('WXO_JWT_PRIVATE_KEY', 'WXO_JWT_PRIVATE_KEY_PATH')),
+        watsonEncryptionConfigured: Boolean(readSecretValue('WXO_IBM_PUBLIC_KEY', 'WXO_IBM_PUBLIC_KEY_PATH')),
     });
 });
 
