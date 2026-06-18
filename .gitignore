@@ -3,3 +3,6 @@ node_modules/
 *.log
 .DS_Store
 Thumbs.db
+
+wxo-private-key.pem
+wxo-public-key.pem
