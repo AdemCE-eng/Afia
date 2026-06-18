@@ -84,10 +84,7 @@ function canEncryptWithIbmKey() {
 }
 
 function shouldIncludeUserPayload() {
-    const configuredValue = String(process.env.WXO_INCLUDE_USER_PAYLOAD || '').toLowerCase();
-    if (configuredValue === 'true') return true;
-    if (configuredValue === 'false') return false;
-    return Boolean(readSecretValue('WXO_IBM_PUBLIC_KEY', 'WXO_IBM_PUBLIC_KEY_PATH'));
+    return String(process.env.WXO_INCLUDE_USER_PAYLOAD || '').toLowerCase() === 'true';
 }
 
 function parseCookies(header) {
@@ -152,7 +149,14 @@ function createWatsonToken(req, res) {
             });
         }
 
-        payload.user_payload = encryptUserPayload(ibmPublicKey, userPayload);
+        try {
+            payload.user_payload = encryptUserPayload(ibmPublicKey, userPayload);
+        } catch (error) {
+            return res.status(503).json({
+                error: 'WXO_IBM_PUBLIC_KEY is not a valid RSA public key for Watson user_payload encryption.',
+                detail: error.message,
+            });
+        }
     }
 
     const tokenOptions = {
