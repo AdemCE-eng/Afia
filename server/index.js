@@ -5,7 +5,6 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
-const { NodeRSA } = require('node-rsa');
 const { GoogleGenAI } = require('@google/genai');
 
 [
@@ -60,9 +59,16 @@ function normalizePublicKey(key) {
 
 function encryptUserPayload(publicKey, userPayload) {
     const normalizedKey = normalizePublicKey(publicKey);
-    const keyFormat = normalizedKey.includes('BEGIN RSA PUBLIC KEY') ? 'pkcs1-public-pem' : 'pkcs8-public-pem';
-    const rsaKey = new NodeRSA(normalizedKey, keyFormat);
-    return rsaKey.encrypt(Buffer.from(JSON.stringify(userPayload), 'utf8'), 'base64');
+    const encryptedBuffer = crypto.publicEncrypt(
+        {
+            key: normalizedKey,
+            padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+            oaepHash: 'sha256',
+        },
+        Buffer.from(JSON.stringify(userPayload), 'utf8')
+    );
+
+    return encryptedBuffer.toString('base64');
 }
 
 function canEncryptWithIbmKey() {
@@ -78,7 +84,10 @@ function canEncryptWithIbmKey() {
 }
 
 function shouldIncludeUserPayload() {
-    return String(process.env.WXO_INCLUDE_USER_PAYLOAD || '').toLowerCase() === 'true';
+    const configuredValue = String(process.env.WXO_INCLUDE_USER_PAYLOAD || '').toLowerCase();
+    if (configuredValue === 'true') return true;
+    if (configuredValue === 'false') return false;
+    return Boolean(readSecretValue('WXO_IBM_PUBLIC_KEY', 'WXO_IBM_PUBLIC_KEY_PATH'));
 }
 
 function parseCookies(header) {

@@ -43,8 +43,10 @@
     return token;
   }
 
-  async function handleAuthTokenNeeded(event) {
-    event.authToken = await fetchWatsonToken();
+  async function handleAuthTokenNeeded(event, instance) {
+    const token = await fetchWatsonToken();
+    event.authToken = token;
+    if (instance?.updateAuthToken) instance.updateAuthToken(token);
   }
 
   function onChatLoad(instance) {
