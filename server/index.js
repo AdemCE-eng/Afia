@@ -77,6 +77,10 @@ function canEncryptWithIbmKey() {
     }
 }
 
+function shouldIncludeUserPayload() {
+    return String(process.env.WXO_INCLUDE_USER_PAYLOAD || '').toLowerCase() === 'true';
+}
+
 function parseCookies(header) {
     return String(header || '')
         .split(';')
@@ -124,9 +128,6 @@ function createWatsonToken(req, res) {
     };
     const payload = {
         sub: userId,
-        user_payload: ibmPublicKey
-            ? encryptUserPayload(ibmPublicKey, userPayload)
-            : userPayload,
         context: {
             app: 'Afia',
             name: userPayload.name,
@@ -134,6 +135,16 @@ function createWatsonToken(req, res) {
             locale: req.query.locale || 'en',
         },
     };
+
+    if (shouldIncludeUserPayload()) {
+        if (!ibmPublicKey) {
+            return res.status(503).json({
+                error: 'WXO_IBM_PUBLIC_KEY or WXO_IBM_PUBLIC_KEY_PATH is required when WXO_INCLUDE_USER_PAYLOAD=true.',
+            });
+        }
+
+        payload.user_payload = encryptUserPayload(ibmPublicKey, userPayload);
+    }
 
     const tokenOptions = {
         algorithm: 'RS256',
@@ -168,6 +179,7 @@ app.get('/api/health', (req, res) => {
         watsonTokenConfigured: Boolean(readSecretValue('WXO_JWT_PRIVATE_KEY', 'WXO_JWT_PRIVATE_KEY_PATH')),
         watsonEncryptionConfigured: Boolean(readSecretValue('WXO_IBM_PUBLIC_KEY', 'WXO_IBM_PUBLIC_KEY_PATH')),
         watsonEncryptionUsable: canEncryptWithIbmKey(),
+        watsonUserPayloadEnabled: shouldIncludeUserPayload(),
     });
 });
 
