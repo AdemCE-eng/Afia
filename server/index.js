@@ -2,6 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const fs = require('fs');
+const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 const { GoogleGenAI } = require('@google/genai');
 
 [
@@ -12,13 +15,93 @@ const { GoogleGenAI } = require('@google/genai');
 });
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim()) : true,
+    credentials: true,
+}));
 app.use(express.json());
 
 // Initialize Gemini Client
 // Requires GEMINI_API_KEY to be set in .env
 const geminiApiKey = process.env.GEMINI_API_KEY;
 const ai = geminiApiKey ? new GoogleGenAI({ apiKey: geminiApiKey }) : null;
+
+function readSecretValue(valueName, pathName) {
+    if (process.env[pathName]) {
+        return fs.readFileSync(path.resolve(process.env[pathName]), 'utf8');
+    }
+
+    const value = process.env[valueName];
+    if (!value) return '';
+
+    if (value.startsWith('base64:')) {
+        return Buffer.from(value.slice('base64:'.length), 'base64').toString('utf8');
+    }
+
+    return value.replace(/\\n/g, '\n');
+}
+
+function parseCookies(header) {
+    return String(header || '')
+        .split(';')
+        .map((part) => part.trim())
+        .filter(Boolean)
+        .reduce((cookies, part) => {
+            const separatorIndex = part.indexOf('=');
+            if (separatorIndex === -1) return cookies;
+            const key = decodeURIComponent(part.slice(0, separatorIndex));
+            const value = decodeURIComponent(part.slice(separatorIndex + 1));
+            cookies[key] = value;
+            return cookies;
+        }, {});
+}
+
+function getOrCreateAnonymousUserId(req, res) {
+    const cookies = parseCookies(req.headers.cookie);
+    const existingId = cookies.AFIA_WXO_USER_ID;
+    const userId = existingId || `afia-${crypto.randomUUID()}`;
+    const crossOriginFrontend = Boolean(process.env.CORS_ORIGIN);
+
+    res.cookie('AFIA_WXO_USER_ID', userId, {
+        httpOnly: true,
+        sameSite: crossOriginFrontend ? 'none' : 'lax',
+        secure: crossOriginFrontend || process.env.NODE_ENV === 'production',
+        maxAge: 45 * 24 * 60 * 60 * 1000,
+    });
+
+    return userId;
+}
+
+function createWatsonToken(req, res) {
+    const privateKey = readSecretValue('WXO_JWT_PRIVATE_KEY', 'WXO_JWT_PRIVATE_KEY_PATH');
+    if (!privateKey) {
+        return res.status(503).json({
+            error: 'WXO_JWT_PRIVATE_KEY or WXO_JWT_PRIVATE_KEY_PATH is required for Watson embedded chat.',
+        });
+    }
+
+    const userId = getOrCreateAnonymousUserId(req, res);
+    const payload = {
+        sub: userId,
+        context: {
+            app: 'Afia',
+            role: req.query.role || 'patient',
+            locale: req.query.locale || 'en',
+        },
+    };
+
+    const tokenOptions = {
+        algorithm: 'RS256',
+        expiresIn: process.env.WXO_JWT_EXPIRES_IN || '1h',
+    };
+
+    if (process.env.WXO_JWT_KEY_ID) {
+        tokenOptions.keyid = process.env.WXO_JWT_KEY_ID;
+    }
+
+    const token = jwt.sign(payload, privateKey, tokenOptions);
+    res.type('text/plain').send(token);
+}
 
 function parseJsonResponse(text) {
     try {
@@ -37,8 +120,11 @@ app.get('/api/health', (req, res) => {
     res.json({
         status: 'ok',
         geminiConfigured: Boolean(process.env.GEMINI_API_KEY),
+        watsonTokenConfigured: Boolean(readSecretValue('WXO_JWT_PRIVATE_KEY', 'WXO_JWT_PRIVATE_KEY_PATH')),
     });
 });
+
+app.get('/api/wxo-token', createWatsonToken);
 
 app.post('/api/generate-plan', async (req, res) => {
     try {

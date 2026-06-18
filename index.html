@@ -68,27 +68,6 @@
     <div id="toastHost" class="toast-host" aria-live="polite" aria-atomic="true"></div>
     <script src="./lang.js" defer></script>
     <script src="./app.js" defer></script>
-    <script>
-      window.wxOConfiguration = {
-        orchestrationID: "09be334b68a34180a9399bdf74c8a5e8_2a6df77e-738a-42eb-8224-65c43367443f",
-        hostURL: "https://eu-de.watson-orchestrate.cloud.ibm.com",
-        rootElementID: "root",
-        deploymentPlatform: "ibmcloud",
-        crn: "crn:v1:bluemix:public:watsonx-orchestrate:eu-de:a/09be334b68a34180a9399bdf74c8a5e8:2a6df77e-738a-42eb-8224-65c43367443f::",
-        chatOptions: {
-            agentId: "0f38e240-3af7-4430-aeae-21a7a779c621", 
-            agentEnvironmentId: "62ff094f-0367-4833-9234-a7117df25e90",
-            title: "عافية - مساعدك الذكي",
-        }
-      };
-      setTimeout(function () {
-        const script = document.createElement('script');
-        script.src = `${window.wxOConfiguration.hostURL}/wxochat/wxoLoader.js?embed=true`;
-        script.addEventListener('load', function () {
-            wxoLoader.init();
-        });
-        document.head.appendChild(script);
-      }, 0);
-    </script>
+    <script src="./watson-orchestrate.js" defer></script>
   </body>
 </html>
