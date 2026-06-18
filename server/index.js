@@ -56,7 +56,8 @@ function normalizePublicKey(key) {
 
 function encryptUserPayload(publicKey, userPayload) {
     const normalizedKey = normalizePublicKey(publicKey);
-    const rsaKey = new NodeRSA(normalizedKey);
+    const keyFormat = normalizedKey.includes('BEGIN RSA PUBLIC KEY') ? 'pkcs1-public-pem' : 'pkcs8-public-pem';
+    const rsaKey = new NodeRSA(normalizedKey, keyFormat);
     return rsaKey.encrypt(Buffer.from(JSON.stringify(userPayload), 'utf8'), 'base64');
 }
 
