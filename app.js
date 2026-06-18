@@ -129,7 +129,6 @@
     }
 
     if (isPatientPage()) {
-      renderFloatingAssistant();
       wirePatientPage();
       renderPatientPortal();
       scheduleBrowserReminders();
@@ -485,15 +484,6 @@
     document.querySelectorAll("[data-question]").forEach((button) => {
       button.addEventListener("click", () => submitPatientQuestion(button.dataset.question));
     });
-    $("floatingAssistantToggle")?.addEventListener("click", () => {
-      $("floatingAssistantPanel")?.classList.toggle("open");
-    });
-    $("floatingChatForm")?.addEventListener("submit", handleFloatingChatSubmit);
-    document.querySelectorAll("[data-floating-question]").forEach((button) => {
-      button.addEventListener("click", () => submitFloatingQuestion(button.dataset.floatingQuestion));
-    });
-    $("floatingAssistantExpand")?.addEventListener("click", toggleFloatingAssistantSize);
-    $("floatingAssistantBackdrop")?.addEventListener("click", closeFloatingAssistant);
     $("clearPatientChat")?.addEventListener("click", clearPatientChat);
 
     // Wire patient summary tabs (Overview / Treatment Plan / Medications / Doctor Notes)
@@ -1284,78 +1274,6 @@
     refreshIcons();
   }
 
-  function renderFloatingAssistant() {
-    if ($("floatingAssistant")) return;
-    const patient = getSelectedPatient();
-    const widget = document.createElement("section");
-    widget.id = "floatingAssistant";
-    widget.className = "floating-assistant";
-    widget.innerHTML = `
-      <div id="floatingAssistantPanel" class="floating-chat-panel">
-        <div class="floating-chat-header">
-          <div>
-            <strong>${escapeHtml(uiText("Health Assistant", "مساعد عافية"))}</strong>
-            <span>${escapeHtml(uiText("Answers from your care plan", "إجابات من خطتك العلاجية"))}</span>
-          </div>
-          <div class="floating-chat-actions">
-            <button class="icon-button" type="button" aria-label="Expand conversation" id="floatingAssistantExpand">
-              <i data-lucide="maximize-2"></i>
-            </button>
-            <button class="icon-button" type="button" aria-label="Close assistant" id="floatingAssistantClose">
-              <i data-lucide="x"></i>
-            </button>
-          </div>
-        </div>
-        <div id="floatingChatMessages" class="floating-chat-messages"></div>
-        <div class="floating-questions">
-          <button type="button" data-floating-question="${escapeHtml(uiText("When should I take my medication?", "\u0645\u062a\u0649 \u0623\u062a\u0646\u0627\u0648\u0644 \u062f\u0648\u0627\u0626\u064a\u061f"))}">${escapeHtml(uiText("Medication time", "وقت الدواء"))}</button>
-          <button type="button" data-floating-question="${escapeHtml(uiText("What if I miss a dose?", "\u0645\u0627\u0630\u0627 \u0623\u0641\u0639\u0644 \u0625\u0630\u0627 \u0646\u0633\u064a\u062a \u062c\u0631\u0639\u0629\u061f"))}">${escapeHtml(uiText("Missed dose", "نسيت جرعة"))}</button>
-          <button type="button" data-floating-question="${escapeHtml(uiText("When is my next appointment?", "\u0645\u062a\u0649 \u0645\u0648\u0639\u062f\u064a \u0627\u0644\u0642\u0627\u062f\u0645\u061f"))}">${escapeHtml(uiText("Appointment", "الموعد"))}</button>
-        </div>
-        <form id="floatingChatForm" class="chat-input-row">
-          <input id="floatingChatInput" placeholder="${escapeHtml(uiText("Ask about your plan...", "اسأل عن خطتك..."))}" />
-          <button class="icon-button" type="submit" aria-label="Send message"><i data-lucide="send"></i></button>
-        </form>
-      </div>
-      <div id="floatingAssistantBackdrop" class="floating-chat-backdrop" aria-hidden="true"></div>
-      <div id="floatingAssistantNudge" class="floating-chat-nudge">
-        <span>${escapeHtml(uiText("Need help with your plan?", "\u0647\u0644 \u0644\u062f\u064a\u0643 \u0633\u0624\u0627\u0644\u061f"))}</span>
-      </div>
-      <button id="floatingAssistantToggle" class="floating-chat-button" type="button" aria-label="Open AI health assistant">
-        <span class="floating-chat-alert" aria-hidden="true"></span>
-        <i data-lucide="message-circle"></i>
-        <span class="floating-chat-label">${escapeHtml(uiText("Afia", "\u0639\u0627\u0641\u064a\u0629"))}</span>
-      </button>
-    `;
-    document.body.appendChild(widget);
-    renderAssistantMessages("floatingChatMessages");
-    $("floatingAssistantClose")?.addEventListener("click", closeFloatingAssistant);
-  }
-
-  function toggleFloatingAssistantSize() {
-    const panel = $("floatingAssistantPanel");
-    const button = $("floatingAssistantExpand");
-    if (!panel || !button) return;
-
-    panel.classList.add("open");
-    const expanded = panel.classList.toggle("expanded");
-    button.setAttribute("aria-label", expanded ? "Collapse conversation" : "Expand conversation");
-    const icon = button.querySelector("i");
-    if (icon) icon.setAttribute("data-lucide", expanded ? "minimize-2" : "maximize-2");
-    refreshIcons();
-    $("floatingChatMessages")?.scrollTo({ top: $("floatingChatMessages").scrollHeight, behavior: "smooth" });
-  }
-
-  function closeFloatingAssistant() {
-    const panel = $("floatingAssistantPanel");
-    const button = $("floatingAssistantExpand");
-    panel?.classList.remove("open", "expanded");
-    button?.setAttribute("aria-label", "Expand conversation");
-    const icon = button?.querySelector("i");
-    if (icon) icon.setAttribute("data-lucide", "maximize-2");
-    refreshIcons();
-  }
-
   function renderDoctorUtilityPanels() {
     const patient = getSelectedPatient();
     const latest = patient.visits[0] || buildFallbackVisit(patient);
@@ -1644,29 +1562,10 @@
     submitPatientQuestion(question);
   }
 
-  function handleFloatingChatSubmit(event) {
-    event.preventDefault();
-    const input = $("floatingChatInput");
-    const question = input.value.trim();
-    if (!question) return;
-    input.value = "";
-    submitFloatingQuestion(question);
-  }
-
   async function submitPatientQuestion(question) {
     appendChat("user", question);
     savePatientChatMessage("user", question);
     const pending = appendChat("bot", uiText("Afia assistant is checking your care plan...", "\u0645\u0633\u0627\u0639\u062f \u0639\u0627\u0641\u064a\u0629 \u064a\u0631\u0627\u062c\u0639 \u062e\u0637\u062a\u0643 \u0627\u0644\u0639\u0644\u0627\u062c\u064a\u0629..."));
-    const answer = await getPatientAiAnswer(question);
-    updateChatMessage(pending, answer);
-    savePatientChatMessage("bot", answer);
-  }
-
-  async function submitFloatingQuestion(question) {
-    $("floatingAssistantPanel")?.classList.add("open");
-    appendFloatingChat("user", question);
-    savePatientChatMessage("user", question);
-    const pending = appendFloatingChat("bot", uiText("Afia assistant is checking your care plan...", "\u0645\u0633\u0627\u0639\u062f \u0639\u0627\u0641\u064a\u0629 \u064a\u0631\u0627\u062c\u0639 \u062e\u0637\u062a\u0643 \u0627\u0644\u0639\u0644\u0627\u062c\u064a\u0629..."));
     const answer = await getPatientAiAnswer(question);
     updateChatMessage(pending, answer);
     savePatientChatMessage("bot", answer);
@@ -1769,15 +1668,6 @@
     return node;
   }
 
-  function appendFloatingChat(role, message) {
-    const node = document.createElement("div");
-    node.className = `chat-message ${role}`;
-    node.textContent = message;
-    $("floatingChatMessages")?.appendChild(node);
-    $("floatingChatMessages")?.scrollTo({ top: $("floatingChatMessages").scrollHeight, behavior: "smooth" });
-    return node;
-  }
-
   function updateChatMessage(node, message) {
     if (!node) return;
     node.textContent = message;
@@ -1816,7 +1706,6 @@
     delete chats[patient.id];
     writeJson(STORAGE.chat, chats);
     renderAssistantMessages("chatMessages");
-    renderAssistantMessages("floatingChatMessages");
     showToast(uiText("Conversation cleared", "تم مسح المحادثة"), uiText("The assistant conversation was reset.", "تمت إعادة محادثة المساعد."), "success");
   }
 
